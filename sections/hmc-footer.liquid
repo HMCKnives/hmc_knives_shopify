@@ -1,0 +1,503 @@
+{% comment %}HMC footer — full-bleed useful links, contact, Made in USA, social, payments{% endcomment %}
+
+{%- liquid
+  assign copyright_year = 'now' | date: '%Y'
+  assign address_one_line = settings.hmc_contact_address | newline_to_br | replace: '<br />', ' ' | replace: '<br/>', ' ' | replace: '<br>', ' ' | strip_html | strip
+  assign flag_alt = settings.hmc_made_in_usa_text | default: 'Proudly Made In The USA!' | escape
+-%}
+
+<footer
+  class="hmc-footer hmc-footer-{{ section.id }}"
+  role="contentinfo"
+  style="
+    --hmc-footer-bg: {{ section.settings.background_color }};
+    --hmc-footer-text: {{ section.settings.text_color }};
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="hmc-footer__inner">
+    <div class="hmc-footer__grid">
+      <div class="hmc-footer__col">
+        {%- if section.settings.links_heading != blank -%}
+          <h2 class="hmc-footer__heading">{{ section.settings.links_heading | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.menu != blank -%}
+          <nav aria-label="{{ 'hmc.accessibility.footer_navigation' | t }}">
+            <ul class="hmc-footer__links list-unstyled">
+              {%- for link in section.settings.menu.links -%}
+                <li>
+                  <a class="hmc-footer__link" href="{{ link.url }}">{{ link.title | escape }}</a>
+                </li>
+              {%- endfor -%}
+            </ul>
+          </nav>
+        {%- endif -%}
+      </div>
+
+      <div class="hmc-footer__col">
+        {%- if section.settings.contact_heading != blank -%}
+          <h2 class="hmc-footer__heading">{{ section.settings.contact_heading | escape }}</h2>
+        {%- endif -%}
+        <ul class="hmc-footer__contact list-unstyled">
+          {%- if settings.hmc_contact_name != blank -%}
+            <li class="hmc-footer__contact-item">
+              <span class="hmc-footer__contact-icon" aria-hidden="true">
+                <svg viewBox="0 0 512 512" focusable="false">
+                  <path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"></path>
+                </svg>
+              </span>
+              <span>{{ settings.hmc_contact_name | escape }}</span>
+            </li>
+          {%- endif -%}
+          {%- if address_one_line != blank -%}
+            <li class="hmc-footer__contact-item">
+              <span class="hmc-footer__contact-icon" aria-hidden="true">
+                <svg viewBox="0 0 384 512" focusable="false">
+                  <path d="M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z"></path>
+                </svg>
+              </span>
+              <span>{{ address_one_line | escape }}</span>
+            </li>
+          {%- endif -%}
+          {%- if settings.hmc_contact_email != blank -%}
+            <li class="hmc-footer__contact-item">
+              <span class="hmc-footer__contact-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"></path>
+                </svg>
+              </span>
+              <a class="hmc-footer__link" href="mailto:{{ settings.hmc_contact_email }}">
+                {{ settings.hmc_contact_email | escape }}
+              </a>
+            </li>
+          {%- endif -%}
+        </ul>
+      </div>
+
+      <div class="hmc-footer__col hmc-footer__col--brand">
+        {%- if settings.hmc_show_made_in_usa -%}
+          <div class="hmc-footer__made-in-usa">
+            {%- if settings.hmc_made_in_usa_image != blank -%}
+              {{
+                settings.hmc_made_in_usa_image
+                | image_url: width: 352
+                | image_tag:
+                  loading: 'lazy',
+                  alt: flag_alt,
+                  widths: '176, 352',
+                  class: 'hmc-footer__flag'
+              }}
+            {%- else -%}
+              <img
+                class="hmc-footer__flag"
+                src="{{ 'hmc-usa-flag.png' | asset_url }}"
+                alt="{{ flag_alt }}"
+                width="176"
+                height="116"
+                loading="lazy"
+              >
+            {%- endif -%}
+            {%- if settings.hmc_made_in_usa_text != blank -%}
+              <p>{{ settings.hmc_made_in_usa_text | escape }}</p>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.show_social -%}
+          {%- if settings.social_instagram_link != blank
+            or settings.social_twitter_link != blank
+            or settings.social_facebook_link != blank
+            or settings.social_youtube_link != blank
+          -%}
+            <ul class="hmc-footer__social list-unstyled" role="list">
+              {%- if settings.social_instagram_link != blank -%}
+                <li>
+                  <a
+                    class="hmc-footer__social-link"
+                    href="{{ settings.social_instagram_link }}"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <svg viewBox="0 0 448 512" aria-hidden="true" focusable="false">
+                      <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
+                    </svg>
+                    <span class="visually-hidden">{{ 'general.social.links.instagram' | t }}</span>
+                  </a>
+                </li>
+              {%- endif -%}
+              {%- if settings.social_twitter_link != blank -%}
+                <li>
+                  <a
+                    class="hmc-footer__social-link"
+                    href="{{ settings.social_twitter_link }}"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <svg viewBox="0 0 512 512" aria-hidden="true" focusable="false">
+                      <path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+                    </svg>
+                    <span class="visually-hidden">{{ 'general.social.links.twitter' | t }}</span>
+                  </a>
+                </li>
+              {%- endif -%}
+              {%- if settings.social_facebook_link != blank -%}
+                <li>
+                  <a
+                    class="hmc-footer__social-link"
+                    href="{{ settings.social_facebook_link }}"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <svg viewBox="0 0 264 512" aria-hidden="true" focusable="false">
+                      <path d="M76.7 512V283H0v-91h76.7v-71.7C76.7 42.4 124.3 0 193.8 0c33.3 0 61.9 2.5 70.2 3.6V85h-48.2c-37.8 0-45.1 18-45.1 44.3V192H256l-11.7 91h-73.6v229"></path>
+                    </svg>
+                    <span class="visually-hidden">{{ 'general.social.links.facebook' | t }}</span>
+                  </a>
+                </li>
+              {%- endif -%}
+              {%- if settings.social_youtube_link != blank -%}
+                <li>
+                  <a
+                    class="hmc-footer__social-link"
+                    href="{{ settings.social_youtube_link }}"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <svg viewBox="0 0 576 512" aria-hidden="true" focusable="false">
+                      <path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"></path>
+                    </svg>
+                    <span class="visually-hidden">{{ 'general.social.links.youtube' | t }}</span>
+                  </a>
+                </li>
+              {%- endif -%}
+            </ul>
+          {%- endif -%}
+        {%- endif -%}
+
+        {%- if section.settings.show_payment -%}
+          <ul class="hmc-footer__cards list-unstyled" role="list" aria-label="{{ 'hmc.footer.payments' | t }}">
+            <li>
+              <span class="visually-hidden">{{ 'hmc.footer.visa' | t }}</span>
+              <svg class="hmc-footer__card" viewBox="0 0 72 52" aria-hidden="true" focusable="false">
+                <path class="hmc-footer__card-visa-bg" d="M7.6,0.9h56.7c3.7,0,6.6,3,6.6,6.6v36.7c0,3.7-3,6.6-6.6,6.6H7.6c-3.7,0-6.6-3-6.6-6.6V7.5C1,3.9,4,0.9,7.6,0.9z"></path>
+                <path class="hmc-footer__card-visa-mark" d="M24.8,33.8h-4.1l-3.1-11.6c-0.1-0.5-0.5-1-0.9-1.2c-1.1-0.6-2.4-1-3.7-1.2v-0.4h6.6c0.9,0,1.6,0.7,1.7,1.5l1.6,8.4l4.1-9.8h4L24.8,33.8z M33.1,33.8h-3.8l3.2-14.5h3.8L33.1,33.8z M41.2,23.3c0.1-0.8,0.8-1.2,1.6-1.2c1.2-0.1,2.6,0.1,3.7,0.7l0.7-3.1c-1.1-0.4-2.4-0.7-3.5-0.7c-3.7,0-6.4,2-6.4,4.8c0,2.1,1.9,3.2,3.3,3.9c1.5,0.7,2,1.1,1.9,1.8c0,1-1.1,1.5-2.3,1.5c-1.4,0-2.7-0.3-4-0.9l-0.7,3.1c1.4,0.6,2.8,0.8,4.2,0.8C44,34,46.6,32,46.6,29C46.6,25.2,41.2,25,41.2,23.3L41.2,23.3z M60,33.8l-3.1-14.5h-3.3c-0.7,0-1.4,0.4-1.6,1.1l-5.6,13.4h4l0.8-2.1H56l0.5,2.1H60z M54.2,23.2l1.1,5.5h-3.2L54.2,23.2z"></path>
+              </svg>
+            </li>
+            <li>
+              <span class="visually-hidden">{{ 'hmc.footer.mastercard' | t }}</span>
+              <svg class="hmc-footer__card" viewBox="0 0 72 52" aria-hidden="true" focusable="false">
+                <g transform="translate(337, 0)">
+                  <path class="hmc-footer__card-mc-bg" d="M-329.4,0.9h56.7c3.7,0,6.6,3,6.6,6.6v36.7c0,3.7-3,6.6-6.6,6.6h-56.7c-3.7,0-6.6-3-6.6-6.6V7.5C-336,3.9-333,0.9-329.4,0.9z"></path>
+                  <g transform="translate(12.526316, 11.194030)">
+                    <path class="hmc-footer__card-mc-orange" d="M-313.2,4.5c-2.4-2.1-5.5-3.3-8.8-3.3c-7.5,0-13.6,6.2-13.6,13.8s6.1,13.8,13.6,13.8c3.4,0,6.5-1.2,8.8-3.3c2.4,2.1,5.5,3.3,8.8,3.3c7.5,0,13.6-6.2,13.6-13.8s-6.1-13.8-13.6-13.8C-307.7,1.2-310.8,2.4-313.2,4.5z"></path>
+                    <path class="hmc-footer__card-mc-red" d="M-313.2,4.5c-2.4-2.1-5.5-3.3-8.8-3.3c-7.5,0-13.6,6.2-13.6,13.8s6.1,13.8,13.6,13.8c3.4,0,6.5-1.2,8.8-3.3c-2.9-2.5-4.8-6.3-4.8-10.5S-316.1,7-313.2,4.5z"></path>
+                    <path class="hmc-footer__card-mc-gold" d="M-313.2,25.5c2.4,2.1,5.5,3.3,8.8,3.3c7.5,0,13.6-6.2,13.6-13.8s-6.1-13.8-13.6-13.8c-3.4,0-6.5,1.2-8.8,3.3c2.9,2.5,4.8,6.3,4.8,10.5S-310.2,23-313.2,25.5z"></path>
+                  </g>
+                </g>
+              </svg>
+            </li>
+            <li>
+              <span class="visually-hidden">{{ 'hmc.footer.amex' | t }}</span>
+              <svg class="hmc-footer__card" viewBox="0 0 72 52" aria-hidden="true" focusable="false">
+                <g transform="translate(169, 0)">
+                  <path class="hmc-footer__card-amex-bg" d="M-161.4,0.9h56.7c3.7,0,6.6,3,6.6,6.6v36.7c0,3.7-3,6.6-6.6,6.6h-56.7c-3.7,0-6.6-3-6.6-6.6V7.5C-168,3.9-165,0.9-161.4,0.9z"></path>
+                </g>
+                <path class="hmc-footer__card-amex-mark" d="M31,28.2l-3.8-8.4h-4.6v11.9l-5.4-11.9h-3.8L8,32.3h3.2l1.1-2.7h6l1.1,2.7h6.2v-9.2l4.1,9.2h2.7l4.1-8.9v8.9h3V20.1h-4.6L31,28.5L31,28.2z M15.4,26.9h-1.9l1.9-4.3l0,0l2,4.3L15.4,26.9z"></path>
+                <path class="hmc-footer__card-amex-mark" d="M58.4,26l2.2-2.4l3.2-3.5H60l-3.5,3.8L53,20.1H41.3v12.2H53l3.5-4.1l3.5,4.1h3.8l-3.2-3.8L58.4,26z M51.1,29.8h-6.8v-2.4h6.8V25h-6.8v-2.2h6.8l3.5,3.2L51.1,29.8z"></path>
+              </svg>
+            </li>
+          </ul>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <p class="hmc-footer__copyright">
+      {{ 'hmc.general.copyright' | t: year: copyright_year, suffix: section.settings.copyright_text }}
+    </p>
+  </div>
+</footer>
+
+{% stylesheet %}
+  .hmc-footer {
+    background: var(--hmc-footer-bg, #0c1115);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    line-height: 21px;
+    font-weight: 400;
+  }
+
+  .hmc-footer__inner {
+    width: 100%;
+    padding: var(--hmc-section-padding-top, 40px) 20px var(--hmc-section-padding-bottom, 20px);
+  }
+
+  .hmc-footer__grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-footer__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 50px;
+    }
+  }
+
+  .hmc-footer__heading {
+    margin: 0 0 15px;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    line-height: 1.75;
+    text-transform: uppercase;
+  }
+
+  .hmc-footer__links,
+  .hmc-footer__contact,
+  .hmc-footer__social,
+  .hmc-footer__cards {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hmc-footer__links li {
+    margin: 0 0 7px;
+    line-height: 21px;
+  }
+
+  .hmc-footer__link {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+    text-decoration: none;
+  }
+
+  .hmc-footer__link:hover {
+    color: rgb(255, 255, 255);
+    text-decoration: underline;
+  }
+
+  .hmc-footer__link:focus-visible,
+  .hmc-footer__social-link:focus-visible {
+    outline: 2px solid rgb(255, 255, 255);
+    outline-offset: 2px;
+  }
+
+  .hmc-footer__contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 11px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    line-height: 21px;
+  }
+
+  .hmc-footer__contact-icon {
+    display: flex;
+    flex: 0 0 22px;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    color: rgba(255, 255, 255, 0.12);
+  }
+
+  .hmc-footer__contact-icon svg {
+    display: block;
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+  }
+
+  .hmc-footer__made-in-usa {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hmc-footer__flag {
+    display: block;
+    width: 176px;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .hmc-footer__made-in-usa p {
+    margin: 1px 0 0;
+    padding: 2.5px 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24.5px;
+  }
+
+  .hmc-footer__social.list-unstyled {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 17px 0 0;
+  }
+
+  .hmc-footer__social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    color: rgb(255, 255, 255);
+  }
+
+  .hmc-footer__social-link svg {
+    display: block;
+    width: 17px;
+    height: 17px;
+    fill: currentColor;
+  }
+
+  .hmc-footer__cards.list-unstyled {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin: 17px 0 0;
+  }
+
+  .hmc-footer__card {
+    display: block;
+    width: 32px;
+    height: 32px;
+  }
+
+  .hmc-footer__card-visa-bg {
+    fill: #3554a5;
+  }
+
+  .hmc-footer__card-visa-mark,
+  .hmc-footer__card-amex-mark {
+    fill: #fff;
+  }
+
+  .hmc-footer__card-mc-bg {
+    fill: #1a2f59;
+  }
+
+  .hmc-footer__card-mc-orange {
+    fill: #f16022;
+  }
+
+  .hmc-footer__card-mc-red {
+    fill: #ec1d25;
+  }
+
+  .hmc-footer__card-mc-gold {
+    fill: #f9a11b;
+  }
+
+  .hmc-footer__card-amex-bg {
+    fill: #38a1d8;
+  }
+
+  .hmc-footer__copyright {
+    margin: 48px 0 0;
+    color: rgba(255, 255, 255, 0.33);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    line-height: 1.7;
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hmc-footer__link,
+    .hmc-footer__social-link {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-footer.name",
+  "tag": "section",
+  "class": "section-hmc-footer",
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:sections.hmc-footer.settings.background_color",
+      "default": "#0c1115"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:sections.hmc-footer.settings.text_color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "links_heading",
+      "label": "t:sections.hmc-footer.settings.links_heading",
+      "default": "Useful links"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "t:sections.hmc-footer.settings.menu",
+      "default": "footer"
+    },
+    {
+      "type": "text",
+      "id": "contact_heading",
+      "label": "t:sections.hmc-footer.settings.contact_heading",
+      "default": "Contact"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social",
+      "label": "t:sections.hmc-footer.settings.show_social",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment",
+      "label": "t:sections.hmc-footer.settings.show_payment",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "copyright_text",
+      "label": "t:sections.hmc-footer.settings.copyright_text",
+      "default": ", all rights reserved."
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 20,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 20
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,223 @@
+{%- liquid
+  assign heading = section.settings.heading
+  assign related_limit = section.settings.products_to_show | default: 4
+  assign recs_ready = false
+  if recommendations.performed and recommendations.products_count > 0
+    assign recs_ready = true
+  endif
+
+  assign fallback_collection = section.settings.fallback_collection
+  if fallback_collection == blank
+    assign fallback_collection = product.collections.first
+  endif
+  if fallback_collection == blank
+    assign fallback_collection = collections.all
+  endif
+
+  assign fallback_count = 0
+  if fallback_collection != blank
+    for related_product in fallback_collection.products
+      if related_product.id != product.id
+        assign fallback_count = fallback_count | plus: 1
+      endif
+    endfor
+  endif
+-%}
+
+<div
+  id="HmcRelatedProducts-{{ section.id }}"
+  class="hmc-related-products"
+  style="
+    --hmc-related-columns-mobile: {{ section.settings.columns_mobile }};
+    --hmc-related-columns-desktop: {{ section.settings.columns_desktop }};
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <product-recommendations
+    class="hmc-related-products__recommendations"
+    data-url="{{ routes.product_recommendations_url }}?limit={{ related_limit }}&intent=related"
+    data-section-id="{{ section.id }}"
+    data-product-id="{{ product.id }}"
+  >
+    {%- if recs_ready -%}
+      <div class="hmc-page-width hmc-related-products__inner">
+        {%- if heading != blank -%}
+          <h2 class="hmc-related-products__heading">{{ heading | escape }}</h2>
+        {%- endif -%}
+
+        <ul class="hmc-related-products__list" role="list">
+          {%- for recommendation in recommendations.products -%}
+            <li class="hmc-related-products__item">
+              {% render 'hmc-related-card', product: recommendation %}
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- elsif fallback_count > 0 -%}
+      <div class="hmc-page-width hmc-related-products__inner">
+        {%- if heading != blank -%}
+          <h2 class="hmc-related-products__heading">{{ heading | escape }}</h2>
+        {%- endif -%}
+
+        <ul class="hmc-related-products__list" role="list">
+          {%- assign shown = 0 -%}
+          {%- for related_product in fallback_collection.products -%}
+            {%- if related_product.id != product.id and shown < related_limit -%}
+              <li class="hmc-related-products__item">
+                {% render 'hmc-related-card', product: related_product %}
+              </li>
+              {%- assign shown = shown | plus: 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+  </product-recommendations>
+</div>
+
+{% stylesheet %}
+  .hmc-related-products {
+    background: var(--hmc-white, #fff);
+  }
+
+  .hmc-related-products__recommendations {
+    display: block;
+    min-height: 1px;
+  }
+
+  .hmc-related-products .hmc-page-width {
+    max-width: 104rem;
+  }
+
+  .hmc-related-products__inner {
+    padding-top: calc(var(--hmc-section-padding-top, 80px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 48px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-related-products__inner {
+      padding-top: var(--hmc-section-padding-top, 80px);
+      padding-bottom: var(--hmc-section-padding-bottom, 48px);
+    }
+  }
+
+  .hmc-related-products__heading {
+    margin: 0;
+    font-size: 2.4rem;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--hmc-black, #0a0a0a);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-related-products__heading {
+      font-size: 2.8rem;
+    }
+  }
+
+  .hmc-related-products__list {
+    display: grid;
+    grid-template-columns: repeat(var(--hmc-related-columns-mobile, 1), minmax(0, 1fr));
+    gap: 4.8rem 2.1rem;
+    margin: 0;
+    padding: 1rem 0 0;
+    list-style: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-related-products__list {
+      grid-template-columns: repeat(var(--hmc-related-columns-desktop, 4), minmax(0, 1fr));
+    }
+  }
+
+  .hmc-related-products__item {
+    min-width: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-related-products.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--related-products",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.hmc-related-products.settings.paragraph"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hmc-related-products.settings.heading",
+      "default": "Related products"
+    },
+    {
+      "type": "collection",
+      "id": "fallback_collection",
+      "label": "t:sections.hmc-related-products.settings.fallback_collection",
+      "info": "t:sections.hmc-related-products.settings.fallback_collection_info"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4,
+      "label": "t:sections.hmc-related-products.settings.products_to_show"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4,
+      "label": "t:sections.hmc-related-products.settings.columns_desktop"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "t:sections.hmc-related-products.settings.columns_mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-related-products.name"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,228 @@
+<section
+  id="HmcFaq-{{ section.id }}"
+  class="hmc-faq section-{{ section.id }}-padding"
+  style="
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="hmc-page-width">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="hmc-faq__heading">{{ section.settings.heading | escape }}</h2>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="hmc-faq__list">
+        {%- for block in section.blocks -%}
+          <details class="hmc-faq__item" {{ block.shopify_attributes }}>
+            <summary class="hmc-faq__question">
+              {{ block.settings.question | escape }}
+            </summary>
+            {%- if block.settings.answer != blank -%}
+              <div class="hmc-faq__answer rte">
+                {{ block.settings.answer }}
+              </div>
+            {%- endif -%}
+          </details>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .hmc-faq {
+    background: var(--hmc-white, #fff);
+    padding-top: calc(var(--hmc-section-padding-top, 36px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 36px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-faq {
+      padding-top: var(--hmc-section-padding-top, 36px);
+      padding-bottom: var(--hmc-section-padding-bottom, 36px);
+    }
+  }
+
+  .hmc-faq__heading {
+    max-width: 108rem;
+    margin: 0 auto;
+    text-align: left;
+    font-size: 2.8rem;
+    font-weight: 400;
+    line-height: 1.4;
+    color: #e6e6e6;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-faq__heading {
+      font-size: 3.7rem;
+    }
+  }
+
+  .hmc-faq__list {
+    max-width: 108rem;
+    margin: 0 auto;
+  }
+
+  .hmc-faq__item {
+    border-top: 1px solid #a58178;
+  }
+
+  .hmc-faq__question {
+    list-style: none;
+    cursor: pointer;
+    padding: 2.2rem 1rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    line-height: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    color: #292324;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-faq__question {
+      padding: 2.6rem 1rem;
+    }
+  }
+
+  .hmc-faq__question::-webkit-details-marker {
+    display: none;
+  }
+
+  .hmc-faq__question:focus-visible {
+    outline: 2px solid var(--hmc-accent, #3d342c);
+    outline-offset: 2px;
+  }
+
+  .hmc-faq__question::after {
+    content: '+';
+    font-size: 2.2rem;
+    font-weight: 300;
+    line-height: 1;
+    color: #4d4a32;
+    flex-shrink: 0;
+  }
+
+  .hmc-faq__item[open] .hmc-faq__question::after {
+    content: '−';
+  }
+
+  .hmc-faq__answer {
+    padding: 0 1rem 2.2rem;
+    font-size: 1.5rem;
+    color: #121212;
+    line-height: 1.8;
+    overflow-wrap: break-word;
+    min-width: 0;
+  }
+
+  .hmc-faq__answer p {
+    margin: 0 0 0.75rem;
+  }
+
+  .hmc-faq__answer p:last-child {
+    margin-bottom: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-faq.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--faq",
+  "max_blocks": 20,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hmc-faq.settings.heading",
+      "default": "FAQ"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "t:sections.hmc-faq.blocks.faq.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "t:sections.hmc-faq.blocks.faq.settings.question",
+          "default": "How do I order a custom knife?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "t:sections.hmc-faq.blocks.faq.settings.answer",
+          "default": "<p>At this time, I am currently not taking any custom orders. My focus is to scale the availability of my knives to a point where weekly drops are made to my email list.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-faq.name",
+      "blocks": [
+        {
+          "type": "faq",
+          "settings": {
+            "question": "How do I order a custom knife?",
+            "answer": "<p>At this time, I am currently not taking any custom orders. My focus is to scale the availability of my knives to a point where weekly drops are made to my email list. If you are interested in a knife, signing up here is currently the best way to purchase one.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "How do I get one of your knives from Instagram?",
+            "answer": "<p>I'm shifting from selling knives on Instagram to notifying my email list about their availability and processing sales through my website.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "Do I need a knife spa?",
+            "answer": "<p>Yes, if your knife has lost its edge, is showing significant surface wear and tear, or is experiencing performance issues unrelated to a manufacturer's defect, it's time to send it in for a spa.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "Why are your knives so expensive?",
+            "answer": "<p>My pricing is based on the high-quality materials and craftsmanship that go into making each knife. I use premium American-made stainless steel and titanium hardware.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

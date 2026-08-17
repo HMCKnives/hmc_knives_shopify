@@ -1,0 +1,306 @@
+{% doc %}
+  About Me page body: bio column plus a bordered two-column photo collage.
+{% enddoc %}
+
+{%- liquid
+  assign is_about_page = false
+  if page.handle == 'about-me' or page.handle == 'about' or template.suffix == 'about'
+    assign is_about_page = true
+  endif
+
+  assign has_block_images = false
+  for block in section.blocks
+    if block.settings.image != blank
+      assign has_block_images = true
+    endif
+  endfor
+
+  assign fallback_names = 'hmc-about-1.jpg,hmc-about-2.jpg,hmc-about-3.jpg,hmc-about-4.jpg,hmc-about-5.jpg,hmc-about-6.jpg,hmc-about-7.jpg,hmc-about-8.jpg' | split: ','
+  assign collage_alt = page.title | default: shop.name
+-%}
+
+{%- if is_about_page or template.suffix == 'about' -%}
+<section
+  id="HmcAboutPage-{{ section.id }}"
+  class="hmc-about-page"
+  style="
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="hmc-page-width hmc-about-page__frame">
+    <div class="hmc-about-page__grid">
+      <div class="hmc-about-page__content">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="hmc-about-page__heading">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+
+        {%- if page.content != blank -%}
+          <div class="hmc-about-page__bio rte">
+            {{ page.content }}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.cta_label != blank -%}
+          <div class="hmc-about-page__cta">
+            <a
+              {% if section.settings.cta_link != blank %}
+                href="{{ section.settings.cta_link }}"
+              {% else %}
+                role="link"
+                aria-disabled="true"
+              {% endif %}
+              class="hmc-about-page__button"
+            >
+              {{ section.settings.cta_label | escape }}
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="hmc-about-page__media">
+        <div
+          class="hmc-about-page__collage"
+          role="region"
+          aria-label="{{ 'hmc.general.about_gallery_label' | t }}"
+        >
+          {%- if has_block_images -%}
+            {%- for block in section.blocks -%}
+              {%- if block.settings.image != blank -%}
+                {%- assign img_alt = block.settings.image.alt | default: collage_alt | escape -%}
+                {% render 'hmc-about-collage-image',
+                  image: block.settings.image,
+                  alt: img_alt,
+                  attributes: block.shopify_attributes
+                %}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- else -%}
+            {%- for name in fallback_names -%}
+              {%- assign ph_alt = 'hmc.general.about_photo_alt' | t: index: forloop.index -%}
+              {%- assign fallback_src = name | asset_url -%}
+              {% render 'hmc-about-collage-image',
+                src: fallback_src,
+                alt: ph_alt
+              %}
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{% stylesheet %}
+  .hmc-about-page {
+    background: var(--hmc-white, #fff);
+    padding-top: calc(var(--hmc-section-padding-top, 0px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 48px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-about-page {
+      padding-top: var(--hmc-section-padding-top, 0px);
+      padding-bottom: var(--hmc-section-padding-bottom, 48px);
+    }
+  }
+
+  .hmc-about-page__frame {
+    background: #f8f8f8;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .hmc-about-page__grid {
+    display: grid;
+    gap: 1.5rem;
+    padding: 1.25rem 1rem 1.5rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-about-page__grid {
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+      padding: 0 0.65rem 1rem 0.9rem;
+    }
+  }
+
+  .hmc-about-page__content,
+  .hmc-about-page__media {
+    min-width: 0;
+  }
+
+  .hmc-about-page__heading {
+    margin: 0 0 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--hmc-black, #0a0a0a);
+  }
+
+  .hmc-about-page__bio {
+    font-size: 1.5rem;
+    line-height: 1.75;
+    color: rgba(10, 10, 10, 0.85);
+    overflow-wrap: break-word;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-about-page__bio {
+      font-size: 1.6rem;
+    }
+  }
+
+  .hmc-about-page__bio p {
+    margin: 0 0 1rem;
+  }
+
+  .hmc-about-page__bio p:last-child {
+    margin-bottom: 0;
+  }
+
+  .hmc-about-page__cta {
+    margin-top: 1.5rem;
+    text-align: center;
+  }
+
+  .hmc-about-page__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 30rem;
+    min-height: 5.9rem;
+    padding: 1.8rem 2.4rem;
+    background: var(--hmc-accent, #383224);
+    color: var(--hmc-white, #fff);
+    border-radius: 3rem;
+    font-family: var(--hmc-font-button, inherit);
+    font-size: 1.7rem;
+    font-weight: 400;
+    letter-spacing: 0.2rem;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-about-page__button {
+      font-size: 1.8rem;
+    }
+  }
+
+  .hmc-about-page__button:hover {
+    opacity: 0.92;
+  }
+
+  .hmc-about-page__button:focus-visible {
+    outline: 2px solid var(--hmc-accent, #383224);
+    outline-offset: 3px;
+  }
+
+  .hmc-about-page__button[aria-disabled='true'] {
+    pointer-events: none;
+    opacity: 0.55;
+  }
+
+  .hmc-about-page__collage {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    border: 10px solid var(--hmc-accent, #383224);
+    border-radius: 20px;
+    padding: 10px 10px 20px;
+    background: var(--hmc-white, #fff);
+  }
+
+  .hmc-about-page__cell {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    aspect-ratio: 215 / 291;
+  }
+
+  .hmc-about-page__image {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-about-page.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--about-page",
+  "max_blocks": 16,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hmc-about-page.settings.heading"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.hmc-about-page.settings.content_info"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "t:sections.hmc-about-page.settings.cta_label",
+      "default": "Get In Touch With Me"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "t:sections.hmc-about-page.settings.cta_link"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "t:sections.hmc-about-page.blocks.image.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.hmc-about-page.blocks.image.settings.image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-about-page.name"
+    }
+  ]
+}
+{% endschema %}

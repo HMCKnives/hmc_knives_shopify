@@ -1,0 +1,71 @@
+{% doc %}
+  Renders a full-bleed section background image.
+  Uses the merchant upload when set; otherwise falls back to the HMC default asset.
+
+  @param {object} [image] - Optional merchant-uploaded background image
+  @param {object} [image_mobile] - Optional mobile-specific background image
+  @param {string} [alt] - Image alt text
+  @param {string} [class] - CSS class applied to the img
+  @param {string} [loading] - Image loading attribute (lazy|eager)
+  @param {string} [fetchpriority] - Fetch priority (auto|high|low)
+  @param {string} [fallback] - Asset filename used when no image is uploaded
+
+  @example
+  {% render 'hmc-bg-image',
+    image: section.settings.background_image,
+    alt: section.settings.heading,
+    class: 'hmc-hero__bg-image'
+  %}
+{% enddoc %}
+
+{%- liquid
+  assign bg_alt = alt | default: shop.name | escape
+  assign bg_loading = loading | default: 'lazy'
+  assign bg_fetchpriority = fetchpriority | default: 'auto'
+  assign bg_class = class | default: 'hmc-media-section__bg-image'
+  assign bg_fallback = fallback | default: 'hmc-default-bg.png'
+-%}
+
+{%- if image != blank -%}
+  {%- if image_mobile != blank -%}
+    <picture>
+      <source
+        media="(max-width: 749px)"
+        srcset="{{ image_mobile | image_url: width: 1200 }}"
+      >
+      {{
+        image
+        | image_url: width: 3840
+        | image_tag:
+          loading: bg_loading,
+          fetchpriority: bg_fetchpriority,
+          alt: bg_alt,
+          widths: '750, 1100, 1500, 2000, 3000, 3840',
+          sizes: '100vw',
+          class: bg_class
+      }}
+    </picture>
+  {%- else -%}
+    {{
+      image
+      | image_url: width: 2400
+      | image_tag:
+        loading: bg_loading,
+        fetchpriority: bg_fetchpriority,
+        alt: bg_alt,
+        widths: '750, 1100, 1500, 2000, 2400',
+        sizes: '100vw',
+        class: bg_class
+    }}
+  {%- endif -%}
+{%- else -%}
+  <img
+    src="{{ bg_fallback | asset_url }}"
+    alt="{{ bg_alt }}"
+    loading="{{ bg_loading }}"
+    fetchpriority="{{ bg_fetchpriority }}"
+    width="2048"
+    height="2048"
+    class="{{ bg_class }}"
+  >
+{%- endif -%}

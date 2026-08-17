@@ -1,0 +1,346 @@
+{%- liquid
+  assign is_about_me_page = false
+  if page.handle == 'about-me' or page.handle == 'about' or template.suffix == 'about'
+    assign is_about_me_page = true
+  endif
+
+  assign layout_class = 'hmc-about-split--image-right'
+  if section.settings.layout == 'image_left'
+    assign layout_class = 'hmc-about-split--image-left'
+  endif
+
+  assign has_portrait = false
+  for block in section.blocks
+    if block.settings.image != blank
+      assign has_portrait = true
+    endif
+  endfor
+-%}
+
+{%- unless is_about_me_page -%}
+<section
+  id="HmcAboutSplit-{{ section.id }}"
+  class="hmc-about-split {{ layout_class }} section-{{ section.id }}-padding"
+  style="
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="hmc-page-width hmc-about-split__grid">
+    <div class="hmc-about-split__content">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="hmc-about-split__heading">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.bio != blank -%}
+        <div class="hmc-about-split__bio rte">
+          {{ section.settings.bio }}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.cta_label != blank -%}
+        <div class="hmc-about-split__cta">
+          <a
+            {% if section.settings.cta_link != blank %}
+              href="{{ section.settings.cta_link }}"
+            {% else %}
+              role="link" aria-disabled="true"
+            {% endif %}
+            class="hmc-btn hmc-btn--dark"
+          >
+            {{ section.settings.cta_label | escape }}
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="hmc-about-split__media">
+      {%- for block in section.blocks -%}
+        {%- if block.settings.image != blank -%}
+          {%- liquid
+            assign img_alt = block.settings.image.alt | default: section.settings.heading | escape
+          -%}
+          <div class="hmc-about-split__portrait" {{ block.shopify_attributes }}>
+            {{
+              block.settings.image
+              | image_url: width: 900
+              | image_tag:
+                loading: 'lazy',
+                alt: img_alt,
+                widths: '300, 450, 600, 900',
+                sizes: '(min-width: 750px) 380px, 70vw',
+                class: 'hmc-about-split__image'
+            }}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- unless has_portrait -%}
+        <div class="hmc-about-split__portrait">
+          <img
+            src="{{ 'hmc-about-portrait.webp' | asset_url }}"
+            alt="{{ section.settings.heading | escape }}"
+            loading="lazy"
+            width="768"
+            height="1024"
+            class="hmc-about-split__image"
+          >
+        </div>
+      {%- endunless -%}
+
+      {%- if section.settings.show_social -%}
+        {% render 'social-icons', class: 'hmc-about-split__social' %}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+{%- endunless -%}
+
+{% stylesheet %}
+  .hmc-about-split {
+    background: #f8f8f8;
+    padding-top: calc(var(--hmc-section-padding-top, 36px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 36px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-about-split {
+      padding-top: var(--hmc-section-padding-top, 36px);
+      padding-bottom: var(--hmc-section-padding-bottom, 36px);
+    }
+  }
+
+  .hmc-about-split__grid {
+    display: grid;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-about-split__grid {
+      grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .hmc-about-split--image-left .hmc-about-split__content {
+      order: 2;
+    }
+
+    .hmc-about-split--image-left .hmc-about-split__media {
+      order: 1;
+    }
+  }
+
+  .hmc-about-split__heading {
+    margin: 0 0 0.4rem;
+    font-size: 2.2rem;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--hmc-black, #0a0a0a);
+  }
+
+  .hmc-about-split__bio {
+    font-size: 1.5rem;
+    line-height: 1.75;
+    color: rgba(10, 10, 10, 0.85);
+    overflow-wrap: break-word;
+    min-width: 0;
+  }
+
+  .hmc-about-split__bio p {
+    margin: 0;
+    padding: 0.5rem 0 1rem;
+  }
+
+  .hmc-about-split__cta {
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+  .hmc-about-split__cta .hmc-btn {
+    padding: 1.8rem;
+    font-size: 1.7rem;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: 0.12em;
+    border-radius: 500px;
+  }
+
+  .hmc-about-split__cta a:focus-visible {
+    outline: 2px solid var(--hmc-accent, #3d342c);
+    outline-offset: 2px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-about-split__heading {
+      font-size: 2.4rem;
+    }
+
+    .hmc-about-split__bio {
+      font-size: 1.6rem;
+    }
+
+    .hmc-about-split__cta .hmc-btn {
+      font-size: 1.8rem;
+    }
+  }
+
+  .hmc-about-split__media {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+  }
+
+  /* Ivory ring around the portrait, as on the reference site */
+  .hmc-about-split__portrait {
+    width: min(38rem, 88vw);
+    aspect-ratio: 1;
+    border: 4.4rem solid rgba(251, 247, 239, 0.85);
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f8f8f8;
+  }
+
+  .hmc-about-split__image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: 50% 0;
+    border-radius: 50%;
+  }
+
+  .hmc-about-split__social {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.9rem;
+    margin: 0;
+    padding: 0.1rem;
+  }
+
+  .hmc-about-split__social .list-social__item {
+    margin: 0;
+  }
+
+  .hmc-about-split__social .list-social__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.7rem;
+    height: 4.7rem;
+    padding: 0;
+    border: 1px solid var(--hmc-accent, #383224);
+    border-radius: 3px;
+    color: var(--hmc-accent, #383224);
+  }
+
+  .hmc-about-split__social .list-social__link:hover {
+    background: rgba(56, 50, 36, 0.08);
+  }
+
+  .hmc-about-split__social .svg-wrapper,
+  .hmc-about-split__social svg {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-about-split.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--about",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hmc-about-split.settings.heading",
+      "default": "About Me"
+    },
+    {
+      "type": "richtext",
+      "id": "bio",
+      "label": "t:sections.hmc-about-split.settings.bio",
+      "default": "<p>My name is Jim Vandeveld, and I am a husband and father of five based out of Erie, Pennsylvania.</p><p>For the past twelve years, I have been a full-time CNC hard mill machinist and injection mold maker. All of these qualities are reflected in the process I use to design and build my knives.</p>"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "t:sections.hmc-about-split.settings.cta_label"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "t:sections.hmc-about-split.settings.cta_link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social",
+      "label": "t:sections.hmc-about-split.settings.show_social",
+      "info": "t:sections.hmc-about-split.settings.show_social_info",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:sections.hmc-about-split.settings.layout",
+      "options": [
+        { "value": "image_right", "label": "t:sections.hmc-about-split.settings.layout_image_right" },
+        { "value": "image_left", "label": "t:sections.hmc-about-split.settings.layout_image_left" }
+      ],
+      "default": "image_right"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "t:sections.hmc-about-split.blocks.image.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.hmc-about-split.blocks.image.settings.image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-about-split.name",
+      "blocks": [
+        {
+          "type": "image"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

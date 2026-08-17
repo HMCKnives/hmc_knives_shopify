@@ -1,0 +1,470 @@
+{%- liquid
+  assign form_id = 'HmcContactForm-' | append: section.id
+  assign message_id = 'HmcContactMessage-' | append: section.id
+  assign counter_id = 'HmcContactCounter-' | append: section.id
+  assign terms_id = 'HmcContactTerms-' | append: section.id
+  assign max_length = section.settings.message_max_length | default: 350
+  assign terms_url = section.settings.terms_page.url | default: '#'
+  assign button_text = section.settings.button_label
+  if button_text == blank
+    assign button_text = 'hmc.contact.send_message' | t
+  endif
+-%}
+
+<section
+  id="HmcContactForm-{{ section.id }}"
+  class="hmc-contact-form"
+  style="
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --hmc-contact-max-length: {{ max_length }};
+  "
+>
+  <div class="hmc-page-width hmc-contact-form__inner">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="hmc-contact-form__heading">{{ section.settings.heading | escape }}</h2>
+    {%- endif -%}
+
+    <hmc-contact-form>
+      {%- form 'contact', id: form_id, class: 'hmc-contact-form__form' -%}
+        {%- if form.posted_successfully? -%}
+          <div class="hmc-contact-form__status hmc-contact-form__status--success" tabindex="-1" autofocus>
+            <p>{{ 'hmc.contact.success' | t }}</p>
+          </div>
+        {%- endif -%}
+
+        {%- if form.errors -%}
+          <div class="hmc-contact-form__status hmc-contact-form__status--error" role="alert" tabindex="-1" autofocus>
+            <p>{{ 'hmc.contact.error' | t }}</p>
+            <ul class="hmc-contact-form__errors" role="list">
+              {%- for field in form.errors -%}
+                <li>
+                  {{ form.errors.translated_fields[field] | capitalize }}
+                  {{ form.errors.messages[field] }}
+                </li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+
+        <div class="hmc-contact-form__field">
+          <label class="hmc-contact-form__label" for="HmcContactName-{{ section.id }}">
+            {{ 'hmc.contact.name' | t }}
+            <span class="visually-hidden">({{ 'hmc.accessibility.required' | t }})</span>
+          </label>
+          <input
+            type="text"
+            id="HmcContactName-{{ section.id }}"
+            class="hmc-contact-form__input"
+            name="contact[name]"
+            autocomplete="name"
+            value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+            aria-required="true"
+            required
+          >
+        </div>
+
+        <div class="hmc-contact-form__field">
+          <label class="hmc-contact-form__label" for="HmcContactEmail-{{ section.id }}">
+            {{ 'hmc.contact.email' | t }}
+            <span class="visually-hidden">({{ 'hmc.accessibility.required' | t }})</span>
+          </label>
+          <input
+            type="email"
+            id="HmcContactEmail-{{ section.id }}"
+            class="hmc-contact-form__input"
+            name="contact[email]"
+            autocomplete="email"
+            spellcheck="false"
+            autocapitalize="off"
+            value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+            aria-required="true"
+            {% if form.errors contains 'email' %}
+              aria-invalid="true"
+            {% endif %}
+            required
+          >
+        </div>
+
+        {%- if section.blocks.size > 0 -%}
+          <div class="hmc-contact-form__field">
+            <label class="hmc-contact-form__label" for="HmcContactSubject-{{ section.id }}">
+              {{ 'hmc.contact.subject' | t }}
+              <span class="visually-hidden">({{ 'hmc.accessibility.required' | t }})</span>
+            </label>
+            <select
+              id="HmcContactSubject-{{ section.id }}"
+              class="hmc-contact-form__select"
+              name="contact[Subject]"
+              aria-required="true"
+              required
+            >
+              <option value="" disabled selected>{{ 'hmc.contact.select_subject' | t }}</option>
+              {%- for block in section.blocks -%}
+                {%- if block.settings.label != blank -%}
+                  <option value="{{ block.settings.label | escape }}">
+                    {{ block.settings.label | escape }}
+                  </option>
+                {%- endif -%}
+              {%- endfor -%}
+            </select>
+          </div>
+        {%- endif -%}
+
+        <div class="hmc-contact-form__field">
+          <label class="hmc-contact-form__label" for="{{ message_id }}">
+            {{ 'hmc.contact.message' | t }}
+            <span class="visually-hidden">({{ 'hmc.accessibility.required' | t }})</span>
+          </label>
+          <textarea
+            id="{{ message_id }}"
+            class="hmc-contact-form__textarea"
+            name="contact[body]"
+            rows="6"
+            maxlength="{{ max_length }}"
+            placeholder="{{ 'hmc.contact.message_placeholder' | t }}"
+            aria-required="true"
+            aria-describedby="{{ counter_id }}"
+            data-hmc-contact-message
+            required
+          >{{- form.body -}}</textarea>
+          <p class="hmc-contact-form__counter" id="{{ counter_id }}" data-hmc-contact-counter aria-live="polite">
+            {{ 'hmc.contact.char_count' | t: count: 0, max: max_length }}
+          </p>
+        </div>
+
+        <div class="hmc-contact-form__field hmc-contact-form__field--checkbox">
+          <input
+            type="checkbox"
+            id="{{ terms_id }}"
+            class="hmc-contact-form__checkbox"
+            name="contact[terms]"
+            value="accepted"
+            aria-required="true"
+            required
+          >
+          <label class="hmc-contact-form__checkbox-label" for="{{ terms_id }}">
+            {%- if section.settings.terms_label != blank -%}
+              {{ section.settings.terms_label | escape }}
+            {%- endif -%}
+            {%- if section.settings.terms_page != blank -%}
+              <a href="{{ terms_url }}" target="_blank" rel="noopener noreferrer">
+                {{- 'hmc.contact.terms_and_conditions' | t -}}
+              </a>
+            {%- endif -%}
+          </label>
+        </div>
+
+        <button type="submit" class="hmc-contact-form__submit">
+          <span>{{ button_text | escape }}</span>
+          <svg
+            class="hmc-contact-form__submit-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            width="16"
+            height="16"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"></path>
+          </svg>
+        </button>
+      {%- endform -%}
+    </hmc-contact-form>
+  </div>
+</section>
+
+{% stylesheet %}
+  .hmc-contact-form {
+    background: var(--hmc-white, #fff);
+    padding-top: calc(var(--hmc-section-padding-top, 36px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 36px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-contact-form {
+      padding-top: var(--hmc-section-padding-top, 36px);
+      padding-bottom: var(--hmc-section-padding-bottom, 36px);
+    }
+  }
+
+  .hmc-contact-form__inner {
+    max-width: 70rem;
+  }
+
+  .hmc-contact-form__heading {
+    margin: 0 0 2.4rem;
+    font-size: clamp(2.4rem, 4vw, 3.8rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: normal;
+    color: var(--hmc-black, #0a0a0a);
+  }
+
+  .hmc-contact-form__form {
+    display: grid;
+    gap: 1.6rem;
+  }
+
+  .hmc-contact-form__field {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .hmc-contact-form__label {
+    font-size: 1.6rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: normal;
+    color: var(--hmc-black, #0a0a0a);
+  }
+
+  .hmc-contact-form__input,
+  .hmc-contact-form__select,
+  .hmc-contact-form__textarea {
+    width: 100%;
+    min-height: 5.2rem;
+    margin: 0;
+    padding: 1.8rem 1.4rem;
+    border: 0;
+    border-radius: 3px;
+    background: #f8f8f8;
+    color: var(--hmc-black, #0a0a0a);
+    font-family: inherit;
+    font-size: 1.4rem;
+    line-height: 1.4;
+    letter-spacing: normal;
+  }
+
+  .hmc-contact-form__input:focus-visible,
+  .hmc-contact-form__select:focus-visible,
+  .hmc-contact-form__textarea:focus-visible,
+  .hmc-contact-form__checkbox:focus-visible,
+  .hmc-contact-form__submit:focus-visible {
+    outline: 2px solid var(--hmc-accent, #383224);
+    outline-offset: 2px;
+  }
+
+  .hmc-contact-form__textarea {
+    min-height: 14rem;
+    resize: vertical;
+  }
+
+  .hmc-contact-form__counter {
+    margin: 0;
+    font-size: 1.4rem;
+    line-height: 1.4;
+    letter-spacing: normal;
+    color: var(--hmc-muted, rgba(10, 10, 10, 0.75));
+    text-align: end;
+  }
+
+  .hmc-contact-form__field--checkbox {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .hmc-contact-form__checkbox {
+    width: 1.8rem;
+    height: 1.8rem;
+    min-width: 1.8rem;
+    min-height: 1.8rem;
+    margin: 0;
+  }
+
+  .hmc-contact-form__checkbox-label {
+    font-size: 1.6rem;
+    line-height: 2.4rem;
+    letter-spacing: normal;
+    color: #555;
+  }
+
+  .hmc-contact-form__checkbox-label a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .hmc-contact-form__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    justify-self: start;
+    width: fit-content;
+    min-width: 18.4rem;
+    min-height: 5.5rem;
+    margin-top: 0.4rem;
+    padding: 1.8rem 2rem;
+    border: 0;
+    border-radius: 0;
+    background: var(--hmc-accent, #383224);
+    color: var(--hmc-white, #fff);
+    font-family: inherit;
+    font-size: 1.6rem;
+    font-weight: 400;
+    letter-spacing: 0.1rem;
+    line-height: 1.2;
+    cursor: pointer;
+  }
+
+  .hmc-contact-form__submit:hover {
+    opacity: 0.92;
+  }
+
+  .hmc-contact-form__submit-icon {
+    flex-shrink: 0;
+  }
+
+  .hmc-contact-form__status {
+    padding: 1.2rem 1.6rem;
+    border-radius: var(--hmc-radius, 8px);
+    font-size: 1.6rem;
+    line-height: 2.4rem;
+  }
+
+  .hmc-contact-form__status--success {
+    background: rgba(26, 122, 58, 0.1);
+    color: #1a7a3a;
+  }
+
+  .hmc-contact-form__status--error {
+    background: rgba(196, 30, 30, 0.08);
+    color: var(--hmc-stock, #c41e1e);
+  }
+
+  .hmc-contact-form__errors {
+    margin: 0.5rem 0 0;
+    padding-inline-start: 1.1rem;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class HmcContactForm extends HTMLElement {
+    #controller = null;
+
+    connectedCallback() {
+      this.#controller = new AbortController();
+      const { signal } = this.#controller;
+
+      const section = this.closest('.hmc-contact-form');
+      const textarea = this.querySelector('[data-hmc-contact-message]');
+      const counter = this.querySelector('[data-hmc-contact-counter]');
+
+      if (!textarea || !counter || !section) return;
+
+      const max = Number.parseInt(
+        getComputedStyle(section).getPropertyValue('--hmc-contact-max-length') || textarea.maxLength,
+        10
+      );
+
+      const updateCount = () => {
+        const count = textarea.value.length;
+        counter.textContent = `${count} of ${max}`;
+      };
+
+      textarea.addEventListener('input', updateCount, { signal });
+      updateCount();
+    }
+
+    disconnectedCallback() {
+      this.#controller?.abort();
+    }
+  }
+
+  if (!customElements.get('hmc-contact-form')) {
+    customElements.define('hmc-contact-form', HmcContactForm);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-contact-form.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--contact",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hmc-contact-form.settings.heading",
+      "default": "What's on your mind?"
+    },
+    {
+      "type": "page",
+      "id": "terms_page",
+      "label": "t:sections.hmc-contact-form.settings.terms_page"
+    },
+    {
+      "type": "text",
+      "id": "terms_label",
+      "label": "t:sections.hmc-contact-form.settings.terms_label",
+      "default": "I agree to the"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.hmc-contact-form.settings.button_label",
+      "default": "Send message"
+    },
+    {
+      "type": "number",
+      "id": "message_max_length",
+      "label": "t:sections.hmc-contact-form.settings.message_max_length",
+      "default": 350
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "subject",
+      "name": "t:sections.hmc-contact-form.blocks.subject.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.hmc-contact-form.blocks.subject.settings.label",
+          "default": "General inquiry"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-contact-form.name",
+      "blocks": [
+        { "type": "subject", "settings": { "label": "General inquiry" } },
+        { "type": "subject", "settings": { "label": "Order question" } },
+        { "type": "subject", "settings": { "label": "Warranty claim" } },
+        { "type": "subject", "settings": { "label": "Custom knife inquiry" } },
+        { "type": "subject", "settings": { "label": "Wholesale" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

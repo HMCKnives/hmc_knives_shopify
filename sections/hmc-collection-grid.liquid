@@ -1,0 +1,261 @@
+{%- if section.settings.show_breadcrumbs -%}
+  {% render 'hmc-breadcrumbs' %}
+{%- endif -%}
+
+<section
+  id="HmcCollectionGrid-{{ section.id }}"
+  class="hmc-collection-grid"
+  style="
+    --hmc-grid-columns-mobile: {{ section.settings.columns_mobile }};
+    --hmc-grid-columns-desktop: {{ section.settings.columns_desktop }};
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="hmc-page-width">
+    {%- if collection.title != blank -%}
+      <h1 class="visually-hidden">{{ collection.title | escape }}</h1>
+    {%- endif -%}
+    {%- paginate collection.products by section.settings.products_per_page -%}
+      {%- if collection.products.size > 0 -%}
+        <ul class="hmc-collection-grid__list" role="list">
+          {%- for product in collection.products -%}
+            <li class="hmc-collection-grid__item">
+              {% render 'hmc-product-card', product: product, show_excerpt: section.settings.show_excerpt, eager: forloop.first %}
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- if paginate.pages > 1 -%}
+          <nav class="hmc-collection-grid__pagination" aria-label="{{ 'hmc.accessibility.collection_pagination' | t }}">
+            <ul class="hmc-collection-grid__pagination-list" role="list">
+              {%- if paginate.previous -%}
+                <li>
+                  <a href="{{ paginate.previous.url }}" class="hmc-collection-grid__pagination-link hmc-collection-grid__pagination-link--prev">
+                    {{ 'hmc.general.previous' | t }}
+                  </a>
+                </li>
+              {%- endif -%}
+
+              {%- for part in paginate.parts -%}
+                <li>
+                  {%- if part.is_link -%}
+                    <a href="{{ part.url }}" class="hmc-collection-grid__pagination-link">
+                      {{ part.title }}
+                    </a>
+                  {%- elsif part.title == paginate.current_page -%}
+                    <span class="hmc-collection-grid__pagination-link hmc-collection-grid__pagination-link--current" aria-current="page">
+                      {{ part.title }}
+                    </span>
+                  {%- else -%}
+                    <span class="hmc-collection-grid__pagination-ellipsis">{{ part.title }}</span>
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+
+              {%- if paginate.next -%}
+                <li>
+                  <a href="{{ paginate.next.url }}" class="hmc-collection-grid__pagination-link hmc-collection-grid__pagination-link--next">
+                    {{ 'hmc.general.next' | t }}
+                  </a>
+                </li>
+              {%- endif -%}
+            </ul>
+          </nav>
+        {%- endif -%}
+      {%- else -%}
+        <p class="hmc-collection-grid__empty">
+          {%- if section.settings.empty_message != blank -%}
+            {{ section.settings.empty_message | escape }}
+          {%- else -%}
+            {{ 'hmc.general.empty_collection' | t }}
+          {%- endif -%}
+        </p>
+      {%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .hmc-collection-grid {
+    background: var(--hmc-white, #fff);
+    padding-top: calc(var(--hmc-section-padding-top, 36px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 36px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-collection-grid {
+      padding-top: var(--hmc-section-padding-top, 36px);
+      padding-bottom: var(--hmc-section-padding-bottom, 36px);
+    }
+  }
+
+  .hmc-collection-grid .hmc-page-width {
+    max-width: 104rem;
+  }
+
+  .hmc-collection-grid__list {
+    display: grid;
+    grid-template-columns: repeat(var(--hmc-grid-columns-mobile, 1), minmax(0, 1fr));
+    gap: 4.2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-collection-grid__list {
+      grid-template-columns: repeat(var(--hmc-grid-columns-desktop, 3), minmax(0, 1fr));
+    }
+  }
+
+  .hmc-collection-grid__item {
+    min-width: 0;
+  }
+
+  .hmc-collection-grid__empty {
+    margin: 0;
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--hmc-muted, rgba(10, 10, 10, 0.75));
+  }
+
+  .hmc-collection-grid__pagination {
+    margin-top: 2rem;
+  }
+
+  .hmc-collection-grid__pagination-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hmc-collection-grid__pagination-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 4.4rem;
+    min-height: 4.4rem;
+    padding: 0.6rem 1rem;
+    border-radius: var(--hmc-radius, 8px);
+    font-size: 1.6rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--hmc-black, #0a0a0a);
+    background: var(--hmc-white, #fff);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .hmc-collection-grid__pagination-link:focus-visible {
+    outline: 2px solid var(--hmc-black, #0a0a0a);
+    outline-offset: 2px;
+  }
+
+  .hmc-collection-grid__pagination-link:hover {
+    border-color: var(--hmc-black, #0a0a0a);
+  }
+
+  .hmc-collection-grid__pagination-link--current {
+    background: var(--hmc-charcoal, #1a1a1a);
+    color: var(--hmc-white, #fff);
+    border-color: var(--hmc-charcoal, #1a1a1a);
+  }
+
+  .hmc-collection-grid__pagination-ellipsis {
+    padding: 0 0.25rem;
+    color: var(--hmc-muted, rgba(10, 10, 10, 0.75));
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-collection-grid.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--collection-grid",
+  "enabled_on": {
+    "templates": ["collection"]
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumbs",
+      "label": "t:sections.hmc-collection-grid.settings.show_breadcrumbs",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 4,
+      "max": 36,
+      "step": 4,
+      "label": "t:sections.hmc-collection-grid.settings.products_per_page",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "t:sections.hmc-collection-grid.settings.columns_desktop",
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "t:sections.hmc-collection-grid.settings.columns_mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "t:sections.hmc-collection-grid.settings.show_excerpt",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "empty_message",
+      "label": "t:sections.hmc-collection-grid.settings.empty_message",
+      "default": "No knives available in this collection right now. Check back soon."
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-collection-grid.name"
+    }
+  ]
+}
+{% endschema %}

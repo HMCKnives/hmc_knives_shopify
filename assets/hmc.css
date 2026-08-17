@@ -1,0 +1,491 @@
+/* HMC Knives brand layer — faithful mono industrial look */
+
+:root {
+  --hmc-black: #0a0a0a;
+  --hmc-white: #ffffff;
+  --hmc-offwhite: #f7f7f7;
+  --hmc-charcoal: #1a1a1a;
+  --hmc-footer: #0c1115;
+  --hmc-muted: rgba(10, 10, 10, 0.75);
+  --hmc-accent: #383224;
+  --hmc-stock: #bb2121;
+  --hmc-breadcrumb: #3a3a3a;
+  --hmc-wave-height: 48px;
+  --hmc-radius: 8px;
+  --hmc-radius-pill: 999px;
+  --hmc-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  --hmc-max: 1110px;
+  --hmc-letter-display: 0.12em;
+  --hmc-font-button: 'Chelsea Market', var(--font-body-family);
+}
+
+.hmc-page-width {
+  width: 100%;
+  max-width: var(--hmc-max);
+  margin: 0 auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Buttons */
+.hmc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.75rem;
+  font-family: var(--hmc-font-button);
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.2;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: var(--hmc-radius);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.hmc-btn--primary {
+  background: var(--hmc-white);
+  color: var(--hmc-black);
+  border-color: var(--hmc-white);
+}
+
+.hmc-btn--primary:hover {
+  opacity: 0.9;
+}
+
+.hmc-btn--dark {
+  background: var(--hmc-accent);
+  color: var(--hmc-white);
+  border-color: var(--hmc-accent);
+}
+
+.hmc-btn--dark:hover {
+  opacity: 0.92;
+}
+
+.hmc-btn--outline-light {
+  background: transparent;
+  color: var(--hmc-white);
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.hmc-btn--outline-light:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hmc-btn--pill {
+  border-radius: var(--hmc-radius-pill);
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Wave dividers */
+.hmc-wave {
+  display: block;
+  width: 100%;
+  height: var(--hmc-wave-height);
+  line-height: 0;
+}
+
+.hmc-wave svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hmc-wave--flip {
+  transform: scaleY(-1);
+}
+
+.hmc-wave--wobble {
+  --hmc-wave-height: 72px;
+}
+
+.hmc-wave--double {
+  --hmc-wave-height: 64px;
+}
+
+.hmc-wave--layered {
+  --hmc-wave-height: 52px;
+}
+
+.hmc-wave--rounded {
+  --hmc-wave-height: 151px;
+}
+
+/* Source shape is drawn bottom-up; rotate to cap the top edge of a section */
+.hmc-wave--rounded svg {
+  transform: scale(-1, -1);
+}
+
+.hmc-wave--mirrored {
+  --hmc-wave-height: 86px;
+}
+
+.hmc-wave--cap {
+  --hmc-wave-height: 62px;
+}
+
+.hmc-wave--cap svg {
+  transform: scaleY(-1);
+}
+
+.hmc-wave--mini {
+  --hmc-wave-height: 219px;
+}
+
+.hmc-wave__lite {
+  opacity: 0.2;
+}
+
+/* Overlay media sections */
+.hmc-media-section {
+  position: relative;
+  overflow: hidden;
+  color: var(--hmc-white);
+  background: var(--hmc-charcoal);
+}
+
+.hmc-media-section__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hmc-media-section__bg img,
+.hmc-media-section__bg .hmc-media-section__placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Dawn base.css hides empty divs (div:empty); force overlays visible */
+div.hmc-media-section__overlay,
+div.hmc-value-props__overlay {
+  display: block !important;
+}
+
+.hmc-media-section__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--hmc-overlay-color, #000);
+  opacity: var(--hmc-overlay-opacity, 0.45);
+  pointer-events: none;
+}
+
+.hmc-media-section__overlay--gradient {
+  background: linear-gradient(
+    91deg,
+    var(--hmc-overlay-start, rgba(0, 0, 0, 0.85)) 0%,
+    var(--hmc-overlay-end, rgba(67, 86, 86, 0.85)) 100%
+  );
+  opacity: 1;
+}
+
+/* Value props background + dim overlay */
+.hmc-value-props__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background-color: #0a0a0a;
+}
+
+.hmc-value-props__bg-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hmc-value-props__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hmc-media-section__inner {
+  position: relative;
+  z-index: 2;
+}
+
+/* Star ratings */
+.hmc-stars {
+  position: relative;
+  display: inline-block;
+  font-size: 2rem;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.hmc-stars__track {
+  color: #cccccc;
+}
+
+.hmc-stars__fill {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  width: var(--hmc-stars-fill, 100%);
+  color: #ffcf02;
+}
+
+/* Product card styles live in snippets/hmc-product-card.liquid */
+
+/* Breadcrumbs */
+.hmc-breadcrumbs {
+  background: var(--hmc-breadcrumb);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.4rem;
+}
+
+.hmc-breadcrumbs__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0.8rem 1.5rem;
+  max-width: var(--hmc-max);
+  margin: 0 auto;
+  list-style: none;
+}
+
+.hmc-breadcrumbs a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+}
+
+.hmc-breadcrumbs a:hover {
+  text-decoration: underline;
+}
+
+.hmc-breadcrumbs__sep {
+  opacity: 0.6;
+}
+
+/* Newsletter form */
+.hmc-newsletter-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: stretch;
+  max-width: 520px;
+}
+
+.hmc-newsletter-form__input {
+  flex: 1 1 200px;
+  min-height: 48px;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: var(--hmc-radius-pill);
+  font-size: 0.95rem;
+  background: var(--hmc-white);
+  color: var(--hmc-black);
+}
+
+.hmc-newsletter-form__input::placeholder {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.hmc-newsletter-form__btn {
+  border-radius: var(--hmc-radius-pill);
+}
+
+/* Header HMC tweaks */
+.hmc-header .header {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.hmc-header .header__heading,
+.hmc-header .header__inline-menu,
+.hmc-header .header__icons {
+  min-width: 0;
+}
+
+.hmc-header .header__heading-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.hmc-header .header__heading-logo {
+  display: block;
+  width: auto;
+  max-width: 120px;
+  height: auto;
+}
+
+.hmc-header .header__inline-menu .header__menu-item,
+.hmc-header .header__inline-menu .header__menu-item span,
+.hmc-header .header__inline-menu .list-menu__item--link {
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+}
+
+.hmc-header .header__inline-menu .header__menu-item:hover,
+.hmc-header .header__inline-menu .header__menu-item:hover span,
+.hmc-header .header__inline-menu .list-menu__item--link:hover {
+  text-decoration: none;
+}
+
+.hmc-header .header__icons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.hmc-header .header__icon--cart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+@media screen and (min-width: 990px) {
+  .hmc-header .header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .hmc-header .header__heading {
+    justify-self: start;
+    margin: 0;
+  }
+
+  .hmc-header .header__inline-menu {
+    justify-self: center;
+    width: 100%;
+  }
+
+  .hmc-header .list-menu--inline {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    gap: 2rem;
+  }
+
+  .hmc-header .header__inline-menu .header__menu-item,
+  .hmc-header .header__inline-menu .header__menu-item span,
+  .hmc-header .header__inline-menu .list-menu__item--link {
+    font-size: 1.8rem;
+  }
+
+  .hmc-header .header__icons {
+    justify-self: end;
+  }
+}
+
+/* Cart badge — match live red count (override Dawn bubble without !important) */
+.header__icon .cart-count-bubble,
+cart-icon-bubble .cart-count-bubble {
+  background-color: var(--hmc-stock);
+  color: var(--hmc-white);
+}
+
+/* Footer dark — layout/type live in sections/hmc-footer.liquid */
+.hmc-footer {
+  background: var(--hmc-footer);
+}
+
+/* Utility */
+.hmc-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus indicators (a11y) */
+.hmc-btn:focus-visible,
+.hmc-product-card__link:focus-visible,
+.hmc-breadcrumbs a:focus-visible {
+  outline: 2px solid var(--hmc-accent);
+  outline-offset: 2px;
+}
+
+@media (forced-colors: active) {
+  .hmc-btn:focus-visible,
+  .hmc-product-card__link:focus-visible,
+  .hmc-breadcrumbs a:focus-visible {
+    outline: 3px solid LinkText;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  :root {
+    --hmc-wave-height: 32px;
+  }
+
+  .hmc-wave--layered {
+    --hmc-wave-height: 34px;
+  }
+
+  .hmc-wave--rounded {
+    --hmc-wave-height: 70px;
+  }
+
+  .hmc-wave--mirrored {
+    --hmc-wave-height: 48px;
+  }
+
+  .hmc-wave--cap {
+    --hmc-wave-height: 40px;
+  }
+
+  .hmc-wave--mini {
+    --hmc-wave-height: 96px;
+  }
+
+  .hmc-newsletter-form {
+    flex-direction: column;
+  }
+
+  .hmc-newsletter-form__btn {
+    width: 100%;
+  }
+}

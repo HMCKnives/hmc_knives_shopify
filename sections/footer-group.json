@@ -1,0 +1,22 @@
+{
+  "name": "Footer",
+  "type": "footer",
+  "sections": {
+    "hmc_footer": {
+      "type": "hmc-footer",
+      "settings": {
+        "background_color": "#0c1115",
+        "text_color": "#ffffff",
+        "links_heading": "Useful links",
+        "menu": "footer",
+        "contact_heading": "Contact",
+        "show_social": true,
+        "show_payment": true,
+        "copyright_text": ", all rights reserved.",
+        "padding_top": 40,
+        "padding_bottom": 20
+      }
+    }
+  },
+  "order": ["hmc_footer"]
+}

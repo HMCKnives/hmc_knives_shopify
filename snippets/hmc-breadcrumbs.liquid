@@ -1,0 +1,101 @@
+{% doc %}
+  Renders contextual breadcrumb navigation for product, collection, page, blog, and article templates.
+
+  @example
+  {% render 'hmc-breadcrumbs' %}
+{% enddoc %}
+
+{%- liquid
+  assign show_breadcrumbs = false
+
+  if template.name == 'product' and product
+    assign show_breadcrumbs = true
+  elsif template.name == 'collection' and collection
+    assign show_breadcrumbs = true
+  elsif template.name == 'page' and page
+    assign show_breadcrumbs = true
+  elsif template.name == 'article' and article
+    assign show_breadcrumbs = true
+  elsif template.name == 'blog' and blog
+    assign show_breadcrumbs = true
+  endif
+-%}
+
+{%- if show_breadcrumbs -%}
+  <nav class="hmc-breadcrumbs" aria-label="{{ 'hmc.accessibility.breadcrumb' | t }}">
+    <ol class="hmc-breadcrumbs__inner" itemscope itemtype="https://schema.org/BreadcrumbList">
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a href="{{ routes.root_url }}" itemprop="item">
+          <span itemprop="name">{{ 'hmc.general.home' | t }}</span>
+        </a>
+        <meta itemprop="position" content="1">
+      </li>
+
+      {%- if template.name == 'collection' -%}
+        <li class="hmc-breadcrumbs__sep" aria-hidden="true">/</li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="{{ routes.all_products_collection_url }}" itemprop="item">
+            <span itemprop="name">{{ 'hmc.general.shop' | t }}</span>
+          </a>
+          <meta itemprop="position" content="2">
+        </li>
+        <li class="hmc-breadcrumbs__sep" aria-hidden="true">/</li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span itemprop="name">{{ collection.title | escape }}</span>
+          <meta itemprop="position" content="3">
+        </li>
+
+      {%- elsif template.name == 'product' -%}
+        <li class="hmc-breadcrumbs__sep" aria-hidden="true">/</li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="{{ routes.all_products_collection_url }}" itemprop="item">
+            <span itemprop="name">{{ 'hmc.general.shop' | t }}</span>
+          </a>
+          <meta itemprop="position" content="2">
+        </li>
+        {%- if collection -%}
+          <li class="hmc-breadcrumbs__sep" aria-hidden="true">/</li>
+          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a href="{{ collection.url }}" itemprop="item">
+              <span itemprop="name">{{ collection.title | escape }}</span>
+            </a>
+            <meta itemprop="position" content="3">
+          </li>
+        {%- endif -%}
+        <li class="hmc-breadcrumbs__sep" aria-hidden="true">/</li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span itemprop="name">{{ product.title | escape }}</span>
+          <meta itemprop="position" content="{% if collection %}4{% else %}3{% endif %}">
+        </li>
+
+      {%- elsif template.name == 'page' -%}
+        <li class="hmc-breadcrumbs__sep" aria-hidden="true">/</li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span itemprop="name">{{ page.title | escape }}</span>
+          <meta itemprop="position" content="2">
+        </li>
+
+      {%- elsif template.name == 'blog' -%}
+        <li class="hmc-breadcrumbs__sep" aria-hidden="true">/</li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span itemprop="name">{{ blog.title | escape }}</span>
+          <meta itemprop="position" content="2">
+        </li>
+
+      {%- elsif template.name == 'article' -%}
+        <li class="hmc-breadcrumbs__sep" aria-hidden="true">/</li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="{{ blog.url }}" itemprop="item">
+            <span itemprop="name">{{ blog.title | escape }}</span>
+          </a>
+          <meta itemprop="position" content="2">
+        </li>
+        <li class="hmc-breadcrumbs__sep" aria-hidden="true">/</li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span itemprop="name">{{ article.title | escape }}</span>
+          <meta itemprop="position" content="3">
+        </li>
+      {%- endif -%}
+    </ol>
+  </nav>
+{%- endif -%}

@@ -1,0 +1,35 @@
+{% doc %}
+  One photo in the About Me collage.
+
+  @param {object} [image] - Shopify image from a section block
+  @param {string} [src] - Asset URL used for theme fallback photos
+  @param {string} alt - Accessible alternative text
+  @param {string} [attributes] - Block shopify_attributes string
+
+  @example
+  {% render 'hmc-about-collage-image', image: block.settings.image, alt: page.title, attributes: block.shopify_attributes %}
+{% enddoc %}
+
+<figure class="hmc-about-page__cell"{% if attributes != blank %} {{ attributes }}{% endif %}>
+  {%- if image != blank -%}
+    {{
+      image
+      | image_url: width: 800
+      | image_tag:
+        loading: 'lazy',
+        alt: alt,
+        widths: '215, 430, 600, 800',
+        sizes: '(min-width: 750px) 215px, 46vw',
+        class: 'hmc-about-page__image'
+    }}
+  {%- elsif src != blank -%}
+    <img
+      class="hmc-about-page__image"
+      src="{{ src }}"
+      alt="{{ alt }}"
+      width="215"
+      height="291"
+      loading="lazy"
+    >
+  {%- endif -%}
+</figure>

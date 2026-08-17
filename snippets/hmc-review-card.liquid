@@ -1,0 +1,57 @@
+{% doc %}
+  Renders one HMC customer review card.
+
+  @param {string} author - Reviewer name
+  @param {string} [date] - Display date
+  @param {string} [body] - Review text
+  @param {number} [rating] - Rating out of 5
+  @param {image} [avatar] - Optional reviewer photo
+  @param {string} [category] - Optional category used by the modal filter
+  @param {string} [shopify_attributes] - Block editor attributes
+
+  @example
+  {% render 'hmc-review-card', author: block.settings.author, body: block.settings.body %}
+{% enddoc %}
+
+<article
+  class="hmc-reviews__item"
+  {{ shopify_attributes }}
+  data-review-author="{{ author | escape }}"
+  data-review-date="{{ date | escape }}"
+  data-review-body="{{ body | escape }}"
+  data-review-rating="{{ rating | default: 5 }}"
+  data-review-category="{{ category | default: 'knives' | escape }}"
+>
+  <div class="hmc-reviews__item-head">
+    {% render 'hmc-stars', rating: rating %}
+
+    {%- if date != blank -%}
+      <span class="hmc-reviews__date">{{ date | escape }}</span>
+    {%- endif -%}
+  </div>
+
+  {%- if body != blank -%}
+    <p class="hmc-reviews__body">{{ body | escape }}</p>
+  {%- endif -%}
+
+  <footer class="hmc-reviews__meta">
+    <span class="hmc-reviews__avatar" aria-hidden="true">
+      {%- if avatar != blank -%}
+        {{
+          avatar
+          | image_url: width: 120
+          | image_tag: loading: 'lazy', alt: '', width: 40, height: 40
+        }}
+      {%- else -%}
+        <svg class="hmc-reviews__avatar-svg" viewBox="0 0 40 40" focusable="false">
+          <circle cx="20" cy="15" r="6.5" />
+          <path d="M7.5 37c0-6.9 5.6-12.5 12.5-12.5S32.5 30.1 32.5 37z" />
+        </svg>
+      {%- endif -%}
+    </span>
+
+    {%- if author != blank -%}
+      <span class="hmc-reviews__author">{{ author | escape }}</span>
+    {%- endif -%}
+  </footer>
+</article>

@@ -1,0 +1,164 @@
+{% doc %}
+  Shared legal-page body for Terms, Shipping & Returns, and Privacy Policy.
+  Uses the Shopify page content when present, otherwise the matching fallback snippet.
+{% enddoc %}
+
+{%- liquid
+  assign is_policy_page = false
+  if template.suffix == 'policy'
+    assign is_policy_page = true
+  endif
+  if page.handle == 'privacy-policy' or page.handle == 'privacy' or page.handle == 'terms-and-conditions' or page.handle == 'terms-conditions' or page.handle == 'terms' or page.handle == 'shipping-return-policy' or page.handle == 'return-policy' or page.handle == 'shipping-policy'
+    assign is_policy_page = true
+  endif
+
+  assign policy_kind = ''
+  if page.handle == 'privacy-policy' or page.handle == 'privacy'
+    assign policy_kind = 'privacy'
+  elsif page.handle == 'terms-and-conditions' or page.handle == 'terms-conditions' or page.handle == 'terms'
+    assign policy_kind = 'terms'
+  elsif page.handle == 'shipping-return-policy' or page.handle == 'return-policy' or page.handle == 'shipping-policy'
+    assign policy_kind = 'shipping'
+  endif
+-%}
+
+{%- if is_policy_page -%}
+<section
+  id="HmcPolicyPage-{{ section.id }}"
+  class="hmc-policy-page"
+  style="
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="hmc-page-width hmc-policy-page__inner">
+    <div class="hmc-policy-page__content rte">
+      {%- if page.content != blank -%}
+        {{ page.content }}
+      {%- elsif policy_kind == 'privacy' -%}
+        {% render 'hmc-policy-privacy' %}
+      {%- elsif policy_kind == 'terms' -%}
+        {% render 'hmc-policy-terms' %}
+      {%- elsif policy_kind == 'shipping' -%}
+        {% render 'hmc-policy-shipping' %}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{% stylesheet %}
+  .hmc-policy-page {
+    background: var(--hmc-white, #fff);
+    padding-top: calc(var(--hmc-section-padding-top, 24px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 48px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-policy-page {
+      padding-top: var(--hmc-section-padding-top, 24px);
+      padding-bottom: var(--hmc-section-padding-bottom, 48px);
+    }
+  }
+
+  .hmc-policy-page__inner {
+    max-width: 108rem;
+  }
+
+  .hmc-policy-page__content {
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 2.8rem;
+    letter-spacing: normal;
+    color: color-mix(in srgb, var(--hmc-black, #0a0a0a) 85%, transparent);
+  }
+
+  .hmc-policy-page__content h1,
+  .hmc-policy-page__content h2,
+  .hmc-policy-page__content h3,
+  .hmc-policy-page__content h4 {
+    margin: 2.4rem 0 0.8rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 2.8rem;
+    letter-spacing: normal;
+    color: color-mix(in srgb, var(--hmc-black, #0a0a0a) 85%, transparent);
+  }
+
+  .hmc-policy-page__content h1:first-child,
+  .hmc-policy-page__content h2:first-child,
+  .hmc-policy-page__content p:first-child,
+  .hmc-policy-page__content > :first-child {
+    margin-top: 0;
+  }
+
+  .hmc-policy-page__content p,
+  .hmc-policy-page__content .ql-block {
+    margin: 0 0 1.6rem;
+  }
+
+  .hmc-policy-page__content strong {
+    font-weight: 700;
+  }
+
+  .hmc-policy-page__content ul,
+  .hmc-policy-page__content ol {
+    margin: 0 0 1.6rem;
+    padding-inline-start: 2.4rem;
+  }
+
+  .hmc-policy-page__content li {
+    margin: 0 0 0.4rem;
+    font-size: 1.6rem;
+    line-height: 2.8rem;
+  }
+
+  .hmc-policy-page__content a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-policy-page.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--policy",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.hmc-policy-page.settings.content_info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-policy-page.name"
+    }
+  ]
+}
+{% endschema %}

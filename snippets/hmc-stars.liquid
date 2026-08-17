@@ -1,0 +1,33 @@
+{% doc %}
+  Renders a five-star rating. Supports fractional ratings by clipping the filled layer.
+
+  @param {number} [rating] - Rating out of 5 (default 5)
+  @param {string} [label] - Accessible label; when blank the stars are decorative
+
+  @example
+  {% render 'hmc-stars', rating: 4.5, label: 'Rated 4.5 out of 5' %}
+{% enddoc %}
+
+{%- liquid
+  assign star_rating = rating | default: 5.0 | times: 1.0
+  if star_rating > 5
+    assign star_rating = 5
+  endif
+  if star_rating < 0
+    assign star_rating = 0
+  endif
+  assign star_pct = star_rating | times: 20
+-%}
+
+<span
+  class="hmc-stars"
+  style="--hmc-stars-fill: {{ star_pct }}%;"
+  {% if label != blank %}
+    role="img" aria-label="{{ label | escape }}"
+  {% else %}
+    aria-hidden="true"
+  {% endif %}
+>
+  <span class="hmc-stars__track">★★★★★</span>
+  <span class="hmc-stars__fill">★★★★★</span>
+</span>

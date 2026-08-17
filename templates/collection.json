@@ -1,0 +1,20 @@
+{
+  "sections": {
+    "hmc_collection": {
+      "type": "hmc-collection-grid",
+      "settings": {
+        "products_per_page": 12,
+        "columns_desktop": 3,
+        "columns_mobile": "1",
+        "show_excerpt": true,
+        "show_breadcrumbs": true,
+        "empty_message": "No products found in this collection.",
+        "padding_top": 40,
+        "padding_bottom": 60
+      }
+    }
+  },
+  "order": [
+    "hmc_collection"
+  ]
+}

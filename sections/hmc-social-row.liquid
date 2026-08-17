@@ -1,0 +1,283 @@
+{%- liquid
+  assign is_media_page = false
+  if page.handle == 'media' or template.suffix == 'media'
+    assign is_media_page = true
+  endif
+  assign has_icons = false
+  if section.settings.show_youtube and settings.social_youtube_link != blank
+    assign has_icons = true
+  endif
+  if section.settings.show_instagram and settings.social_instagram_link != blank
+    assign has_icons = true
+  endif
+  if section.settings.show_twitter and settings.social_twitter_link != blank
+    assign has_icons = true
+  endif
+  if section.settings.show_facebook and settings.social_facebook_link != blank
+    assign has_icons = true
+  endif
+  if section.settings.show_email and section.settings.email_link != blank
+    assign has_icons = true
+  endif
+-%}
+
+{%- if is_media_page or template.name != 'page' -%}
+<section
+  id="HmcSocialRow-{{ section.id }}"
+  class="hmc-social-row"
+  style="
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="hmc-page-width hmc-social-row__inner">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="hmc-social-row__heading">{{ section.settings.heading | escape }}</h2>
+    {%- endif -%}
+
+    {%- if has_icons -%}
+      <ul class="hmc-social-row__list" role="list">
+        {%- if section.settings.show_youtube and settings.social_youtube_link != blank -%}
+          <li>
+            <a
+              href="{{ settings.social_youtube_link }}"
+              class="hmc-social-row__link"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="{{ 'hmc.accessibility.social_youtube' | t }}"
+            >
+              <svg class="hmc-social-row__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="currentColor" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.7 15.5V8.5L15.8 12l-6.1 3.5z"/>
+              </svg>
+            </a>
+          </li>
+        {%- endif -%}
+
+        {%- if section.settings.show_instagram and settings.social_instagram_link != blank -%}
+          <li>
+            <a
+              href="{{ settings.social_instagram_link }}"
+              class="hmc-social-row__link"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="{{ 'hmc.accessibility.social_instagram' | t }}"
+            >
+              <svg class="hmc-social-row__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="currentColor" d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.9.2 2.3.4.6.2 1 .5 1.5 1 .5.5.8.9 1 1.5.2.4.4 1.1.4 2.3.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.9-.4 2.3-.2.6-.5 1-1 1.5-.5.5-.9.8-1.5 1-.4.2-1.1.4-2.3.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.9-.2-2.3-.4-.6-.2-1-.5-1.5-1-.5-.5-.8-.9-1-1.5-.2-.4-.4-1.1-.4-2.3-.1-1.3-.1-1.7-.1-4.9s0-3.6.1-4.9c.1-1.2.2-1.9.4-2.3.2-.6.5-1 1-1.5.5-.5.9-.8 1.5-1 .4-.2 1.1-.4 2.3-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1.1.1-1.7.2-2.1.4-.5.2-.9.4-1.3.8-.4.4-.6.8-.8 1.3-.2.4-.3 1-.4 2.1-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1.1.2 1.7.4 2.1.2.5.4.9.8 1.3.4.4.8.6 1.3.8.4.2 1 .3 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.7-.2 2.1-.4.5-.2.9-.4 1.3-.8.4-.4.6-.8.8-1.3.2-.4.3-1 .4-2.1.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1.1-.2-1.7-.4-2.1-.2-.5-.4-.9-.8-1.3-.4-.4-.8-.6-1.3-.8-.4-.2-1-.3-2.1-.4-1.2-.1-1.6-.1-4.7-.1zm0 3.7a5.3 5.3 0 1 1 0 10.6 5.3 5.3 0 0 1 0-10.6zm0 1.8a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.5-3.4a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/>
+              </svg>
+            </a>
+          </li>
+        {%- endif -%}
+
+        {%- if section.settings.show_twitter and settings.social_twitter_link != blank -%}
+          <li>
+            <a
+              href="{{ settings.social_twitter_link }}"
+              class="hmc-social-row__link"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="{{ 'hmc.accessibility.social_twitter' | t }}"
+            >
+              <svg class="hmc-social-row__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="currentColor" d="M18.9 2.2h3.5l-7.6 8.7L23.8 22h-6.6l-5.2-6.8L5.8 22H2.2l8.1-9.3L.2 2.2h6.8l4.7 6.2 7.2-6.2zm-1.2 17.8h1.9L7.1 4.1H5.1l12.6 15.9z"/>
+              </svg>
+            </a>
+          </li>
+        {%- endif -%}
+
+        {%- if section.settings.show_facebook and settings.social_facebook_link != blank -%}
+          <li>
+            <a
+              href="{{ settings.social_facebook_link }}"
+              class="hmc-social-row__link"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="{{ 'hmc.accessibility.social_facebook' | t }}"
+            >
+              <svg class="hmc-social-row__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="currentColor" d="M24 12.1c0-6.6-5.4-12-12-12S0 5.5 0 12.1c0 6 4.4 11 10.1 11.9v-8.4H7.1v-3.5h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9v2.3h3.4l-.5 3.5h-2.9V24C19.6 23.1 24 18.1 24 12.1z"/>
+              </svg>
+            </a>
+          </li>
+        {%- endif -%}
+
+        {%- if section.settings.show_email and section.settings.email_link != blank -%}
+          <li>
+            <a
+              href="{{ section.settings.email_link }}"
+              class="hmc-social-row__link"
+              aria-label="{{ 'hmc.accessibility.social_email' | t }}"
+            >
+              <svg class="hmc-social-row__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5L4 8V6l8 5 8-5v2z"/>
+              </svg>
+            </a>
+          </li>
+        {%- endif -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</section>
+{%- endif -%}
+
+{% stylesheet %}
+  .hmc-social-row {
+    background: var(--hmc-white, #fff);
+    padding-top: calc(var(--hmc-section-padding-top, 20px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 28px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-social-row {
+      padding-top: var(--hmc-section-padding-top, 20px);
+      padding-bottom: var(--hmc-section-padding-bottom, 28px);
+    }
+  }
+
+  .hmc-social-row__inner {
+    text-align: center;
+  }
+
+  .hmc-social-row__heading {
+    margin: 0 0 1.25rem;
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    font-weight: 700;
+    color: var(--hmc-black, #0a0a0a);
+  }
+
+  .hmc-social-row__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 11px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hmc-social-row__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
+    background: var(--hmc-charcoal, #1a1a1a);
+    color: var(--hmc-white, #fff);
+    text-decoration: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .hmc-social-row__link:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+  }
+
+  .hmc-social-row__link:focus-visible {
+    outline: 2px solid var(--hmc-black, #0a0a0a);
+    outline-offset: 2px;
+  }
+
+  .hmc-social-row__icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hmc-social-row__link {
+      transition: none;
+    }
+
+    .hmc-social-row__link:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-social-row.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--social",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hmc-social-row.settings.heading"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc-social-row.settings.header_social"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.hmc-social-row.settings.social_urls_info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_youtube",
+      "label": "t:sections.hmc-social-row.settings.show_youtube",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_instagram",
+      "label": "t:sections.hmc-social-row.settings.show_instagram",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_twitter",
+      "label": "t:sections.hmc-social-row.settings.show_twitter",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_facebook",
+      "label": "t:sections.hmc-social-row.settings.show_facebook",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_email",
+      "label": "t:sections.hmc-social-row.settings.show_email",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "email_link",
+      "label": "t:sections.hmc-social-row.settings.email_link",
+      "info": "Use a mailto: link, e.g. mailto:info@hmcknives.com"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-social-row.name"
+    }
+  ]
+}
+{% endschema %}

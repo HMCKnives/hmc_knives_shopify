@@ -1,0 +1,21 @@
+{% doc %}
+  Renders the decorative double quotation mark used by HMC testimonial cards.
+
+  @param {boolean} [close] - Render the closing (rotated) mark
+
+  @example
+  {% render 'hmc-icon-quote' %}
+  {% render 'hmc-icon-quote', close: true %}
+{% enddoc %}
+
+<svg
+  class="hmc-quote-mark{% if close %} hmc-quote-mark--close{% endif %}"
+  viewBox="0 0 52 36"
+  fill="currentColor"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path
+    d="M0 36V21.4C0 14.9 1.6 9.7 4.9 5.8 8.2 1.9 13 0 19.2 0v7.4c-3.2 0-5.6 1-7.2 3-1.6 2-2.4 4.6-2.4 7.9h9.6V36H0zm32.4 0V21.4c0-6.5 1.6-11.7 4.9-15.6C40.6 1.9 45.4 0 51.6 0v7.4c-3.2 0-5.6 1-7.2 3-1.6 2-2.4 4.6-2.4 7.9h9.6V36H32.4z"
+  />
+</svg>

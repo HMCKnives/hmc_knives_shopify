@@ -1,0 +1,116 @@
+{%- liquid
+  assign is_media_page = false
+  if page.handle == 'media' or template.suffix == 'media'
+    assign is_media_page = true
+  endif
+  assign hero_image = settings.hmc_media_hero_image
+  assign hero_alt = page.title | default: shop.name | escape
+  assign fetch_priority = 'auto'
+  assign loading_attr = 'lazy'
+  if section.index == 1
+    assign fetch_priority = 'high'
+    assign loading_attr = 'eager'
+  endif
+-%}
+
+{%- if is_media_page -%}
+
+<section
+  id="HmcMediaHero-{{ section.id }}"
+  class="hmc-media-hero"
+  style="
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <h1 class="visually-hidden">{{ page.title | escape }}</h1>
+
+  <div class="hmc-media-hero__frame">
+    {%- if hero_image != blank -%}
+      {{
+        hero_image
+        | image_url: width: 2400
+        | image_tag:
+          loading: loading_attr,
+          fetchpriority: fetch_priority,
+          alt: hero_alt,
+          widths: '750, 1100, 1217, 1600, 2000, 2400',
+          sizes: '(min-width: 1280px) 1217px, 92vw',
+          class: 'hmc-media-hero__image'
+      }}
+    {%- else -%}
+      <img
+        class="hmc-media-hero__image"
+        src="{{ 'hmc-media-hero.jpg' | asset_url }}"
+        alt="{{ hero_alt }}"
+        width="1217"
+        height="626"
+        loading="{{ loading_attr }}"
+        fetchpriority="{{ fetch_priority }}"
+      >
+    {%- endif -%}
+  </div>
+</section>
+{%- endif -%}
+
+{% stylesheet %}
+  .hmc-media-hero {
+    background: var(--hmc-white, #fff);
+    padding-top: var(--hmc-section-padding-top, 40px);
+    padding-bottom: var(--hmc-section-padding-bottom, 0px);
+  }
+
+  .hmc-media-hero__frame {
+    width: min(1217px, calc(100% - 32px));
+    margin: 0 auto;
+  }
+
+  .hmc-media-hero__image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-media-hero.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--media-hero",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.hmc-media-hero.settings.image_info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-media-hero.name"
+    }
+  ]
+}
+{% endschema %}

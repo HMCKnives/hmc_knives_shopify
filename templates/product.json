@@ -1,0 +1,159 @@
+{
+  "sections": {
+    "hmc_product": {
+      "type": "hmc-product",
+      "settings": {
+        "show_breadcrumbs": true,
+        "show_stock_badge": true,
+        "show_vendor": false,
+        "show_notes_field": false,
+        "enable_sticky_info": true,
+        "padding_top": 24,
+        "padding_bottom": 48
+      }
+    },
+    "related_products": {
+      "type": "hmc-related-products",
+      "settings": {
+        "heading": "Related products",
+        "products_to_show": 4,
+        "columns_desktop": 4,
+        "columns_mobile": "1",
+        "padding_top": 80,
+        "padding_bottom": 48
+      }
+    },
+    "hmc_reviews": {
+      "type": "hmc-reviews",
+      "blocks": {
+        "r1": {
+          "type": "review",
+          "settings": {
+            "author": "Garrick Eisenbeis",
+            "date": "July 13, 2026",
+            "body": "Been trying to pick one up for sometime, and boy was it worth the wait! Absolutely love this Transient! Haven't been able to put anything else in my pocket since it arrived!",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r2": {
+          "type": "review",
+          "settings": {
+            "author": "Steven L",
+            "date": "June 26, 2026",
+            "body": "Jim / HMC never disappoints. Highest quality with attention to detail. great action and really great acoustics. finally I will say the customer service is over the top.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r3": {
+          "type": "review",
+          "settings": {
+            "author": "Danny",
+            "date": "May 8, 2026",
+            "body": "Impeccable build quality and great design.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r4": {
+          "type": "review",
+          "settings": {
+            "author": "Eric Snow",
+            "date": "August 15, 2026",
+            "body": "This knife has blown me away with the quality, fit, and finish. I am no stranger to higher end American knives!",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r5": {
+          "type": "review",
+          "settings": {
+            "author": "Stephen Antonelli",
+            "date": "August 14, 2026",
+            "body": "I bought my first HMC knife from a friend. Was so impressed, I now own 3!! Actions are smooth and aesthetically appealing.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r6": {
+          "type": "review",
+          "settings": {
+            "author": "Thom F",
+            "date": "August 14, 2026",
+            "body": "Excellent knife and Excellent customer service.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r7": {
+          "type": "review",
+          "settings": {
+            "author": "Rick",
+            "date": "March 9, 2026",
+            "body": "Jim is the guy! Great customer service.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r8": {
+          "type": "review",
+          "settings": {
+            "author": "Louis Johnson",
+            "date": "February 27, 2026",
+            "body": "Second knife I have purchased and I will continue to purchase more from HMC. Great product and you can tell that attention to detail is a priority.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r9": {
+          "type": "review",
+          "settings": {
+            "author": "Steven Lisco",
+            "date": "February 27, 2026",
+            "body": "This is my very first HMC knife. I absolutely love it. The craftsmanship is over the top. The knife just works perfectly.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r10": {
+          "type": "review",
+          "settings": {
+            "author": "Antonio Simone",
+            "date": "February 13, 2026",
+            "body": "Jim has proven to be both a talented machinist and an exceptional person to work with. I recently purchased a Transient and it exceeded every expectation.",
+            "rating": 5,
+            "category": "knives"
+          }
+        }
+      },
+      "block_order": [
+        "r4",
+        "r5",
+        "r6",
+        "r1",
+        "r2",
+        "r3",
+        "r7",
+        "r8",
+        "r9",
+        "r10"
+      ],
+      "settings": {
+        "heading": "Customer Reviews",
+        "show_summary": true,
+        "rating_value": "5.0",
+        "rating_summary": "",
+        "pct_5": 100,
+        "pct_4": 0,
+        "pct_3": 0,
+        "pct_2": 0,
+        "pct_1": 0,
+        "button_label": "View More",
+        "padding_top": 36,
+        "padding_bottom": 48
+      }
+    }
+  },
+  "order": ["hmc_product", "related_products", "hmc_reviews"]
+}

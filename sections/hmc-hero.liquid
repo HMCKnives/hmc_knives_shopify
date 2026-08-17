@@ -1,0 +1,439 @@
+{%- liquid
+  assign overlay_opacity = section.settings.overlay_opacity | divided_by: 100.0
+  assign btn_class = 'hmc-btn hmc-btn--primary'
+  if section.settings.button_style == 'outline'
+    assign btn_class = 'hmc-btn hmc-btn--outline-light'
+  endif
+  assign fetch_priority = 'auto'
+  assign loading_attr = 'lazy'
+  if section.index == 1
+    assign fetch_priority = 'high'
+    assign loading_attr = 'eager'
+  endif
+-%}
+
+<section
+  id="HmcHero-{{ section.id }}"
+  class="hmc-hero hmc-media-section hmc-hero--align-{{ section.settings.text_alignment }} section-{{ section.id }}-padding"
+  style="
+    --hmc-overlay-color: {{ section.settings.overlay_color }};
+    --hmc-overlay-opacity: {{ overlay_opacity }};
+    --hmc-hero-min-height-desktop: {{ section.settings.min_height_desktop }}px;
+    --hmc-hero-min-height-mobile: {{ section.settings.min_height_mobile }}px;
+    --hmc-hero-content-max-width: {{ section.settings.content_max_width }}px;
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="hmc-media-section__bg hmc-hero__bg">
+    {%- if section.settings.background_image != blank -%}
+      <picture>
+        {%- if section.settings.background_image_mobile != blank -%}
+          <source
+            media="(max-width: 749px)"
+            srcset="{{ section.settings.background_image_mobile | image_url: width: 1200 }}"
+          >
+        {%- endif -%}
+        {%- liquid
+          assign img_alt = section.settings.background_image.alt | default: section.settings.heading_line_1 | escape
+        -%}
+        {{
+          section.settings.background_image
+          | image_url: width: 3840
+          | image_tag:
+            loading: loading_attr,
+            fetchpriority: fetch_priority,
+            alt: img_alt,
+            widths: '750, 1100, 1500, 2000, 3000, 3840',
+            sizes: '100vw',
+            class: 'hmc-hero__bg-image'
+        }}
+      </picture>
+    {%- else -%}
+      {{ 'hero-apparel-1' | placeholder_svg_tag: 'hmc-media-section__placeholder' }}
+    {%- endif -%}
+  </div>
+
+  <div class="hmc-media-section__overlay" aria-hidden="true"></div>
+
+  <div class="hmc-media-section__inner hmc-hero__inner hmc-page-width">
+    <div class="hmc-hero__content">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="hmc-hero__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.heading_line_1 != blank -%}
+        <p class="hmc-hero__line">{{ section.settings.heading_line_1 | escape }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.heading_line_2 != blank -%}
+        <p class="hmc-hero__line hmc-hero__line--accent">{{ section.settings.heading_line_2 | escape }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.show_drop_badge and section.settings.drop_status != blank -%}
+        <p class="hmc-hero__drop">
+          <span class="hmc-hero__drop-badge">{{ section.settings.drop_status | escape }}</span>
+        </p>
+      {%- elsif section.settings.drop_status != blank -%}
+        <p class="hmc-hero__drop">{{ section.settings.drop_status | escape }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.cta_label != blank -%}
+        <div class="hmc-hero__cta">
+          <a
+            {% if section.settings.cta_link != blank %}
+              href="{{ section.settings.cta_link }}"
+            {% else %}
+              href="#newsletter"
+            {% endif %}
+            class="{{ btn_class }}"
+          >
+            {{ section.settings.cta_label | escape }}
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .hmc-hero {
+    display: flex;
+    align-items: center;
+    min-height: var(--hmc-hero-min-height-mobile, 480px);
+    padding-top: calc(var(--hmc-section-padding-top, 36px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 36px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-hero {
+      min-height: var(--hmc-hero-min-height-desktop, 640px);
+      padding-top: var(--hmc-section-padding-top, 36px);
+      padding-bottom: var(--hmc-section-padding-bottom, 36px);
+    }
+  }
+
+  .hmc-hero__bg {
+    aspect-ratio: auto;
+  }
+
+  .hmc-hero__bg picture,
+  .hmc-hero__bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hmc-hero__inner {
+    width: 100%;
+    display: flex;
+    min-height: inherit;
+    align-items: center;
+  }
+
+  .hmc-hero__content {
+    width: min(100%, var(--hmc-hero-content-max-width, 720px));
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+
+  .hmc-hero--align-center .hmc-hero__inner {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .hmc-hero--align-center .hmc-hero__content {
+    margin-inline: auto;
+  }
+
+  .hmc-hero--align-left .hmc-hero__inner {
+    justify-content: flex-start;
+    text-align: start;
+  }
+
+  .hmc-hero__eyebrow {
+    margin: 0 0 0.75rem;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    opacity: 0.9;
+    text-align: center;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-hero__eyebrow {
+      font-size: 4rem;
+      text-align: inherit;
+    }
+  }
+
+  .hmc-hero__line {
+    margin: 0;
+    font-size: clamp(3.4rem, 7vw, 5.8rem);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-hero__line {
+      text-align: inherit;
+    }
+  }
+
+  .hmc-hero__line--accent {
+    margin-top: 0.15em;
+  }
+
+  .hmc-hero__drop {
+    margin: 1.25rem 0 0;
+    font-size: 1.5rem;
+    font-weight: 400;
+    text-align: center;
+  }
+
+  .hmc-hero__drop-badge {
+    display: inline-block;
+    padding: 0.45rem 0.9rem;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 0;
+    letter-spacing: 0.18em;
+    text-align: center;
+  }
+
+  .hmc-hero__cta {
+    margin-top: 1.75rem;
+    text-align: center;
+  }
+
+  .hmc-hero__cta .hmc-btn {
+    font-size: 1.6rem;
+    font-weight: 400;
+    padding: 0.85rem 1.5rem;
+    text-align: center;
+    justify-content: center;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-hero__drop {
+      font-size: 4rem;
+      text-align: inherit;
+    }
+
+    .hmc-hero__drop-badge {
+      padding: 0.55rem 1.15rem;
+      text-align: inherit;
+    }
+
+    .hmc-hero__cta {
+      text-align: inherit;
+    }
+
+    .hmc-hero__cta .hmc-btn {
+      font-size: 4rem;
+      padding: 0.95rem 1.85rem;
+    }
+  }
+
+  .hmc-hero__cta a:focus-visible {
+    outline: 2px solid var(--hmc-accent, #3d342c);
+    outline-offset: 2px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .hmc-hero {
+      align-items: stretch;
+    }
+
+    .hmc-hero__inner {
+      align-items: stretch;
+    }
+
+    .hmc-hero__content {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-height: inherit;
+      padding-top: 1rem;
+      padding-bottom: 1.25rem;
+      box-sizing: border-box;
+    }
+
+    .hmc-hero__drop {
+      margin-top: 1rem;
+    }
+
+    .hmc-hero__cta {
+      margin-top: auto;
+      padding-top: 1.5rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-hero.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--hero",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.hmc-hero.settings.eyebrow",
+      "default": "HMC Knives"
+    },
+    {
+      "type": "text",
+      "id": "heading_line_1",
+      "label": "t:sections.hmc-hero.settings.heading_line_1",
+      "default": "High Quality"
+    },
+    {
+      "type": "text",
+      "id": "heading_line_2",
+      "label": "t:sections.hmc-hero.settings.heading_line_2",
+      "default": "Custom Made Knives"
+    },
+    {
+      "type": "text",
+      "id": "drop_status",
+      "label": "t:sections.hmc-hero.settings.drop_status",
+      "default": "Next Drop 7/31/26"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_drop_badge",
+      "label": "t:sections.hmc-hero.settings.show_drop_badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "t:sections.hmc-hero.settings.cta_label",
+      "default": "Alert Me To Drops!"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "t:sections.hmc-hero.settings.cta_link"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.background.header"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:sections.hmc.common.background.background_image"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image_mobile",
+      "label": "t:sections.hmc.common.background.background_image_mobile"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "t:sections.hmc.common.background.overlay_color",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "t:sections.hmc.common.background.overlay_opacity",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.layout.header"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:sections.hmc.common.layout.text_alignment",
+      "options": [
+        { "value": "left", "label": "t:sections.hmc.common.layout.left" },
+        { "value": "center", "label": "t:sections.hmc.common.layout.center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "min_height_desktop",
+      "min": 400,
+      "max": 900,
+      "step": 20,
+      "unit": "px",
+      "label": "t:sections.hmc-hero.settings.min_height_desktop",
+      "default": 640
+    },
+    {
+      "type": "range",
+      "id": "min_height_mobile",
+      "min": 320,
+      "max": 700,
+      "step": 20,
+      "unit": "px",
+      "label": "t:sections.hmc-hero.settings.min_height_mobile",
+      "default": 480
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "min": 400,
+      "max": 1200,
+      "step": 20,
+      "unit": "px",
+      "label": "t:sections.hmc-hero.settings.content_max_width",
+      "default": 900
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:sections.hmc-hero.settings.button_style",
+      "options": [
+        { "value": "primary", "label": "t:sections.hmc-hero.settings.button_style_primary" },
+        { "value": "outline", "label": "t:sections.hmc-hero.settings.button_style_outline" }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-hero.name"
+    }
+  ]
+}
+{% endschema %}

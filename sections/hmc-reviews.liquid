@@ -1,0 +1,1225 @@
+{%- liquid
+  assign rating_value = section.settings.rating_value | default: '5.0'
+  assign bar_levels = '5,4,3,2,1' | split: ','
+  assign review_count = 0
+  for block in section.blocks
+    if block.type == 'review'
+      assign review_count = review_count | plus: 1
+    endif
+  endfor
+  if section.settings.heading != blank
+    assign carousel_label = section.settings.heading | escape
+  else
+    assign carousel_label = 'hmc.reviews.carousel_label' | t
+  endif
+  assign open_modal = false
+  if section.settings.button_label != blank and section.settings.button_link == blank
+    assign open_modal = true
+  endif
+-%}
+
+<section
+  id="HmcReviews-{{ section.id }}"
+  class="hmc-reviews section-{{ section.id }}-padding"
+  style="
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <hmc-reviews-ui class="hmc-page-width hmc-reviews__container">
+    <header class="hmc-reviews__header">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="hmc-reviews__heading" id="HmcReviewsHeading-{{ section.id }}">
+          {{ section.settings.heading | escape }}
+        </h2>
+      {%- endif -%}
+    </header>
+
+    {%- if section.settings.show_summary -%}
+      <div class="hmc-reviews__summary">
+        <div class="hmc-reviews__summary-head">
+          <p class="hmc-reviews__summary-rating">{{ rating_value | escape }}</p>
+
+          {% render 'hmc-stars', rating: rating_value, label: section.settings.rating_summary %}
+        </div>
+
+        {%- if section.settings.rating_summary != blank -%}
+          <p class="hmc-reviews__summary-text">{{ section.settings.rating_summary | escape }}</p>
+        {%- endif -%}
+
+        <div class="hmc-reviews__bars">
+          {%- for level in bar_levels -%}
+            {%- liquid
+              assign pct_key = 'pct_' | append: level
+              assign pct = section.settings[pct_key] | default: 0
+              assign label_key = 'hmc.reviews.bars.level_' | append: level
+            -%}
+            <div class="hmc-reviews__bar">
+              <span class="hmc-reviews__bar-label">{{ label_key | t }}</span>
+              <span class="hmc-reviews__bar-track">
+                <span class="hmc-reviews__bar-fill" style="width: {{ pct }}%;"></span>
+              </span>
+              <span class="hmc-reviews__bar-pct">{{ pct }}%</span>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div
+        class="hmc-reviews__carousel"
+        role="region"
+        aria-roledescription="carousel"
+        aria-label="{{ carousel_label }}"
+      >
+        <div
+          id="HmcReviewsViewport-{{ section.id }}"
+          class="hmc-reviews__viewport"
+          data-reviews-viewport
+        >
+          <div
+            class="hmc-reviews__track"
+            data-reviews-track
+            aria-live="off"
+          >
+            {%- for block in section.blocks -%}
+              {%- case block.type -%}
+                {%- when '@app' -%}
+                  <div class="hmc-reviews__slide hmc-reviews__app-block" {{ block.shopify_attributes }}>
+                    {% render block %}
+                  </div>
+
+                {%- when 'review' -%}
+                  <div
+                    class="hmc-reviews__slide"
+                    role="group"
+                    aria-roledescription="slide"
+                    aria-label="{{ 'accessibility.slide_n_of_total' | t: n: forloop.index, total: section.blocks.size }}"
+                    data-review-slide
+                    {{ block.shopify_attributes }}
+                  >
+                    {% render 'hmc-review-card',
+                      author: block.settings.author,
+                      date: block.settings.date,
+                      body: block.settings.body,
+                      rating: block.settings.rating,
+                      avatar: block.settings.avatar,
+                      category: block.settings.category
+                    %}
+                  </div>
+              {%- endcase -%}
+            {%- endfor -%}
+          </div>
+        </div>
+
+        {%- if review_count > 1 -%}
+          <div class="hmc-reviews__controls">
+            <div class="hmc-reviews__dots" data-reviews-dots>
+              {%- assign dot_index = 0 -%}
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'review' -%}
+                  {%- assign dot_index = dot_index | plus: 1 -%}
+                  <button
+                    type="button"
+                    class="hmc-reviews__dot{% if dot_index == 1 %} hmc-reviews__dot--active{% endif %}"
+                    aria-label="{{ 'accessibility.slide_n_of_total' | t: n: dot_index, total: review_count }}"
+                    aria-controls="HmcReviewsViewport-{{ section.id }}"
+                    data-reviews-dot
+                  ></button>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+
+            <button
+              type="button"
+              class="hmc-reviews__pause"
+              data-reviews-pause
+              data-label-pause="{{ 'accessibility.pause_slideshow' | t | escape }}"
+              data-label-play="{{ 'hmc.reviews.play_slideshow' | t | escape }}"
+              aria-pressed="false"
+              aria-label="{{ 'accessibility.pause_slideshow' | t }}"
+            >
+              <span class="hmc-reviews__pause-icon" aria-hidden="true"></span>
+            </button>
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.button_label != blank -%}
+      <div class="hmc-reviews__cta">
+        {%- if open_modal -%}
+          <button
+            type="button"
+            class="hmc-btn hmc-btn--dark hmc-reviews__button"
+            data-reviews-open
+            aria-haspopup="dialog"
+            aria-expanded="false"
+            aria-controls="HmcReviewsModal-{{ section.id }}"
+          >
+            {{ section.settings.button_label | escape }}
+          </button>
+        {%- else -%}
+          <a
+            {% if section.settings.button_link != blank %}
+              href="{{ section.settings.button_link }}"
+            {% else %}
+              role="link" aria-disabled="true"
+            {% endif %}
+            class="hmc-btn hmc-btn--dark hmc-reviews__button"
+          >
+            {{ section.settings.button_label | escape }}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if open_modal -%}
+      <dialog
+        id="HmcReviewsModal-{{ section.id }}"
+        class="hmc-reviews-modal"
+        aria-modal="true"
+        aria-labelledby="HmcReviewsModalTitle-{{ section.id }}"
+        data-reviews-modal
+      >
+        <button
+          type="button"
+          class="hmc-reviews-modal__close"
+          data-reviews-close
+          aria-label="{{ 'accessibility.close' | t }}"
+        >
+          ×
+        </button>
+
+        <h2 class="hmc-reviews-modal__title" id="HmcReviewsModalTitle-{{ section.id }}">
+          {%- if section.settings.heading != blank -%}
+            {{ section.settings.heading | escape }}
+          {%- else -%}
+            {{ 'hmc.reviews.modal_title' | t }}
+          {%- endif -%}
+        </h2>
+
+        <form class="hmc-reviews-modal__form" data-reviews-form>
+          <div class="hmc-reviews-modal__search">
+            <label class="visually-hidden" for="HmcReviewsSearch-{{ section.id }}">
+              {{ 'hmc.reviews.search_label' | t }}
+            </label>
+            <input
+              id="HmcReviewsSearch-{{ section.id }}"
+              class="hmc-reviews-modal__search-input"
+              type="search"
+              name="search_for"
+              placeholder="{{ 'hmc.reviews.search_placeholder' | t }}"
+              autocomplete="off"
+              data-reviews-search
+            >
+            <button
+              type="submit"
+              class="hmc-reviews-modal__search-btn"
+              aria-label="{{ 'hmc.reviews.search_label' | t }}"
+            >
+              <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 0 1-10.5 6.062A7 7 0 0 1 10 3a7 7 0 0 1 7 7h0z"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <div class="hmc-reviews-modal__filters">
+            <label class="hmc-reviews-modal__filter">
+              <span class="hmc-reviews-modal__filter-label">{{ 'hmc.reviews.sort_by' | t }}</span>
+              <select name="sort_by" data-reviews-sort>
+                <option value="recent">{{ 'hmc.reviews.sort_recent' | t }}</option>
+                <option value="useful">{{ 'hmc.reviews.sort_useful' | t }}</option>
+                <option value="rated">{{ 'hmc.reviews.sort_rated' | t }}</option>
+              </select>
+            </label>
+
+            <label class="hmc-reviews-modal__filter">
+              <span class="hmc-reviews-modal__filter-label">{{ 'hmc.reviews.filter_by' | t }}</span>
+              <select name="filter_by_rating" data-reviews-rating>
+                <option value="all">{{ 'hmc.reviews.filter_all_stars' | t }}</option>
+                <option value="5">{{ 'hmc.reviews.filter_stars' | t: count: 5 }}</option>
+                <option value="4">{{ 'hmc.reviews.filter_stars' | t: count: 4 }}</option>
+                <option value="3">{{ 'hmc.reviews.filter_stars' | t: count: 3 }}</option>
+                <option value="2">{{ 'hmc.reviews.filter_stars' | t: count: 2 }}</option>
+                <option value="1">{{ 'hmc.reviews.filter_stars' | t: count: 1 }}</option>
+              </select>
+            </label>
+
+            <label class="hmc-reviews-modal__filter">
+              <span class="hmc-reviews-modal__filter-label">{{ 'hmc.reviews.filter_by' | t }}</span>
+              <select name="filter_by_term" data-reviews-category>
+                <option value="all">{{ 'hmc.reviews.filter_all_categories' | t }}</option>
+                <option value="knives">{{ 'hmc.reviews.filter_knives' | t }}</option>
+              </select>
+            </label>
+          </div>
+        </form>
+
+        <div class="hmc-reviews-modal__list" data-reviews-modal-list>
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'review' -%}
+              {% render 'hmc-review-card',
+                author: block.settings.author,
+                date: block.settings.date,
+                body: block.settings.body,
+                rating: block.settings.rating,
+                avatar: block.settings.avatar,
+                category: block.settings.category
+              %}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        <p class="hmc-reviews-modal__empty" data-reviews-empty hidden>
+          {{ 'hmc.reviews.empty' | t }}
+        </p>
+      </dialog>
+    {%- endif -%}
+  </hmc-reviews-ui>
+</section>
+
+{% stylesheet %}
+  .hmc-reviews {
+    background: var(--hmc-white, #fff);
+    padding-top: calc(var(--hmc-section-padding-top, 36px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 36px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-reviews {
+      padding-top: var(--hmc-section-padding-top, 36px);
+      padding-bottom: var(--hmc-section-padding-bottom, 36px);
+    }
+  }
+
+  hmc-reviews-ui {
+    display: block;
+  }
+
+  .hmc-reviews .hmc-reviews__container {
+    display: block;
+    max-width: 111rem;
+  }
+
+  .hmc-reviews__header {
+    text-align: center;
+    margin-bottom: 3.1rem;
+  }
+
+  .hmc-reviews__heading {
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--hmc-black, #0a0a0a);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-reviews__heading {
+      font-size: 2.4rem;
+    }
+  }
+
+  .hmc-reviews__summary {
+    width: min(100%, 43.2rem);
+    margin: 0 auto 5.9rem;
+    color: rgba(10, 10, 10, 0.85);
+  }
+
+  .hmc-reviews__summary-head {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .hmc-reviews__summary-rating {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .hmc-reviews__summary .hmc-stars {
+    font-size: 2.4rem;
+    letter-spacing: 0.15em;
+  }
+
+  .hmc-reviews__summary-text {
+    margin: 0.4rem 0 0;
+    font-size: 1.6rem;
+    line-height: 1.5;
+  }
+
+  .hmc-reviews__bars {
+    display: grid;
+    gap: 0.8rem;
+    margin-top: 0.8rem;
+  }
+
+  .hmc-reviews__bar {
+    display: grid;
+    grid-template-columns: 6.3rem minmax(0, 1fr) 3.4rem;
+    gap: 0.8rem;
+    align-items: center;
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+
+  .hmc-reviews__bar-label {
+    white-space: nowrap;
+  }
+
+  .hmc-reviews__bar-track {
+    display: block;
+    height: 1.6rem;
+    border-radius: 2px;
+    background: #e5e7eb;
+    overflow: hidden;
+  }
+
+  .hmc-reviews__bar-fill {
+    display: block;
+    height: 100%;
+    background: #ffcf02;
+  }
+
+  .hmc-reviews__bar-pct {
+    text-align: right;
+  }
+
+  .hmc-reviews__viewport {
+    overflow: hidden;
+  }
+
+  .hmc-reviews__track {
+    --hmc-reviews-gap: 1.6rem;
+    --hmc-reviews-per-view: 1;
+    display: flex;
+    gap: var(--hmc-reviews-gap);
+    will-change: transform;
+  }
+
+  .hmc-reviews__track.is-ready {
+    transition: transform 0.3s ease;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-reviews__track {
+      --hmc-reviews-per-view: 3;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hmc-reviews__track.is-ready {
+      transition: none;
+    }
+  }
+
+  .hmc-reviews__slide {
+    flex: 0 0 calc(
+      (100% - (var(--hmc-reviews-per-view) - 1) * var(--hmc-reviews-gap)) /
+        var(--hmc-reviews-per-view)
+    );
+    min-width: 0;
+  }
+
+  .hmc-reviews__item {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    height: 100%;
+    padding: 1.6rem;
+    border-radius: 8px;
+    background: var(--hmc-white, #fff);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    text-align: center;
+    color: #374151;
+  }
+
+  .hmc-reviews__item-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    align-items: center;
+  }
+
+  .hmc-reviews__item-head .hmc-stars {
+    font-size: 2.4rem;
+    letter-spacing: 0.083em;
+  }
+
+  .hmc-reviews__date {
+    font-size: 1.4rem;
+    line-height: 1.5;
+  }
+
+  .hmc-reviews__body {
+    margin: 0;
+    font-size: 1.4rem;
+    line-height: 1.5;
+    overflow-wrap: break-word;
+    min-width: 0;
+  }
+
+  .hmc-reviews__meta {
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+    margin-top: auto;
+    font-size: 1.4rem;
+    text-align: start;
+  }
+
+  .hmc-reviews__avatar {
+    display: block;
+    flex: 0 0 auto;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #d1d5db;
+  }
+
+  .hmc-reviews__avatar img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  .hmc-reviews__avatar-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    fill: #9ca3af;
+  }
+
+  .hmc-reviews__controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    margin: 1rem 0 0;
+  }
+
+  .hmc-reviews__dots {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.2rem;
+  }
+
+  .hmc-reviews__dot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0.25;
+  }
+
+  .hmc-reviews__dot::before {
+    content: '';
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: rgba(10, 10, 10, 0.85);
+  }
+
+  .hmc-reviews__dot--active,
+  .hmc-reviews__dot:focus-visible {
+    opacity: 1;
+  }
+
+  .hmc-reviews__dot:focus-visible {
+    outline: 2px solid var(--hmc-accent, #383224);
+    outline-offset: 2px;
+  }
+
+  .hmc-reviews__pause {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    color: rgba(10, 10, 10, 0.85);
+  }
+
+  .hmc-reviews__pause:focus-visible {
+    outline: 2px solid var(--hmc-accent, #383224);
+    outline-offset: 2px;
+  }
+
+  .hmc-reviews__pause-icon {
+    display: block;
+    width: 0.9rem;
+    height: 1rem;
+    background: currentColor;
+    clip-path: polygon(0 0, 35% 0, 35% 100%, 0 100%, 0 0, 65% 0, 100% 0, 100% 100%, 65% 100%, 65% 0);
+  }
+
+  .hmc-reviews__pause[aria-pressed='true'] .hmc-reviews__pause-icon {
+    clip-path: polygon(0 0, 0 100%, 100% 50%);
+    width: 0.8rem;
+  }
+
+  .hmc-reviews__cta {
+    margin-top: 4rem;
+    text-align: center;
+  }
+
+  .hmc-reviews__cta .hmc-btn {
+    padding: 1.8rem;
+    font-size: 1.7rem;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: 0.12em;
+    border-radius: 5px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-reviews__cta .hmc-btn {
+      font-size: 1.8rem;
+    }
+  }
+
+  .hmc-reviews-modal {
+    position: relative;
+    width: min(65rem, calc(100vw - 2.4rem));
+    max-height: min(70rem, calc(100vh - 4rem));
+    padding: 1.5rem;
+    border: 0;
+    border-radius: 6px;
+    overflow: visible;
+    color: #374151;
+  }
+
+  .hmc-reviews-modal::backdrop {
+    background: rgba(0, 0, 0, 0.8);
+  }
+
+  .hmc-reviews-modal__close {
+    position: absolute;
+    top: -1.2rem;
+    inset-inline-end: -1.2rem;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.4rem;
+    height: 4.4rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #000;
+    color: #fff;
+    font-size: 2.2rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .hmc-reviews-modal__close:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+
+  .hmc-reviews-modal__title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .hmc-reviews-modal__form {
+    margin-bottom: 1.6rem;
+  }
+
+  .hmc-reviews-modal__search {
+    display: flex;
+    margin-bottom: 0.8rem;
+  }
+
+  .hmc-reviews-modal__search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 4.1rem;
+    padding: 1rem;
+    border: 1px solid #a3a3a3;
+    border-inline-end: 0;
+    border-radius: 0;
+    font-size: 1.6rem;
+    background: #fff;
+    color: inherit;
+  }
+
+  .hmc-reviews-modal__search-btn {
+    flex: 0 0 auto;
+    width: 7.1rem;
+    height: 4.1rem;
+    padding: 0;
+    border: 0;
+    background: #32373c;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .hmc-reviews-modal__search-input:focus-visible,
+  .hmc-reviews-modal__search-btn:focus-visible,
+  .hmc-reviews-modal__filter select:focus-visible {
+    outline: 2px solid var(--hmc-accent, #383224);
+    outline-offset: 2px;
+  }
+
+  .hmc-reviews-modal__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .hmc-reviews-modal__filter {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1 1 14rem;
+    min-width: 0;
+  }
+
+  .hmc-reviews-modal__filter-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #52525b;
+  }
+
+  .hmc-reviews-modal__filter select {
+    width: 100%;
+    height: 3.6rem;
+    padding: 0.7rem 1.05rem;
+    border: 1px solid #a3a3a3;
+    border-radius: 0;
+    font-size: 1.4rem;
+    background: #fff;
+    color: inherit;
+  }
+
+  .hmc-reviews-modal__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    max-height: 42rem;
+    overflow: auto;
+    padding-inline-end: 0.4rem;
+  }
+
+  .hmc-reviews-modal__list .hmc-reviews__item {
+    text-align: start;
+  }
+
+  .hmc-reviews-modal__empty {
+    margin: 1.6rem 0 0;
+    font-size: 1.4rem;
+  }
+
+  .hmc-reviews__app-block {
+    min-width: 0;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  if (!customElements.get('hmc-reviews-ui')) {
+    class HmcReviewsUi extends HTMLElement {
+      #controller = null;
+      #timer = null;
+      #index = 0;
+      #paused = false;
+      #uniqueCount = 0;
+      #resizeObserver = null;
+
+      connectedCallback() {
+        this.#controller = new AbortController();
+        const { signal } = this.#controller;
+
+        this.track = this.querySelector('[data-reviews-track]');
+        this.viewport = this.querySelector('[data-reviews-viewport]');
+        this.dots = [...this.querySelectorAll('[data-reviews-dot]')];
+        this.pauseButton = this.querySelector('[data-reviews-pause]');
+        this.modal = this.querySelector('[data-reviews-modal]');
+        this.openButton = this.querySelector('[data-reviews-open]');
+
+        this.#initSlider(signal);
+        this.#initModal(signal);
+      }
+
+      disconnectedCallback() {
+        this.#stop();
+        this.#controller?.abort();
+        this.#resizeObserver?.disconnect();
+      }
+
+      #perView() {
+        return window.matchMedia('(min-width: 750px)').matches ? 3 : 1;
+      }
+
+      #reducedMotion() {
+        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      }
+
+      #initSlider(signal) {
+        if (!this.track || !this.viewport) return;
+
+        this.originalSlides = [...this.track.querySelectorAll('[data-review-slide]')];
+        this.#uniqueCount = this.originalSlides.length;
+        if (this.#uniqueCount < 2) {
+          this.pauseButton?.setAttribute('hidden', '');
+          return;
+        }
+
+        this.#prepareClones();
+        this.track.classList.add('is-ready');
+        this.#goTo(0, false);
+
+        this.dots.forEach((dot, index) => {
+          dot.addEventListener('click', () => {
+            this.#goTo(index);
+            this.#restart();
+          }, { signal });
+        });
+
+        this.pauseButton?.addEventListener('click', () => {
+          this.#paused = !this.#paused;
+          this.pauseButton.setAttribute('aria-pressed', this.#paused ? 'true' : 'false');
+          const playLabel = this.pauseButton.dataset.labelPlay || 'Play slideshow';
+          const pauseLabel = this.pauseButton.dataset.labelPause || 'Pause slideshow';
+          this.pauseButton.setAttribute('aria-label', this.#paused ? playLabel : pauseLabel);
+          if (this.#paused) this.#stop();
+          else this.#start();
+        }, { signal });
+
+        this.viewport.addEventListener('mouseenter', () => this.#stop(), { signal });
+        this.viewport.addEventListener('mouseleave', () => {
+          if (!this.#paused) this.#start();
+        }, { signal });
+        this.viewport.addEventListener('focusin', () => this.#stop(), { signal });
+        this.viewport.addEventListener('focusout', () => {
+          if (!this.#paused) this.#start();
+        }, { signal });
+
+        this.track.addEventListener('transitionend', () => this.#onTransitionEnd(), { signal });
+
+        this.#resizeObserver = new ResizeObserver(() => {
+          const real = this.#index % this.#uniqueCount;
+          this.#prepareClones();
+          this.#goTo(real, false);
+        });
+        this.#resizeObserver.observe(this.viewport);
+
+        if (!this.#reducedMotion()) this.#start();
+        else {
+          this.#paused = true;
+          this.pauseButton?.setAttribute('aria-pressed', 'true');
+        }
+      }
+
+      #prepareClones() {
+        this.track.querySelectorAll('[data-review-clone]').forEach((node) => node.remove());
+        const perView = this.#perView();
+        const clones = this.originalSlides.slice(0, perView);
+        for (const slide of clones) {
+          const clone = slide.cloneNode(true);
+          clone.setAttribute('data-review-clone', '');
+          clone.setAttribute('aria-hidden', 'true');
+          clone.removeAttribute('role');
+          this.track.appendChild(clone);
+        }
+      }
+
+      #slideOffset() {
+        const first = this.track.querySelector('[data-review-slide]');
+        if (!first) return 0;
+        const styles = getComputedStyle(this.track);
+        const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
+        return first.getBoundingClientRect().width + gap;
+      }
+
+      #goTo(index, animate = true) {
+        if (!this.track) return;
+        if (!animate) this.track.classList.remove('is-ready');
+        this.#index = index;
+        const offset = this.#slideOffset() * this.#index;
+        this.track.style.transform = `translateX(-${offset}px)`;
+        this.#updateDots();
+        this.#updateLive();
+        if (!animate) {
+          this.track.offsetHeight;
+          this.track.classList.add('is-ready');
+        }
+      }
+
+      #onTransitionEnd() {
+        if (this.#index < this.#uniqueCount) return;
+        this.#goTo(this.#index % this.#uniqueCount, false);
+      }
+
+      #next() {
+        this.#goTo(this.#index + 1);
+      }
+
+      #updateDots() {
+        const active = ((this.#index % this.#uniqueCount) + this.#uniqueCount) % this.#uniqueCount;
+        this.dots.forEach((dot, index) => {
+          dot.classList.toggle('hmc-reviews__dot--active', index === active);
+        });
+      }
+
+      #updateLive() {
+        const slides = [...this.track.querySelectorAll('[data-review-slide]:not([data-review-clone])')];
+        const start = ((this.#index % this.#uniqueCount) + this.#uniqueCount) % this.#uniqueCount;
+        const perView = this.#perView();
+        slides.forEach((slide, index) => {
+          let visible = false;
+          for (let offset = 0; offset < perView; offset += 1) {
+            if ((start + offset) % this.#uniqueCount === index) visible = true;
+          }
+          slide.setAttribute('aria-hidden', visible ? 'false' : 'true');
+        });
+      }
+
+      #start() {
+        this.#stop();
+        if (this.#paused || this.#reducedMotion() || this.#uniqueCount < 2) return;
+        this.#timer = window.setInterval(() => this.#next(), 5000);
+      }
+
+      #stop() {
+        if (this.#timer) {
+          window.clearInterval(this.#timer);
+          this.#timer = null;
+        }
+      }
+
+      #restart() {
+        if (!this.#paused) this.#start();
+      }
+
+      #initModal(signal) {
+        if (!this.modal || !this.openButton) return;
+
+        const closeButton = this.modal.querySelector('[data-reviews-close]');
+        const form = this.modal.querySelector('[data-reviews-form]');
+        const search = this.modal.querySelector('[data-reviews-search]');
+        const sort = this.modal.querySelector('[data-reviews-sort]');
+        const rating = this.modal.querySelector('[data-reviews-rating]');
+        const category = this.modal.querySelector('[data-reviews-category]');
+        const list = this.modal.querySelector('[data-reviews-modal-list]');
+        const empty = this.modal.querySelector('[data-reviews-empty]');
+        const cards = list ? [...list.querySelectorAll('.hmc-reviews__item')] : [];
+
+        const applyFilters = () => {
+          const query = (search?.value || '').trim().toLowerCase();
+          const sortBy = sort?.value || 'recent';
+          const ratingValue = rating?.value || 'all';
+          const categoryValue = category?.value || 'all';
+
+          const visible = cards.filter((card) => {
+            const haystack = [
+              card.dataset.reviewAuthor,
+              card.dataset.reviewBody,
+              card.dataset.reviewDate,
+            ]
+              .join(' ')
+              .toLowerCase();
+            const matchesQuery = query === '' || haystack.includes(query);
+            const cardRating = Number.parseFloat(card.dataset.reviewRating || '5');
+            const matchesRating =
+              ratingValue === 'all' || Math.round(cardRating) === Number.parseInt(ratingValue, 10);
+            const matchesCategory =
+              categoryValue === 'all' ||
+              (card.dataset.reviewCategory || 'knives').toLowerCase() === categoryValue;
+            card.hidden = !(matchesQuery && matchesRating && matchesCategory);
+            return !card.hidden;
+          });
+
+          visible.sort((a, b) => {
+            if (sortBy === 'rated') {
+              return (
+                Number.parseFloat(b.dataset.reviewRating || '0') -
+                Number.parseFloat(a.dataset.reviewRating || '0')
+              );
+            }
+            if (sortBy === 'useful') {
+              return (b.dataset.reviewBody || '').length - (a.dataset.reviewBody || '').length;
+            }
+            const dateA = Date.parse(a.dataset.reviewDate || '') || 0;
+            const dateB = Date.parse(b.dataset.reviewDate || '') || 0;
+            return dateB - dateA;
+          });
+
+          for (const card of visible) list.appendChild(card);
+
+          if (empty) empty.hidden = visible.length > 0;
+        };
+
+        this.openButton.addEventListener('click', () => {
+          this.#stop();
+          applyFilters();
+          this.modal.showModal();
+          this.openButton.setAttribute('aria-expanded', 'true');
+          search?.focus();
+        }, { signal });
+
+        closeButton?.addEventListener('click', () => this.modal.close(), { signal });
+        this.modal.addEventListener('click', (event) => {
+          if (event.target === this.modal) this.modal.close();
+        }, { signal });
+        this.modal.addEventListener('close', () => {
+          this.openButton.setAttribute('aria-expanded', 'false');
+          this.openButton.focus();
+          if (!this.#paused) this.#start();
+        }, { signal });
+
+        form?.addEventListener('submit', (event) => {
+          event.preventDefault();
+          applyFilters();
+        }, { signal });
+        search?.addEventListener('input', applyFilters, { signal });
+        sort?.addEventListener('change', applyFilters, { signal });
+        rating?.addEventListener('change', applyFilters, { signal });
+        category?.addEventListener('change', applyFilters, { signal });
+      }
+    }
+
+    customElements.define('hmc-reviews-ui', HmcReviewsUi);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-reviews.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--reviews",
+  "max_blocks": 48,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hmc-reviews.settings.heading",
+      "default": "Customer Reviews"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc-reviews.settings.summary_header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_summary",
+      "label": "t:sections.hmc-reviews.settings.show_summary",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "rating_value",
+      "label": "t:sections.hmc-reviews.settings.rating_value",
+      "default": "5.0"
+    },
+    {
+      "type": "text",
+      "id": "rating_summary",
+      "label": "t:sections.hmc-reviews.settings.rating_summary",
+      "default": "5.0 out of 5 stars (based on 67 reviews)"
+    },
+    {
+      "type": "range",
+      "id": "pct_5",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:sections.hmc-reviews.settings.pct_5",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "pct_4",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:sections.hmc-reviews.settings.pct_4",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "pct_3",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:sections.hmc-reviews.settings.pct_3",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "pct_2",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:sections.hmc-reviews.settings.pct_2",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "pct_1",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:sections.hmc-reviews.settings.pct_1",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc-reviews.settings.button_header"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.hmc-reviews.settings.button_label",
+      "default": "View More"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.hmc-reviews.settings.button_link",
+      "info": "t:sections.hmc-reviews.settings.button_link_info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "t:sections.hmc-reviews.blocks.review.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "author",
+          "label": "t:sections.hmc-reviews.blocks.review.settings.author",
+          "default": "Garrick Eisenbeis"
+        },
+        {
+          "type": "text",
+          "id": "date",
+          "label": "t:sections.hmc-reviews.blocks.review.settings.date",
+          "default": "July 13, 2026"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "t:sections.hmc-reviews.blocks.review.settings.body",
+          "default": "Been trying to pick one up for sometime, and boy was it worth the wait! Absolutely love this Transient!"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 0,
+          "max": 5,
+          "step": 0.5,
+          "label": "t:sections.hmc-reviews.blocks.review.settings.rating",
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "category",
+          "label": "t:sections.hmc-reviews.blocks.review.settings.category",
+          "default": "knives"
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar",
+          "label": "t:sections.hmc-reviews.blocks.review.settings.avatar"
+        }
+      ]
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-reviews.name",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "author": "Garrick Eisenbeis",
+            "date": "July 13, 2026",
+            "body": "Been trying to pick one up for sometime, and boy was it worth the wait! Absolutely love this Transient!"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "author": "Steven L",
+            "date": "June 26, 2026",
+            "body": "Jim / HMC never disappoints. Highest quality with attention to detail. Great action and really great acoustics."
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "author": "Danny",
+            "date": "May 8, 2026",
+            "body": "Impeccable build quality and great design."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

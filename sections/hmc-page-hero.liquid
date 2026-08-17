@@ -1,0 +1,384 @@
+{%- liquid
+  assign is_about_page = false
+  if page.handle == 'about-me' or page.handle == 'about' or template.suffix == 'about'
+    assign is_about_page = true
+  endif
+  assign is_warranty_page = false
+  if page.handle == 'warranty' or page.handle == 'knife-spa' or page.handle == 'knife-spa-warranty' or template.suffix == 'warranty'
+    assign is_warranty_page = true
+  endif
+  if request.path contains '/pages/warranty' or request.path contains '/pages/knife-spa'
+    assign is_warranty_page = true
+  endif
+
+  assign is_policy_page = false
+  if template.suffix == 'policy'
+    assign is_policy_page = true
+  endif
+  if page.handle == 'privacy-policy' or page.handle == 'privacy' or page.handle == 'terms-and-conditions' or page.handle == 'terms-conditions' or page.handle == 'terms' or page.handle == 'shipping-return-policy' or page.handle == 'return-policy' or page.handle == 'shipping-policy'
+    assign is_policy_page = true
+  endif
+
+  assign show_on = section.settings.show_on | default: 'auto'
+  assign show_hero = true
+  if show_on == 'about'
+    assign show_hero = is_about_page
+  elsif show_on == 'warranty'
+    assign show_hero = is_warranty_page
+  elsif show_on == 'policy'
+    assign show_hero = is_policy_page
+  elsif template.name == 'page' and template.suffix == blank
+    if page.handle != 'about-me' and page.handle != 'about'
+      assign show_hero = false
+    endif
+  endif
+
+  assign overlay_opacity = section.settings.overlay_opacity | divided_by: 100.0
+  assign fetch_priority = 'auto'
+  assign loading_attr = 'lazy'
+  if section.index == 1
+    assign fetch_priority = 'high'
+    assign loading_attr = 'eager'
+  endif
+
+  assign hero_class = 'hmc-page-hero hmc-media-section hmc-page-hero--align-' | append: section.settings.text_alignment
+  unless section.settings.uppercase_heading
+    assign hero_class = hero_class | append: ' hmc-page-hero--natural'
+  endunless
+  if is_warranty_page
+    assign hero_class = hero_class | append: ' hmc-page-hero--warranty'
+  endif
+  if is_policy_page
+    assign hero_class = hero_class | append: ' hmc-page-hero--policy'
+  endif
+
+  assign hero_heading = section.settings.heading
+  if hero_heading == blank
+    assign hero_heading = page.title
+  endif
+
+  assign overlay_class = 'hmc-media-section__overlay'
+  if section.settings.use_gradient_overlay
+    assign overlay_class = overlay_class | append: ' hmc-media-section__overlay--gradient'
+  endif
+
+  assign bg_fallback = 'hmc-default-bg.png'
+  if template.suffix == 'about' or page.handle == 'about-me' or page.handle == 'about'
+    assign bg_fallback = 'hmc-about-hero.png'
+  endif
+
+  assign wave_variant = section.settings.wave_style | default: 'simple'
+  assign overlay_end = section.settings.overlay_color_end | default: '#556a69'
+  assign overlay_start_alpha = section.settings.overlay_color | color_modify: 'alpha', overlay_opacity
+  assign overlay_end_alpha = overlay_end | color_modify: 'alpha', overlay_opacity
+-%}
+
+{%- if show_hero -%}
+<section
+  id="HmcPageHero-{{ section.id }}"
+  class="{{ hero_class }}"
+  style="
+    --hmc-overlay-color: {{ section.settings.overlay_color }};
+    --hmc-overlay-opacity: {{ overlay_opacity }};
+    --hmc-overlay-start: {{ overlay_start_alpha }};
+    --hmc-overlay-end: {{ overlay_end_alpha }};
+    --hmc-page-hero-min-height: {{ section.settings.min_height }}px;
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="hmc-media-section__bg hmc-page-hero__bg">
+    {%- liquid
+      assign page_hero_bg_alt = section.settings.background_image.alt | default: hero_heading | escape
+    -%}
+    {% render 'hmc-bg-image',
+      image: section.settings.background_image,
+      alt: page_hero_bg_alt,
+      class: 'hmc-page-hero__bg-image',
+      loading: loading_attr,
+      fetchpriority: fetch_priority,
+      fallback: bg_fallback
+    %}
+  </div>
+
+  <div class="{{ overlay_class }}" aria-hidden="true"></div>
+
+  <div class="hmc-media-section__inner hmc-page-hero__inner hmc-page-width">
+    <div class="hmc-page-hero__content">
+      {%- if hero_heading != blank -%}
+        <h1 class="hmc-page-hero__heading">{{ hero_heading | escape }}</h1>
+      {%- endif -%}
+
+      {%- if section.settings.subheading != blank -%}
+        <p class="hmc-page-hero__subheading">{{ section.settings.subheading | escape }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- if section.settings.show_wave_bottom -%}
+    {% render 'hmc-wave', fill: '#ffffff', variant: wave_variant %}
+  {%- endif -%}
+</section>
+{%- endif -%}
+
+{% stylesheet %}
+  .hmc-page-hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: var(--hmc-page-hero-min-height, 320px);
+    padding-top: calc(var(--hmc-section-padding-top, 36px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 36px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-page-hero {
+      padding-top: var(--hmc-section-padding-top, 36px);
+      padding-bottom: var(--hmc-section-padding-bottom, 36px);
+    }
+  }
+
+  .hmc-page-hero__bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hmc-page-hero__inner {
+    width: 100%;
+    display: flex;
+    min-height: inherit;
+    align-items: center;
+    flex: 1;
+  }
+
+  .hmc-page-hero__content {
+    width: min(100%, 720px);
+  }
+
+  .hmc-page-hero--align-left .hmc-page-hero__inner {
+    justify-content: flex-start;
+    text-align: start;
+  }
+
+  .hmc-page-hero--align-center .hmc-page-hero__inner {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .hmc-page-hero--align-center .hmc-page-hero__content {
+    margin-inline: auto;
+  }
+
+  .hmc-page-hero--align-right .hmc-page-hero__inner {
+    justify-content: flex-end;
+    text-align: end;
+  }
+
+  .hmc-page-hero--align-right .hmc-page-hero__content {
+    margin-inline-start: auto;
+  }
+
+  .hmc-page-hero__heading {
+    margin: 0;
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: var(--hmc-letter-display, 0.12em);
+    text-transform: uppercase;
+    color: var(--hmc-white, #fff);
+  }
+
+  .hmc-page-hero--natural .hmc-page-hero__content {
+    width: min(100%, 56rem);
+  }
+
+  .hmc-page-hero--natural .hmc-page-hero__heading {
+    font-size: clamp(1.5rem, 3.2vw, 2.375rem);
+    line-height: 1.15;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  .hmc-page-hero--warranty .hmc-page-hero__heading,
+  .hmc-page-hero--policy .hmc-page-hero__heading {
+    font-size: clamp(2.4rem, 4vw, 3.8rem);
+    line-height: 1.75;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  .hmc-page-hero--warranty .hmc-page-hero__inner,
+  .hmc-page-hero--policy .hmc-page-hero__inner {
+    min-height: 0;
+  }
+
+  .hmc-page-hero__subheading {
+    margin: 0.85rem 0 0;
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    line-height: 1.5;
+    opacity: 0.92;
+  }
+
+  .hmc-page-hero .hmc-wave {
+    position: relative;
+    z-index: 3;
+    margin-top: auto;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-page-hero.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--page-hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.hmc-page-hero.settings.header_content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hmc-page-hero.settings.heading",
+      "default": "About HMC Knives"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "t:sections.hmc-page-hero.settings.subheading",
+      "default": "Precision-made custom knives from Erie, Pennsylvania"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.background.header"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:sections.hmc.common.background.background_image"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.hmc.common.background.background_image_info"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "t:sections.hmc.common.background.overlay_color",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "t:sections.hmc.common.background.overlay_opacity",
+      "default": 45
+    },
+    {
+      "type": "checkbox",
+      "id": "use_gradient_overlay",
+      "label": "t:sections.hmc-page-hero.settings.use_gradient_overlay",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "overlay_color_end",
+      "label": "t:sections.hmc-page-hero.settings.overlay_color_end",
+      "default": "#556a69"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.layout.header"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:sections.hmc.common.layout.text_alignment",
+      "options": [
+        { "value": "left", "label": "t:sections.hmc.common.layout.left" },
+        { "value": "center", "label": "t:sections.hmc.common.layout.center" },
+        { "value": "right", "label": "t:sections.hmc.common.layout.right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "uppercase_heading",
+      "label": "t:sections.hmc-page-hero.settings.uppercase_heading",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "show_on",
+      "label": "t:sections.hmc-page-hero.settings.show_on",
+      "options": [
+        { "value": "auto", "label": "t:sections.hmc-page-hero.settings.show_on_auto" },
+        { "value": "about", "label": "t:sections.hmc-page-hero.settings.show_on_about" },
+        { "value": "warranty", "label": "t:sections.hmc-page-hero.settings.show_on_warranty" },
+        { "value": "policy", "label": "t:sections.hmc-page-hero.settings.show_on_policy" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "min": 200,
+      "max": 600,
+      "step": 20,
+      "unit": "px",
+      "label": "t:sections.hmc-page-hero.settings.min_height",
+      "default": 320
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wave_bottom",
+      "label": "t:sections.hmc-page-hero.settings.show_wave_bottom",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "wave_style",
+      "label": "t:sections.hmc-page-hero.settings.wave_style",
+      "options": [
+        { "value": "simple", "label": "t:sections.hmc-page-hero.settings.wave_simple" },
+        { "value": "mirrored", "label": "t:sections.hmc-page-hero.settings.wave_mirrored" }
+      ],
+      "default": "simple"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-page-hero.name"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,374 @@
+<section
+  id="HmcIconCards-{{ section.id }}"
+  class="hmc-icon-cards section-{{ section.id }}-padding"
+  style="
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --hmc-icon-circle: {{ section.settings.icon_circle_color }};
+  "
+>
+  <div class="hmc-page-width">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="hmc-icon-cards__heading">{{ section.settings.heading | escape }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.subheading != blank -%}
+      <p class="hmc-icon-cards__subheading">{{ section.settings.subheading | escape }}</p>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="hmc-icon-cards__grid">
+        {%- for block in section.blocks -%}
+          <div class="hmc-icon-cards__card" {{ block.shopify_attributes }}>
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}" class="hmc-icon-cards__link">
+            {%- else -%}
+              <div class="hmc-icon-cards__link">
+            {%- endif -%}
+
+            <div class="hmc-icon-cards__icon-wrap" aria-hidden="true">
+              {%- if block.settings.icon != blank -%}
+                {%- liquid
+                  assign img_alt = block.settings.title | escape
+                -%}
+                {{
+                  block.settings.icon
+                  | image_url: width: 120
+                  | image_tag:
+                    loading: 'lazy',
+                    alt: img_alt,
+                    width: 64,
+                    height: 64,
+                    class: 'hmc-icon-cards__icon'
+                }}
+              {%- elsif block.settings.icon_snippet == 'icon-academic-cap' -%}
+                {% render 'icon-academic-cap' %}
+              {%- elsif block.settings.icon_snippet == 'icon-pencil-rule' -%}
+                {% render 'icon-pencil-rule' %}
+              {%- elsif block.settings.icon_snippet == 'icon-email-open' -%}
+                {% render 'icon-email-open' %}
+              {%- else -%}
+                <span class="hmc-icon-cards__icon-placeholder"></span>
+              {%- endif -%}
+            </div>
+
+            {%- if block.settings.title != blank -%}
+              <h3 class="hmc-icon-cards__title">{{ block.settings.title | escape }}</h3>
+            {%- endif -%}
+
+            {%- if block.settings.text != blank -%}
+              <p class="hmc-icon-cards__text">{{ block.settings.text | escape }}</p>
+            {%- endif -%}
+
+            {%- if block.settings.link != blank -%}
+              </a>
+            {%- else -%}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .hmc-icon-cards {
+    background: var(--hmc-offwhite, #f7f7f7);
+    padding-top: calc(var(--hmc-section-padding-top, 36px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 36px) * 0.75);
+    overflow: visible;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-icon-cards {
+      padding-top: var(--hmc-section-padding-top, 36px);
+      padding-bottom: var(--hmc-section-padding-bottom, 36px);
+    }
+  }
+
+  .hmc-icon-cards__heading {
+    margin: 0 0 0.5rem;
+    text-align: center;
+    font-size: clamp(1.85rem, 3.5vw, 2.4rem);
+    font-weight: 700;
+    color: var(--hmc-black, #0a0a0a);
+  }
+
+  .hmc-icon-cards__subheading {
+    margin: 0 0 1.25rem;
+    text-align: center;
+    font-size: clamp(1.15rem, 2vw, 1.35rem);
+    color: var(--hmc-muted, rgba(10, 10, 10, 0.75));
+  }
+
+  .hmc-icon-cards__grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+    padding-top: 2.75rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-icon-cards__grid {
+      grid-template-columns: repeat(3, minmax(0, 32rem));
+      gap: 2rem;
+      justify-content: center;
+    }
+  }
+
+  .hmc-icon-cards__card {
+    position: relative;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .hmc-icon-cards__link {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+    padding: 3.5rem 1.5rem 1.85rem;
+    border-radius: var(--hmc-radius, 8px);
+    background: var(--hmc-white, #fff);
+    box-shadow: var(--hmc-shadow, 0 4px 18px rgba(0, 0, 0, 0.08));
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .hmc-icon-cards__link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .hmc-icon-cards__link:focus-visible {
+    outline: 2px solid var(--hmc-accent, #3d342c);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hmc-icon-cards__link {
+      transition: none;
+    }
+
+    .hmc-icon-cards__link:hover {
+      transform: none;
+    }
+  }
+
+  .hmc-icon-cards__icon-wrap {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: 50%;
+    background: var(--hmc-icon-circle, var(--hmc-accent, #3d342c));
+    color: var(--hmc-white, #fff);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  }
+
+  .hmc-icon-cards__icon-wrap svg {
+    width: 2.4rem;
+    height: 2.4rem;
+    fill: currentColor;
+  }
+
+  .hmc-icon-cards__icon-wrap svg path {
+    fill: currentColor;
+  }
+
+  .hmc-icon-cards__icon {
+    width: 2.4rem;
+    height: 2.4rem;
+    object-fit: contain;
+    aspect-ratio: 1;
+  }
+
+  .hmc-icon-cards__icon-placeholder {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.35);
+  }
+
+  .hmc-icon-cards__title {
+    margin: 0 0 0.95rem;
+    padding-bottom: 0.6rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--hmc-black, #0a0a0a);
+    border-bottom: 2px dotted rgba(10, 10, 10, 0.35);
+  }
+
+  .hmc-icon-cards__text {
+    margin: 0;
+    font-size: 1.2rem;
+    line-height: 1.55;
+    color: var(--hmc-muted, rgba(10, 10, 10, 0.78));
+    overflow-wrap: break-word;
+    min-width: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-icon-cards__heading {
+      font-size: 2.6rem;
+    }
+
+    .hmc-icon-cards__subheading {
+      font-size: 1.5rem;
+    }
+
+    .hmc-icon-cards__title {
+      font-size: 1.85rem;
+    }
+
+    .hmc-icon-cards__text {
+      font-size: 1.55rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-icon-cards.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--icon-cards",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hmc-icon-cards.settings.heading",
+      "default": "New Here?"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "t:sections.hmc-icon-cards.settings.subheading",
+      "default": "Here's what to do."
+    },
+    {
+      "type": "color",
+      "id": "icon_circle_color",
+      "label": "t:sections.hmc-icon-cards.settings.icon_circle_color",
+      "default": "#3d342c"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "t:sections.hmc-icon-cards.blocks.card.name",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon_snippet",
+          "label": "t:sections.hmc-icon-cards.blocks.card.settings.icon_snippet",
+          "options": [
+            {
+              "value": "icon-academic-cap",
+              "label": "t:sections.hmc-icon-cards.blocks.card.settings.icon_snippet_academic"
+            },
+            {
+              "value": "icon-pencil-rule",
+              "label": "t:sections.hmc-icon-cards.blocks.card.settings.icon_snippet_pencil"
+            },
+            {
+              "value": "icon-email-open",
+              "label": "t:sections.hmc-icon-cards.blocks.card.settings.icon_snippet_email"
+            }
+          ],
+          "default": "icon-academic-cap"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "t:sections.hmc-icon-cards.blocks.card.settings.icon"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.hmc-icon-cards.blocks.card.settings.title",
+          "default": "Learn"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.hmc-icon-cards.blocks.card.settings.text",
+          "default": "Discover invaluable tips, techniques, and take your everyday skills to new heights"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.hmc-icon-cards.blocks.card.settings.link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-icon-cards.name",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "icon_snippet": "icon-academic-cap",
+            "title": "Learn",
+            "text": "Discover invaluable tips, techniques, and take your everyday skills to new heights"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "icon_snippet": "icon-pencil-rule",
+            "title": "Check Out All Our Designs",
+            "text": "Visit our shop or gallery, and get inspired"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "icon_snippet": "icon-email-open",
+            "title": "Get Weekly Tips",
+            "text": "Join our community and receive FREE weekly tips."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

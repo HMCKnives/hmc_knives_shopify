@@ -1,0 +1,526 @@
+{% doc %}
+  Knife Spa / Warranty page: numbered instructions, printable note form, and ship-to address.
+{% enddoc %}
+
+{%- liquid
+  assign is_warranty_page = false
+  if page.handle == 'warranty' or page.handle == 'knife-spa' or page.handle == 'knife-spa-warranty' or template.suffix == 'warranty'
+    assign is_warranty_page = true
+  endif
+  if request.path contains '/pages/warranty' or request.path contains '/pages/knife-spa'
+    assign is_warranty_page = true
+  endif
+
+  assign form_id = 'HmcWarrantyForm-' | append: section.id
+  assign button_text = section.settings.button_label
+  if button_text == blank
+    assign button_text = 'hmc.warranty.send' | t
+  endif
+-%}
+
+{%- if is_warranty_page -%}
+<section
+  id="HmcWarrantySteps-{{ section.id }}"
+  class="hmc-warranty-steps"
+  style="
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="hmc-page-width hmc-warranty-steps__inner">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="hmc-warranty-steps__heading">{{ section.settings.heading | escape }}</h2>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <ol class="hmc-warranty-steps__list">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'step' -%}
+              <li class="hmc-warranty-steps__item" {{ block.shopify_attributes }}>
+                {%- if block.settings.title != blank -%}
+                  <h3 class="hmc-warranty-steps__title">{{ block.settings.title | escape }}</h3>
+                {%- endif -%}
+                {%- if block.settings.text != blank -%}
+                  <div class="hmc-warranty-steps__text rte">
+                    {{ block.settings.text }}
+                  </div>
+                {%- endif -%}
+              </li>
+
+            {%- when 'note_form' -%}
+              <li class="hmc-warranty-steps__item hmc-warranty-steps__item--form" {{ block.shopify_attributes }}>
+                {%- if block.settings.title != blank -%}
+                  <h3 class="hmc-warranty-steps__title">{{ block.settings.title | escape }}</h3>
+                {%- endif -%}
+
+                {%- if block.settings.important != blank -%}
+                  <blockquote class="hmc-warranty-steps__quote">
+                    {{ block.settings.important | escape }}
+                  </blockquote>
+                {%- endif -%}
+
+                {%- form 'contact', id: form_id, class: 'hmc-warranty-steps__form' -%}
+                  {%- if form.posted_successfully? -%}
+                    <p class="hmc-warranty-steps__status hmc-warranty-steps__status--success" role="status" tabindex="-1">
+                      {{ 'hmc.warranty.success' | t }}
+                    </p>
+                  {%- else -%}
+                    {%- if form.errors -%}
+                      <div class="hmc-warranty-steps__status hmc-warranty-steps__status--error" role="alert" tabindex="-1">
+                        <p>{{ 'hmc.warranty.error' | t }}</p>
+                        <ul class="hmc-warranty-steps__errors" role="list">
+                          {%- for field in form.errors -%}
+                            <li>
+                              {{ form.errors.translated_fields[field] | capitalize }}
+                              {{ form.errors.messages[field] }}
+                            </li>
+                          {%- endfor -%}
+                        </ul>
+                      </div>
+                    {%- endif -%}
+
+                    <input type="hidden" name="contact[tags]" value="warranty">
+                    <input type="hidden" name="contact[subject]" value="{{ 'hmc.warranty.subject' | t }}">
+
+                    <div class="hmc-warranty-steps__field">
+                      <label class="visually-hidden" for="HmcWarrantyName-{{ section.id }}">
+                        {{ 'hmc.warranty.full_name' | t }}
+                        <span>({{ 'hmc.accessibility.required' | t }})</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="HmcWarrantyName-{{ section.id }}"
+                        class="hmc-warranty-steps__input"
+                        name="contact[name]"
+                        autocomplete="name"
+                        placeholder="{{ 'hmc.warranty.full_name' | t }}"
+                        value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+                        aria-required="true"
+                        required
+                      >
+                    </div>
+
+                    <div class="hmc-warranty-steps__field">
+                      <label class="visually-hidden" for="HmcWarrantyEmail-{{ section.id }}">
+                        {{ 'hmc.warranty.email' | t }}
+                        <span>({{ 'hmc.accessibility.required' | t }})</span>
+                      </label>
+                      <input
+                        type="email"
+                        id="HmcWarrantyEmail-{{ section.id }}"
+                        class="hmc-warranty-steps__input"
+                        name="contact[email]"
+                        autocomplete="email"
+                        spellcheck="false"
+                        autocapitalize="off"
+                        placeholder="{{ 'hmc.warranty.email' | t }}"
+                        value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+                        aria-required="true"
+                        {% if form.errors contains 'email' %}
+                          aria-invalid="true"
+                        {% endif %}
+                        required
+                      >
+                    </div>
+
+                    <div class="hmc-warranty-steps__field">
+                      <label class="visually-hidden" for="HmcWarrantyAddress-{{ section.id }}">
+                        {{ 'hmc.warranty.return_address' | t }}
+                        <span>({{ 'hmc.accessibility.required' | t }})</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="HmcWarrantyAddress-{{ section.id }}"
+                        class="hmc-warranty-steps__input"
+                        name="contact[returning_address]"
+                        autocomplete="street-address"
+                        placeholder="{{ 'hmc.warranty.return_address' | t }}"
+                        value="{{ form.returning_address }}"
+                        aria-required="true"
+                        required
+                      >
+                    </div>
+
+                    <div class="hmc-warranty-steps__field">
+                      <label class="visually-hidden" for="HmcWarrantyDate-{{ section.id }}">
+                        {{ 'hmc.warranty.date' | t }}
+                        <span>({{ 'hmc.accessibility.required' | t }})</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="HmcWarrantyDate-{{ section.id }}"
+                        class="hmc-warranty-steps__input"
+                        name="contact[date]"
+                        autocomplete="off"
+                        placeholder="{{ 'hmc.warranty.date' | t }}"
+                        value="{{ form.date }}"
+                        aria-required="true"
+                        required
+                      >
+                    </div>
+
+                    <div class="hmc-warranty-steps__field">
+                      <label class="visually-hidden" for="HmcWarrantyDefect-{{ section.id }}">
+                        {{ 'hmc.warranty.defect' | t }}
+                        <span>({{ 'hmc.accessibility.required' | t }})</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="HmcWarrantyDefect-{{ section.id }}"
+                        class="hmc-warranty-steps__input"
+                        name="contact[body]"
+                        placeholder="{{ 'hmc.warranty.defect' | t }}"
+                        value="{{ form.body }}"
+                        aria-required="true"
+                        required
+                      >
+                    </div>
+
+                    <button type="submit" class="hmc-warranty-steps__submit">
+                      <span>{{ button_text | escape }}</span>
+                      <svg
+                        class="hmc-warranty-steps__submit-icon"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        width="16"
+                        height="16"
+                        aria-hidden="true"
+                        focusable="false"
+                      >
+                        <path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"></path>
+                      </svg>
+                    </button>
+                  {%- endif -%}
+                {%- endform -%}
+              </li>
+
+            {%- when 'ship' -%}
+              <li class="hmc-warranty-steps__item" {{ block.shopify_attributes }}>
+                {%- if block.settings.title != blank -%}
+                  <h3 class="hmc-warranty-steps__title">{{ block.settings.title | escape }}</h3>
+                {%- endif -%}
+                {%- if block.settings.address != blank -%}
+                  <address class="hmc-warranty-steps__address">
+                    {{ block.settings.address | newline_to_br }}
+                  </address>
+                {%- endif -%}
+                {%- if block.settings.text != blank -%}
+                  <div class="hmc-warranty-steps__text rte">
+                    {{ block.settings.text }}
+                  </div>
+                {%- endif -%}
+              </li>
+          {%- endcase -%}
+        {%- endfor -%}
+      </ol>
+    {%- endif -%}
+  </div>
+</section>
+{%- endif -%}
+
+{% stylesheet %}
+  .hmc-warranty-steps {
+    background: var(--hmc-white, #fff);
+    padding-top: calc(var(--hmc-section-padding-top, 24px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 48px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-warranty-steps {
+      padding-top: var(--hmc-section-padding-top, 24px);
+      padding-bottom: var(--hmc-section-padding-bottom, 48px);
+    }
+  }
+
+  .hmc-warranty-steps__inner {
+    max-width: 108rem;
+  }
+
+  .hmc-warranty-steps__heading {
+    margin: 0 0 2.4rem;
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 2.8rem;
+    color: color-mix(in srgb, var(--hmc-black, #0a0a0a) 85%, transparent);
+  }
+
+  .hmc-warranty-steps__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 2.4rem;
+  }
+
+  .hmc-warranty-steps__item {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .hmc-warranty-steps__heading,
+  .hmc-warranty-steps__title,
+  .hmc-warranty-steps__text,
+  .hmc-warranty-steps__quote,
+  .hmc-warranty-steps__address {
+    letter-spacing: normal;
+  }
+
+  .hmc-warranty-steps__title {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 2.8rem;
+    color: color-mix(in srgb, var(--hmc-black, #0a0a0a) 85%, transparent);
+  }
+
+  .hmc-warranty-steps__text {
+    font-size: 1.6rem;
+    line-height: 2.8rem;
+    color: color-mix(in srgb, var(--hmc-black, #0a0a0a) 85%, transparent);
+  }
+
+  .hmc-warranty-steps__text p {
+    margin: 0;
+  }
+
+  .hmc-warranty-steps__text a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .hmc-warranty-steps__quote {
+    margin: 0.4rem 0 0.8rem;
+    padding: 0.5rem 0 0.5rem 2rem;
+    border: 0;
+    border-inline-start: 2px solid #ccc;
+    font-size: 1.6rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 2.8rem;
+    color: color-mix(in srgb, var(--hmc-black, #0a0a0a) 85%, transparent);
+  }
+
+  .hmc-warranty-steps__form {
+    display: grid;
+    gap: 1rem;
+    margin-top: 0.8rem;
+    padding: 2.4rem;
+    background: var(--hmc-white, #fff);
+  }
+
+  .hmc-warranty-steps__field {
+    display: grid;
+  }
+
+  .hmc-warranty-steps__input {
+    width: 100%;
+    height: 4.8rem;
+    min-height: 4.8rem;
+    margin: 0;
+    padding: 1.6rem;
+    border: 0;
+    box-shadow: none;
+    border-radius: 3px;
+    background: #f6f6f6;
+    color: var(--hmc-black, #0a0a0a);
+    font-family: inherit;
+    font-size: 1.4rem;
+    line-height: 1.4;
+    letter-spacing: normal;
+  }
+
+  .hmc-warranty-steps__input::placeholder {
+    color: color-mix(in srgb, var(--hmc-black, #0a0a0a) 55%, transparent);
+  }
+
+  .hmc-warranty-steps__input:focus-visible {
+    outline: 2px solid var(--hmc-accent, #383224);
+    outline-offset: 2px;
+  }
+
+  .hmc-warranty-steps__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    width: fit-content;
+    min-width: 24.7rem;
+    min-height: 5.1rem;
+    margin: 0.4rem 0 0;
+    padding: 1.2rem 2rem;
+    border: 0;
+    border-radius: 0;
+    background: var(--hmc-accent, #383224);
+    color: var(--hmc-white, #fff);
+    font-family: inherit;
+    font-size: 1.6rem;
+    font-weight: 400;
+    letter-spacing: 0.2rem;
+    line-height: 1.2;
+    cursor: pointer;
+  }
+
+  .hmc-warranty-steps__submit:hover {
+    opacity: 0.92;
+  }
+
+  .hmc-warranty-steps__submit:focus-visible {
+    outline: 2px solid var(--hmc-accent, #383224);
+    outline-offset: 3px;
+  }
+
+  .hmc-warranty-steps__submit-icon {
+    flex-shrink: 0;
+  }
+
+  .hmc-warranty-steps__address {
+    font-style: normal;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 2.8rem;
+    color: color-mix(in srgb, var(--hmc-black, #0a0a0a) 85%, transparent);
+  }
+
+  .hmc-warranty-steps__status {
+    margin: 0 0 1rem;
+    font-size: 1.6rem;
+    line-height: 2.8rem;
+  }
+
+  .hmc-warranty-steps__status--success {
+    color: var(--hmc-black, #0a0a0a);
+  }
+
+  .hmc-warranty-steps__status--error {
+    color: var(--hmc-stock, #c41e1e);
+  }
+
+  .hmc-warranty-steps__errors {
+    margin: 0.8rem 0 0;
+    padding-inline-start: 1.6rem;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-warranty-steps.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--warranty",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hmc-warranty-steps.settings.heading",
+      "default": "Here's How to Redeem Your Warranty."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.hmc-warranty-steps.settings.button_label",
+      "default": "Send To HMC Knives"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "t:sections.hmc-warranty-steps.blocks.step.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.hmc-warranty-steps.blocks.step.settings.title",
+          "default": "1. Contact Us:"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:sections.hmc-warranty-steps.blocks.step.settings.text",
+          "default": "<p>Reach out to us at info@hmcknives.com to initiate the Warranty process.</p>"
+        }
+      ]
+    },
+    {
+      "type": "note_form",
+      "name": "t:sections.hmc-warranty-steps.blocks.note_form.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.hmc-warranty-steps.blocks.note_form.settings.title",
+          "default": "3. Print the note"
+        },
+        {
+          "type": "textarea",
+          "id": "important",
+          "label": "t:sections.hmc-warranty-steps.blocks.note_form.settings.important",
+          "default": "IMPORTANT: Add a note with below details to send along with your knife."
+        }
+      ]
+    },
+    {
+      "type": "ship",
+      "name": "t:sections.hmc-warranty-steps.blocks.ship.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.hmc-warranty-steps.blocks.ship.settings.title",
+          "default": "4. Ship Your Knife: Send your package to"
+        },
+        {
+          "type": "textarea",
+          "id": "address",
+          "label": "t:sections.hmc-warranty-steps.blocks.ship.settings.address",
+          "default": "HMC MFG\n3527 Sterrettania RD\nErie, PA 16506."
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:sections.hmc-warranty-steps.blocks.ship.settings.text",
+          "default": "<p>We recommend using a trackable shipping method for your peace of mind.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-warranty-steps.name",
+      "blocks": [
+        { "type": "step" },
+        { "type": "note_form" },
+        { "type": "ship" }
+      ]
+    }
+  ]
+}
+{% endschema %}

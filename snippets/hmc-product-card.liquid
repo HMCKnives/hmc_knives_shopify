@@ -1,0 +1,187 @@
+{% doc %}
+  Collection product card: photo, red brush stock banner, centered title, and short description.
+
+  @param {object} product - Product Liquid object (required)
+  @param {boolean} [show_excerpt] - Show truncated product description
+  @param {boolean} [eager] - Load the product image immediately (first cards)
+
+  @example
+  {% render 'hmc-product-card', product: product, show_excerpt: true %}
+{% enddoc %}
+
+{%- liquid
+  assign card_product = product
+  assign show_card_excerpt = show_excerpt | default: false
+  assign load_eager = eager | default: false
+-%}
+
+{%- if card_product and card_product != empty -%}
+  {%- liquid
+    assign title_id = 'HmcProductTitle-' | append: card_product.id
+    assign badge_id = 'HmcProductStock-' | append: card_product.id
+
+    assign inventory_qty = 0
+    assign tracks_inventory = false
+    for variant in card_product.variants
+      assign inventory_qty = inventory_qty | plus: variant.inventory_quantity
+      if variant.inventory_management != blank
+        assign tracks_inventory = true
+      endif
+    endfor
+
+    assign in_stock = card_product.available
+    if tracks_inventory
+      if inventory_qty > 0
+        assign in_stock = true
+      else
+        assign in_stock = false
+      endif
+    endif
+
+    if in_stock
+      assign badge_text = 'hmc.general.in_stock' | t
+    else
+      assign badge_text = 'hmc.general.out_of_stock' | t
+    endif
+
+    assign image_loading = 'lazy'
+    if load_eager
+      assign image_loading = 'eager'
+    endif
+  -%}
+
+  <article class="hmc-product-card" aria-labelledby="{{ title_id }} {{ badge_id }}">
+    <a href="{{ card_product.url }}" class="hmc-product-card__link">
+      <div class="hmc-product-card__media">
+        {%- if card_product.featured_media -%}
+          {{
+            card_product.featured_media
+            | image_url: width: 800
+            | image_tag:
+              loading: image_loading,
+              alt: '',
+              widths: '320, 480, 640, 800',
+              sizes: '(min-width: 990px) 320px, (min-width: 750px) 45vw, 90vw',
+              class: 'hmc-product-card__image'
+          }}
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'hmc-product-card__image hmc-product-card__placeholder' }}
+        {%- endif -%}
+        <span
+          id="{{ badge_id }}"
+          class="hmc-product-card__badge"
+          style="--hmc-badge-mask: url({{ 'hmc-brush-highlight.svg' | asset_url | json }});"
+        >
+          {{ badge_text }}
+        </span>
+      </div>
+      <div class="hmc-product-card__body">
+        <h2 id="{{ title_id }}" class="hmc-product-card__title">{{ card_product.title | escape }}</h2>
+        {%- if show_card_excerpt and card_product.description != blank -%}
+          <p class="hmc-product-card__excerpt">
+            {{ card_product.description | strip_html | truncate: 80 }}
+          </p>
+        {%- endif -%}
+      </div>
+    </a>
+  </article>
+{%- endif -%}
+
+{% stylesheet %}
+  .hmc-product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-width: 0;
+    overflow-wrap: break-word;
+    background: var(--hmc-white, #fff);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  .hmc-product-card__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .hmc-product-card__link:focus-visible {
+    outline: 2px solid var(--hmc-accent, #383224);
+    outline-offset: 3px;
+  }
+
+  .hmc-product-card__media {
+    position: relative;
+    aspect-ratio: 319 / 220;
+    overflow: hidden;
+    background: var(--hmc-charcoal, #1a1a1a);
+  }
+
+  .hmc-product-card__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hmc-product-card__badge {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    z-index: 1;
+    isolation: isolate;
+    display: inline-block;
+    max-width: calc(100% - 4rem);
+    color: color-mix(in srgb, var(--hmc-white, #fff) 85%, transparent);
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 2.8rem;
+    letter-spacing: normal;
+  }
+
+  .hmc-product-card__badge::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0 -0.24rem;
+    background-color: var(--hmc-stock, #bb2121);
+    -webkit-mask-image: var(--hmc-badge-mask);
+    mask-image: var(--hmc-badge-mask);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+  }
+
+  .hmc-product-card__body {
+    display: flex;
+    flex-direction: column;
+    padding: 0 1.3rem 1.5rem 1.8rem;
+  }
+
+  .hmc-product-card__title {
+    margin: 0 0 1rem;
+    font-size: 1.9rem;
+    font-weight: 400;
+    line-height: 2.66rem;
+    letter-spacing: normal;
+    text-align: center;
+    color: var(--hmc-black, #0a0a0a);
+  }
+
+  .hmc-product-card__excerpt {
+    margin: 0;
+    padding: 0 0.5rem;
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 2.4rem;
+    letter-spacing: normal;
+    text-align: start;
+    color: color-mix(in srgb, var(--hmc-black, #0a0a0a) 85%, transparent);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+{% endstylesheet %}

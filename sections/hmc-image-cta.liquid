@@ -1,0 +1,333 @@
+{%- liquid
+  assign overlay_alpha = section.settings.overlay_opacity | default: 85 | times: 0.01
+  assign overlay_color = section.settings.overlay_color | default: '#435656'
+  assign overlay_start = '#000000' | color_modify: 'alpha', overlay_alpha
+  assign overlay_end = overlay_color | color_modify: 'alpha', overlay_alpha
+  assign image_cta_bg_alt = section.settings.background_image.alt | default: section.settings.heading | escape
+-%}
+
+<section
+  id="HmcImageCta-{{ section.id }}"
+  class="hmc-image-cta hmc-media-section hmc-image-cta--align-{{ section.settings.text_alignment }} section-{{ section.id }}-padding"
+  style="
+    --hmc-overlay-start: {{ overlay_start }};
+    --hmc-overlay-end: {{ overlay_end }};
+    --hmc-image-cta-min-height: {{ section.settings.min_height }}px;
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="hmc-media-section__bg hmc-image-cta__bg">
+    {% render 'hmc-bg-image',
+      image: section.settings.background_image,
+      alt: image_cta_bg_alt,
+      class: 'hmc-image-cta__bg-image'
+    %}
+  </div>
+
+  <div class="hmc-media-section__overlay hmc-media-section__overlay--gradient" aria-hidden="true"></div>
+
+  {%- if section.settings.show_wave_top -%}
+    <div class="hmc-image-cta__wave hmc-image-cta__wave--top">
+      {% render 'hmc-wave', variant: 'rounded', fill: section.settings.wave_color %}
+    </div>
+  {%- endif -%}
+
+  <div class="hmc-media-section__inner hmc-image-cta__inner hmc-page-width">
+    <div class="hmc-image-cta__content">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="hmc-image-cta__heading">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.button_label != blank -%}
+        <div class="hmc-image-cta__cta">
+          <a
+            {% if section.settings.button_link != blank %}
+              href="{{ section.settings.button_link }}"
+            {% else %}
+              role="link" aria-disabled="true"
+            {% endif %}
+            class="hmc-btn hmc-image-cta__button"
+          >
+            <span class="hmc-image-cta__button-text">{{ section.settings.button_label | escape }}</span>
+
+            {%- if section.settings.show_button_arrow -%}
+              <span class="hmc-image-cta__button-icon" aria-hidden="true">
+                <svg viewBox="0 0 192 512" fill="currentColor" focusable="false">
+                  <path
+                    d="M166.9 264.5l-117.8 116c-4.7 4.7-12.3 4.7-17 0l-7.1-7.1c-4.7-4.7-4.7-12.3 0-17L127.3 256 25.1 155.6c-4.7-4.7-4.7-12.3 0-17l7.1-7.1c4.7-4.7 12.3-4.7 17 0l117.8 116c4.6 4.7 4.6 12.3-.1 17z"
+                  />
+                </svg>
+              </span>
+            {%- endif -%}
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .hmc-image-cta {
+    display: flex;
+    align-items: center;
+    min-height: var(--hmc-image-cta-min-height, 360px);
+    color: var(--hmc-white, #fff);
+    background: #0a0a0a;
+    padding-top: calc(var(--hmc-section-padding-top, 36px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 36px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-image-cta {
+      padding-top: var(--hmc-section-padding-top, 36px);
+      padding-bottom: var(--hmc-section-padding-bottom, 36px);
+    }
+  }
+
+  .hmc-image-cta__bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hmc-image-cta__wave {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    line-height: 0;
+    pointer-events: none;
+  }
+
+  .hmc-image-cta__wave--top {
+    top: 0;
+  }
+
+  .hmc-image-cta__inner {
+    width: 100%;
+    display: flex;
+    min-height: inherit;
+    align-items: center;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-image-cta__inner {
+      padding-top: 7.8rem;
+      padding-bottom: 5.7rem;
+    }
+  }
+
+  .hmc-image-cta--align-center .hmc-image-cta__inner {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .hmc-image-cta--align-left .hmc-image-cta__inner {
+    justify-content: flex-start;
+    text-align: start;
+  }
+
+  .hmc-image-cta__heading {
+    margin: 0;
+    color: var(--hmc-white, #fff);
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1.3;
+    overflow-wrap: break-word;
+    min-width: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-image-cta__heading {
+      font-size: 5rem;
+    }
+  }
+
+  .hmc-image-cta__cta {
+    margin-top: 6rem;
+  }
+
+  .hmc-image-cta__cta .hmc-btn {
+    gap: 1.5rem;
+    padding: 0.8rem 1rem 0.8rem 2rem;
+    font-size: 1.5rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    line-height: 1.2;
+    border: 2.67px solid var(--hmc-white, #fff);
+    border-radius: 92px;
+    background: var(--hmc-accent, #383224);
+    color: var(--hmc-white, #fff);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-image-cta__cta .hmc-btn {
+      font-size: 1.6rem;
+    }
+  }
+
+  .hmc-image-cta__cta .hmc-btn:hover {
+    background: #2b2619;
+  }
+
+  .hmc-image-cta__button-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 4.1rem;
+    height: 4.1rem;
+    border: 0.67px solid rgba(255, 255, 255, 0.45);
+    border-radius: 100px;
+  }
+
+  .hmc-image-cta__button-icon svg {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+
+  .hmc-image-cta__cta a:focus-visible {
+    outline: 2px solid var(--hmc-white, #fff);
+    outline-offset: 2px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-image-cta.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--image-cta",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hmc-image-cta.settings.heading",
+      "default": "Get Your Knife Today"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.hmc-image-cta.settings.button_label",
+      "default": "Check Out The Shop Here"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.hmc-image-cta.settings.button_link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button_arrow",
+      "label": "t:sections.hmc-image-cta.settings.show_button_arrow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.background.header"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:sections.hmc.common.background.background_image"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.hmc.common.background.background_image_info"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "t:sections.hmc.common.background.overlay_color",
+      "default": "#435656"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "t:sections.hmc.common.background.overlay_opacity",
+      "default": 85
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "min": 240,
+      "max": 700,
+      "step": 20,
+      "unit": "px",
+      "label": "t:sections.hmc-image-cta.settings.min_height",
+      "default": 320
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.waves.header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wave_top",
+      "label": "t:sections.hmc.common.waves.show_wave_top",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "wave_color",
+      "label": "t:sections.hmc.common.waves.wave_color",
+      "info": "t:sections.hmc.common.waves.wave_color_info",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.layout.header"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:sections.hmc.common.layout.text_alignment",
+      "options": [
+        { "value": "left", "label": "t:sections.hmc.common.layout.left" },
+        { "value": "center", "label": "t:sections.hmc.common.layout.center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-image-cta.name",
+      "settings": {
+        "heading": "Get Your Knife Today",
+        "button_label": "Check Out The Shop Here"
+      }
+    }
+  ]
+}
+{% endschema %}

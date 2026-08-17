@@ -1,0 +1,161 @@
+{%- liquid
+  assign is_media_page = false
+  if page.handle == 'media'
+    assign is_media_page = true
+  endif
+  assign is_about_page = false
+  if page.handle == 'about-me' or page.handle == 'about' or template.suffix == 'about'
+    assign is_about_page = true
+  endif
+  if request.path contains '/pages/about'
+    assign is_about_page = true
+  endif
+  assign is_warranty_page = false
+  if page.handle == 'warranty' or page.handle == 'knife-spa' or page.handle == 'knife-spa-warranty' or template.suffix == 'warranty'
+    assign is_warranty_page = true
+  endif
+  if request.path contains '/pages/warranty' or request.path contains '/pages/knife-spa'
+    assign is_warranty_page = true
+  endif
+  assign is_policy_page = false
+  if template.suffix == 'policy'
+    assign is_policy_page = true
+  endif
+  if page.handle == 'privacy-policy' or page.handle == 'privacy' or page.handle == 'terms-and-conditions' or page.handle == 'terms-conditions' or page.handle == 'terms' or page.handle == 'shipping-return-policy' or page.handle == 'return-policy' or page.handle == 'shipping-policy'
+    assign is_policy_page = true
+  endif
+  assign show_title = section.settings.show_title
+  if is_media_page or is_about_page or is_warranty_page or is_policy_page
+    assign show_title = false
+  endif
+  assign show_section = false
+  if is_media_page or is_about_page or is_warranty_page or is_policy_page
+    assign show_section = false
+  elsif show_title or page.content != blank
+    assign show_section = true
+  endif
+-%}
+
+{%- if show_section -%}
+<section
+  id="HmcRichtextPage-{{ section.id }}"
+  class="hmc-richtext-page"
+  style="
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="hmc-page-width hmc-richtext-page__inner">
+    {%- if show_title -%}
+      <h1 class="hmc-richtext-page__title">{{ page.title | escape }}</h1>
+    {%- endif -%}
+
+    {%- if page.content != blank -%}
+      <div class="hmc-richtext-page__content rte">
+        {{ page.content }}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+{%- endif -%}
+
+{% stylesheet %}
+  .hmc-richtext-page {
+    background: var(--hmc-white, #fff);
+    padding-top: calc(var(--hmc-section-padding-top, 36px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 36px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-richtext-page {
+      padding-top: var(--hmc-section-padding-top, 36px);
+      padding-bottom: var(--hmc-section-padding-bottom, 36px);
+    }
+  }
+
+  .hmc-richtext-page__inner {
+    max-width: 760px;
+  }
+
+  .hmc-richtext-page__title {
+    margin: 0 0 1.25rem;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 700;
+    color: var(--hmc-black, #0a0a0a);
+  }
+
+  .hmc-richtext-page__content {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--hmc-muted, rgba(10, 10, 10, 0.85));
+  }
+
+  .hmc-richtext-page__content h2,
+  .hmc-richtext-page__content h3,
+  .hmc-richtext-page__content h4 {
+    color: var(--hmc-black, #0a0a0a);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  .hmc-richtext-page__content p {
+    margin: 0 0 1rem;
+  }
+
+  .hmc-richtext-page__content ul,
+  .hmc-richtext-page__content ol {
+    margin: 0 0 1rem;
+    padding-inline-start: 1.25rem;
+  }
+
+  .hmc-richtext-page__content a {
+    color: var(--hmc-black, #0a0a0a);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-richtext-page.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--richtext-page",
+  "enabled_on": {
+    "templates": ["page"]
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "t:sections.hmc-richtext-page.settings.show_title",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-richtext-page.name"
+    }
+  ]
+}
+{% endschema %}

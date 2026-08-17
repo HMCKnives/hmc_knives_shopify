@@ -1,0 +1,450 @@
+{%- liquid
+  assign layout_class = 'hmc-testimonials--grid'
+  if section.settings.layout == 'carousel'
+    assign layout_class = 'hmc-testimonials--carousel'
+  endif
+
+  if section.settings.heading != blank
+    assign carousel_label = section.settings.heading | escape
+  else
+    assign carousel_label = 'hmc.accessibility.testimonials_carousel' | t
+  endif
+
+  assign overlay_alpha = section.settings.overlay_opacity | default: 85 | times: 0.01
+  assign overlay_color = section.settings.overlay_color | default: '#435656'
+  assign overlay_start = '#000000' | color_modify: 'alpha', overlay_alpha
+  assign overlay_end = overlay_color | color_modify: 'alpha', overlay_alpha
+  assign bg_alt = section.settings.background_image.alt | default: section.settings.heading | escape
+-%}
+
+<section
+  id="HmcTestimonials-{{ section.id }}"
+  class="hmc-testimonials hmc-media-section {{ layout_class }} section-{{ section.id }}-padding"
+  style="
+    --hmc-overlay-start: {{ overlay_start }};
+    --hmc-overlay-end: {{ overlay_end }};
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="hmc-media-section__bg">
+    {% render 'hmc-bg-image',
+      image: section.settings.background_image,
+      alt: bg_alt,
+      class: 'hmc-testimonials__bg-image'
+    %}
+  </div>
+
+  <div class="hmc-media-section__overlay hmc-media-section__overlay--gradient" aria-hidden="true"></div>
+
+  {%- if section.settings.show_wave_top -%}
+    <div class="hmc-testimonials__wave hmc-testimonials__wave--top">
+      {% render 'hmc-wave', variant: 'layered', fill: section.settings.wave_color %}
+    </div>
+  {%- endif -%}
+
+  <div class="hmc-media-section__inner hmc-testimonials__inner hmc-page-width">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="hmc-testimonials__heading">{{ section.settings.heading | escape }}</h2>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      {%- if section.settings.layout == 'carousel' -%}
+        <div
+          class="hmc-testimonials__carousel"
+          role="region"
+          aria-roledescription="carousel"
+          aria-label="{{ carousel_label }}"
+        >
+          <div
+            id="HmcTestimonialsTrack-{{ section.id }}"
+            class="hmc-testimonials__track"
+          >
+            {%- for block in section.blocks -%}
+              <blockquote
+                class="hmc-testimonials__card"
+                role="group"
+                aria-roledescription="slide"
+                aria-label="{{ 'accessibility.slide_n_of_total' | t: n: forloop.index, total: section.blocks.size }}"
+                {{ block.shopify_attributes }}
+              >
+                <span class="hmc-testimonials__mark hmc-testimonials__mark--open">
+                  {% render 'hmc-icon-quote' %}
+                </span>
+
+                {%- if block.settings.quote != blank -%}
+                  <p class="hmc-testimonials__quote">{{ block.settings.quote | escape }}</p>
+                {%- endif -%}
+
+                {%- if block.settings.name != blank -%}
+                  <footer class="hmc-testimonials__name">{{ block.settings.name | escape }}</footer>
+                {%- endif -%}
+
+                <span class="hmc-testimonials__mark hmc-testimonials__mark--close">
+                  {% render 'hmc-icon-quote', close: true %}
+                </span>
+              </blockquote>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- else -%}
+        <div class="hmc-testimonials__track">
+          {%- for block in section.blocks -%}
+            <blockquote class="hmc-testimonials__card" {{ block.shopify_attributes }}>
+              <span class="hmc-testimonials__mark hmc-testimonials__mark--open">
+                {% render 'hmc-icon-quote' %}
+              </span>
+
+              {%- if block.settings.quote != blank -%}
+                <p class="hmc-testimonials__quote">{{ block.settings.quote | escape }}</p>
+              {%- endif -%}
+
+              {%- if block.settings.name != blank -%}
+                <footer class="hmc-testimonials__name">{{ block.settings.name | escape }}</footer>
+              {%- endif -%}
+
+              <span class="hmc-testimonials__mark hmc-testimonials__mark--close">
+                {% render 'hmc-icon-quote', close: true %}
+              </span>
+            </blockquote>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+
+  {%- if section.settings.show_wave_bottom -%}
+    <div class="hmc-testimonials__wave hmc-testimonials__wave--bottom">
+      {% render 'hmc-wave', variant: 'layered', fill: section.settings.wave_color %}
+    </div>
+  {%- endif -%}
+</section>
+
+{% stylesheet %}
+  .hmc-testimonials {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: #0a0a0a;
+    color: #fff;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .hmc-testimonials__bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hmc-testimonials__wave {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    line-height: 0;
+    pointer-events: none;
+  }
+
+  .hmc-testimonials__wave--top {
+    top: 0;
+  }
+
+  /* Source path fills from the top of the viewBox. Mirror X on the cap
+     and rotate 180deg on the footer so the fill meets the next section. */
+  .hmc-testimonials__wave--top .hmc-wave svg {
+    transform: scaleX(-1);
+  }
+
+  .hmc-testimonials__wave--bottom {
+    bottom: 0;
+  }
+
+  .hmc-testimonials__wave--bottom .hmc-wave {
+    --hmc-wave-height: 64px;
+  }
+
+  .hmc-testimonials__wave--bottom .hmc-wave svg {
+    transform: scale(-1, -1);
+  }
+
+  @media screen and (max-width: 749px) {
+    .hmc-testimonials__wave--bottom .hmc-wave {
+      --hmc-wave-height: 42px;
+    }
+  }
+
+  .hmc-testimonials__inner {
+    position: relative;
+    z-index: 2;
+    padding-top: calc(52px + var(--hmc-section-padding-top, 36px) * 0.75);
+    padding-bottom: calc(64px + var(--hmc-section-padding-bottom, 36px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-testimonials__inner {
+      padding-top: calc(52px + var(--hmc-section-padding-top, 36px));
+      padding-bottom: calc(64px + var(--hmc-section-padding-bottom, 36px));
+    }
+  }
+
+  .hmc-testimonials__heading {
+    margin: 0 0 3rem;
+    text-align: center;
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1.4;
+    text-transform: capitalize;
+    color: #fff;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-testimonials__heading {
+      margin-bottom: 8rem;
+      font-size: 2.8rem;
+    }
+  }
+
+  .hmc-testimonials--grid .hmc-testimonials__track {
+    display: grid;
+    gap: 2rem 3rem;
+    grid-template-columns: 1fr;
+    max-width: 100rem;
+    margin-inline: auto;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-testimonials--grid .hmc-testimonials__track {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: start;
+    }
+  }
+
+  .hmc-testimonials--carousel .hmc-testimonials__track {
+    display: flex;
+    gap: 2.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 1rem;
+  }
+
+  .hmc-testimonials--carousel .hmc-testimonials__card {
+    flex: 0 0 min(85vw, 32rem);
+    scroll-snap-align: start;
+  }
+
+  /* Side rules with a large radius leave the card open at top and bottom */
+  .hmc-testimonials__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 3rem;
+    border-left: 0.67px solid #fff;
+    border-right: 0.67px solid #fff;
+    border-radius: 30px;
+    background: transparent;
+  }
+
+  .hmc-testimonials__mark {
+    display: block;
+    color: #fff;
+  }
+
+  .hmc-testimonials__mark svg {
+    display: block;
+    width: 4.4rem;
+    height: 3rem;
+  }
+
+  /* Marks overhang the card padding, as on the reference site */
+  .hmc-testimonials__mark--open {
+    width: 4.4rem;
+    margin: -4.2rem 0 2.2rem 0.9rem;
+  }
+
+  .hmc-testimonials__mark--close {
+    margin: 1.2rem 0.9rem -4.2rem auto;
+    width: 4.4rem;
+  }
+
+  .hmc-quote-mark--close {
+    transform: rotate(180deg);
+  }
+
+  .hmc-testimonials__quote {
+    margin: 0;
+    font-size: 1.6rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.85);
+    font-style: normal;
+    overflow-wrap: break-word;
+    min-width: 0;
+  }
+
+  .hmc-testimonials__name {
+    margin-top: 2.4rem;
+    font-size: 1.5rem;
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: 1px;
+    color: #fff;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hmc-testimonials--carousel .hmc-testimonials__track {
+      scroll-behavior: auto;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-testimonials.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--testimonials",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hmc-testimonials.settings.heading",
+      "default": "What They Say"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:sections.hmc-testimonials.settings.layout",
+      "options": [
+        { "value": "grid", "label": "t:sections.hmc-testimonials.settings.layout_grid" },
+        { "value": "carousel", "label": "t:sections.hmc-testimonials.settings.layout_carousel" }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.background.header"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:sections.hmc.common.background.background_image"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "t:sections.hmc.common.background.overlay_color",
+      "default": "#435656"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "t:sections.hmc.common.background.overlay_opacity",
+      "default": 85
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.waves.header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wave_top",
+      "label": "t:sections.hmc.common.waves.show_wave_top",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wave_bottom",
+      "label": "t:sections.hmc.common.waves.show_wave_bottom",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "wave_color",
+      "label": "t:sections.hmc.common.waves.wave_color",
+      "info": "t:sections.hmc.common.waves.wave_color_info",
+      "default": "#f8f8f8"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "t:sections.hmc-testimonials.blocks.testimonial.name",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "t:sections.hmc-testimonials.blocks.testimonial.settings.quote",
+          "default": "Dudes got integrity, family value, sportsmanship, and makes a hello of a knife!"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "t:sections.hmc-testimonials.blocks.testimonial.settings.name",
+          "default": "Rick W."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-testimonials.name",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "Dudes got integrity, family value, sportsmanship, and makes a hello of a knife! Whether it's one of his Transients or any of the MAC projects! Never disappoints.",
+            "name": "Rick W."
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "Came for the knife stayed for the maker — The Transient — model designed and made by Jim lives in my pocket.",
+            "name": "Michael P."
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "Jim is passionate about getting something in your hands that is functional, well-crafted, and gorgeous.",
+            "name": "Mike S."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

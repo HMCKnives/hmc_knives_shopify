@@ -1,0 +1,65 @@
+{
+  "sections": {
+    "hmc_media_hero": {
+      "type": "hmc-media-hero",
+      "settings": {
+        "padding_top": 40,
+        "padding_bottom": 0
+      }
+    },
+    "hmc_social": {
+      "type": "hmc-social-row",
+      "settings": {
+        "heading": "",
+        "show_youtube": true,
+        "show_instagram": true,
+        "show_twitter": true,
+        "show_facebook": true,
+        "show_email": true,
+        "email_link": "mailto:info@hmcknives.com",
+        "padding_top": 20,
+        "padding_bottom": 36
+      }
+    },
+    "hmc_gallery": {
+      "type": "hmc-media-gallery",
+      "settings": {
+        "heading": "",
+        "columns_desktop": 3,
+        "columns_mobile": "1",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "hmc_signup": {
+      "type": "hmc-media-signup",
+      "settings": {
+        "heading": "Sign up for exclusive drop alerts and a chance to win a Free Transient Knife",
+        "button_label": "Sign Up",
+        "padding_top": 24,
+        "padding_bottom": 8
+      }
+    },
+    "hmc_social_bottom": {
+      "type": "hmc-social-row",
+      "settings": {
+        "heading": "",
+        "show_youtube": true,
+        "show_instagram": true,
+        "show_twitter": true,
+        "show_facebook": true,
+        "show_email": true,
+        "email_link": "mailto:info@hmcknives.com",
+        "padding_top": 12,
+        "padding_bottom": 28
+      }
+    }
+  },
+  "order": [
+    "hmc_media_hero",
+    "hmc_social",
+    "hmc_gallery",
+    "hmc_signup",
+    "hmc_social_bottom"
+  ]
+}

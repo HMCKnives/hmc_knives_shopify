@@ -1,0 +1,86 @@
+{
+  "sections": {
+    "hmc_page_hero": {
+      "type": "hmc-page-hero",
+      "settings": {
+        "heading": "Knife Spa/Warranty",
+        "subheading": "",
+        "overlay_color": "#000000",
+        "overlay_opacity": 85,
+        "use_gradient_overlay": true,
+        "overlay_color_end": "#556a69",
+        "text_alignment": "center",
+        "uppercase_heading": false,
+        "show_on": "warranty",
+        "min_height": 260,
+        "show_wave_bottom": true,
+        "wave_style": "mirrored",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "hmc_warranty": {
+      "type": "hmc-warranty-steps",
+      "blocks": {
+        "s1": {
+          "type": "step",
+          "settings": {
+            "title": "1. Contact Us:",
+            "text": "<p>Reach out to us at <a href=\"mailto:info@hmcknives.com\" title=\"info@hmcknives.com\">info@hmcknives.com</a> to initiate the Warranty process. This will allow us to anticipate your knife's arrival and speed up the return process.</p>"
+          }
+        },
+        "s2": {
+          "type": "step",
+          "settings": {
+            "title": "2. Pack Your Knife:",
+            "text": "<p>Carefully package your knife, ensuring it's securely wrapped to prevent any damage during transit.</p>"
+          }
+        },
+        "s3": {
+          "type": "note_form",
+          "settings": {
+            "title": "3. Print the note",
+            "important": "IMPORTANT: Add a note with below details to send along with your knife."
+          }
+        },
+        "s4": {
+          "type": "ship",
+          "settings": {
+            "title": "4. Ship Your Knife: Send your package to",
+            "address": "HMC MFG\n3527 Sterrettania RD\nErie, PA 16506.",
+            "text": "<p>We recommend using a trackable shipping method for your peace of mind.</p>"
+          }
+        }
+      },
+      "block_order": ["s1", "s2", "s3", "s4"],
+      "settings": {
+        "heading": "Here's How to Redeem Your Warranty.",
+        "button_label": "Send To HMC Knives",
+        "padding_top": 24,
+        "padding_bottom": 48
+      }
+    },
+    "hmc_newsletter": {
+      "type": "hmc-newsletter-band",
+      "blocks": {
+        "b1": { "type": "benefit", "settings": { "text": "Exclusive Email List Knife Drops" } },
+        "b2": { "type": "benefit", "settings": { "text": "Educational Content" } },
+        "b3": { "type": "benefit", "settings": { "text": "Free Knife Giveaways" } }
+      },
+      "block_order": ["b1", "b2", "b3"],
+      "settings": {
+        "heading": "Be first to know & never miss out.",
+        "subheading": "Join 4k+ members and get exclusive content.",
+        "overlay_opacity": 85,
+        "overlay_color": "#000000",
+        "use_gradient_overlay": true,
+        "overlay_color_end": "#556a69",
+        "show_wave_top": true,
+        "button_label": "Subscribe Now",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
+    }
+  },
+  "order": ["hmc_page_hero", "hmc_warranty", "hmc_newsletter"]
+}

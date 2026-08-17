@@ -1,0 +1,52 @@
+{
+  "sections": {
+    "hmc_page_hero": {
+      "type": "hmc-page-hero",
+      "settings": {
+        "heading": "",
+        "subheading": "",
+        "overlay_color": "#000000",
+        "overlay_opacity": 85,
+        "use_gradient_overlay": true,
+        "overlay_color_end": "#556a69",
+        "text_alignment": "center",
+        "uppercase_heading": false,
+        "show_on": "policy",
+        "min_height": 260,
+        "show_wave_bottom": true,
+        "wave_style": "mirrored",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "hmc_policy": {
+      "type": "hmc-policy-page",
+      "settings": {
+        "padding_top": 24,
+        "padding_bottom": 48
+      }
+    },
+    "hmc_newsletter": {
+      "type": "hmc-newsletter-band",
+      "blocks": {
+        "b1": { "type": "benefit", "settings": { "text": "Exclusive Email List Knife Drops" } },
+        "b2": { "type": "benefit", "settings": { "text": "Educational Content" } },
+        "b3": { "type": "benefit", "settings": { "text": "Free Knife Giveaways" } }
+      },
+      "block_order": ["b1", "b2", "b3"],
+      "settings": {
+        "heading": "Be first to know & never miss out.",
+        "subheading": "Join 4k+ members and get exclusive content.",
+        "overlay_opacity": 85,
+        "overlay_color": "#000000",
+        "use_gradient_overlay": true,
+        "overlay_color_end": "#556a69",
+        "show_wave_top": true,
+        "button_label": "Subscribe Now",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
+    }
+  },
+  "order": ["hmc_page_hero", "hmc_policy", "hmc_newsletter"]
+}

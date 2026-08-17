@@ -1,0 +1,259 @@
+{% doc %}
+  Simple white Name + Email signup used at the bottom of the Media page.
+{% enddoc %}
+
+{%- liquid
+  assign is_media_page = false
+  if page.handle == 'media' or template.suffix == 'media'
+    assign is_media_page = true
+  endif
+  assign heading = section.settings.heading
+  if heading == blank
+    assign heading = 'hmc.general.media_newsletter_heading' | t
+  endif
+  assign button_label = section.settings.button_label
+  if button_label == blank
+    assign button_label = 'hmc.general.media_newsletter_button' | t
+  endif
+-%}
+
+{%- if is_media_page -%}
+<section
+  id="HmcMediaSignup-{{ section.id }}"
+  class="hmc-media-signup"
+  style="
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="hmc-media-signup__inner">
+    {%- if heading != blank -%}
+      <h2 class="hmc-media-signup__heading">{{ heading | escape }}</h2>
+    {%- endif -%}
+
+    {%- capture signup_form_id -%}HmcMediaSignupForm-{{ section.id }}{%- endcapture -%}
+    {%- capture name_id -%}HmcMediaSignupName-{{ section.id }}{%- endcapture -%}
+    {%- capture email_id -%}HmcMediaSignupEmail-{{ section.id }}{%- endcapture -%}
+    {%- capture error_id -%}HmcMediaSignupError-{{ section.id }}{%- endcapture -%}
+    {%- capture success_id -%}HmcMediaSignupSuccess-{{ section.id }}{%- endcapture -%}
+
+    {% form 'customer', class: 'hmc-media-signup__form', id: signup_form_id %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+
+      <div class="hmc-media-signup__fields">
+        <div class="hmc-media-signup__field">
+          <label class="visually-hidden" for="{{ name_id }}">
+            {{ 'hmc.contact.name' | t }}
+            <span>({{ 'hmc.accessibility.required' | t }})</span>
+          </label>
+          <input
+            id="{{ name_id }}"
+            class="hmc-media-signup__input"
+            type="text"
+            name="contact[first_name]"
+            value="{% if form.first_name %}{{ form.first_name }}{% elsif customer %}{{ customer.first_name }}{% endif %}"
+            placeholder="{{ 'hmc.contact.name' | t }}"
+            autocomplete="given-name"
+            aria-required="true"
+            required
+          >
+        </div>
+
+        <div class="hmc-media-signup__field">
+          <label class="visually-hidden" for="{{ email_id }}">
+            {{ 'hmc.contact.email' | t }}
+            <span>({{ 'hmc.accessibility.required' | t }})</span>
+          </label>
+          <input
+            id="{{ email_id }}"
+            class="hmc-media-signup__input"
+            type="email"
+            name="contact[email]"
+            value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+            placeholder="{{ 'hmc.contact.email' | t }}"
+            autocomplete="email"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            aria-required="true"
+            {% if form.errors %}
+              aria-invalid="true"
+              aria-describedby="{{ error_id }}"
+            {% elsif form.posted_successfully? %}
+              aria-describedby="{{ success_id }}"
+            {% endif %}
+            required
+          >
+        </div>
+
+        <button
+          type="submit"
+          class="hmc-media-signup__submit"
+          name="commit"
+        >
+          {{ button_label | escape }}
+        </button>
+      </div>
+
+      {%- if form.errors -%}
+        <p class="hmc-media-signup__message hmc-media-signup__message--error" id="{{ error_id }}" role="alert">
+          {{ form.errors.translated_fields.email | capitalize }}
+          {{ form.errors.messages.email }}
+        </p>
+      {%- endif -%}
+
+      {%- if form.posted_successfully? -%}
+        <p class="hmc-media-signup__message hmc-media-signup__message--success" id="{{ success_id }}" role="status">
+          {{ 'hmc.newsletter.success' | t }}
+        </p>
+      {%- endif -%}
+    {% endform %}
+  </div>
+</section>
+{%- endif -%}
+
+{% stylesheet %}
+  .hmc-media-signup {
+    background: var(--hmc-white, #fff);
+    padding-top: calc(var(--hmc-section-padding-top, 24px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 16px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-media-signup {
+      padding-top: var(--hmc-section-padding-top, 24px);
+      padding-bottom: var(--hmc-section-padding-bottom, 16px);
+    }
+  }
+
+  .hmc-media-signup__inner {
+    width: min(1080px, calc(100% - 32px));
+    margin: 0 auto;
+  }
+
+  .hmc-media-signup__heading {
+    margin: 0 auto 0.75rem;
+    max-width: 42rem;
+    text-align: center;
+    font-size: 1.25rem;
+    line-height: 1.4;
+    font-weight: 700;
+    color: var(--hmc-black, #0a0a0a);
+  }
+
+  .hmc-media-signup__fields {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-media-signup__fields {
+      grid-template-columns: 1fr 1fr minmax(12rem, 15rem);
+      gap: 0.9rem;
+    }
+  }
+
+  .hmc-media-signup__input,
+  .hmc-media-signup__submit {
+    width: 100%;
+    min-height: 53px;
+    font-size: 0.875rem;
+    line-height: 1.2;
+  }
+
+  .hmc-media-signup__input {
+    display: block;
+    padding: 18px;
+    border: 1px solid var(--hmc-black, #000);
+    border-radius: 3px;
+    background: #f8f6f1;
+    color: #111;
+  }
+
+  .hmc-media-signup__input::placeholder {
+    color: rgba(17, 17, 17, 0.55);
+  }
+
+  .hmc-media-signup__input:focus-visible,
+  .hmc-media-signup__submit:focus-visible {
+    outline: 2px solid var(--hmc-accent, #383224);
+    outline-offset: 2px;
+  }
+
+  .hmc-media-signup__submit {
+    padding: 18px;
+    border: 0;
+    border-radius: 0;
+    background: var(--hmc-accent, #383224);
+    color: var(--hmc-white, #fff);
+    font-weight: 400;
+    cursor: pointer;
+  }
+
+  .hmc-media-signup__message {
+    margin: 0.75rem 0 0;
+    text-align: center;
+    font-size: 0.875rem;
+  }
+
+  .hmc-media-signup__message--error {
+    color: #8a1f1f;
+  }
+
+  .hmc-media-signup__message--success {
+    color: var(--hmc-black, #0a0a0a);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-media-signup.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--media-signup",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hmc-media-signup.settings.heading",
+      "default": "Sign up for exclusive drop alerts and a chance to win a Free Transient Knife"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.hmc-media-signup.settings.button_label",
+      "default": "Sign Up"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 16
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-media-signup.name"
+    }
+  ]
+}
+{% endschema %}

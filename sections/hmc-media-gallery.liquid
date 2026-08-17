@@ -1,0 +1,330 @@
+{%- liquid
+  assign gallery_mf = nil
+  if page != blank
+    assign gallery_mf = page.metafields.custom.gallery
+    if gallery_mf == blank
+      assign gallery_mf = page.metafields.hmc.gallery
+    endif
+  endif
+  assign gallery_value = gallery_mf.value
+  assign gallery_is_list = false
+  assign has_meta_images = false
+  if gallery_value != blank
+    if gallery_value.first != blank
+      assign gallery_is_list = true
+      assign has_meta_images = true
+    elsif gallery_value.size == 0
+      assign has_meta_images = false
+    else
+      assign has_meta_images = true
+    endif
+  endif
+
+  assign has_block_images = false
+  for block in section.blocks
+    if block.settings.image != blank
+      assign has_block_images = true
+    endif
+  endfor
+
+  assign placeholder_names = 'collection-apparel-1,detailed-apparel-1,hero-apparel-1,product-apparel-1,hero-apparel-2,product-apparel-2,hero-apparel-3,collection-apparel-1,detailed-apparel-1' | split: ','
+  assign gallery_alt = page.title | default: section.settings.heading | default: shop.name
+  assign is_media_page = false
+  if page.handle == 'media' or template.suffix == 'media'
+    assign is_media_page = true
+  endif
+  assign show_placeholders = is_media_page
+  assign show_gallery = false
+  if has_meta_images or has_block_images or show_placeholders
+    assign show_gallery = true
+  endif
+-%}
+
+{%- if show_gallery -%}
+<section
+  id="HmcMediaGallery-{{ section.id }}"
+  class="hmc-media-gallery"
+  style="
+    --hmc-gallery-columns-mobile: {{ section.settings.columns_mobile }};
+    --hmc-gallery-columns-desktop: {{ section.settings.columns_desktop }};
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  {%- if section.settings.heading != blank -%}
+    <h2 class="hmc-media-gallery__heading hmc-page-width">{{ section.settings.heading | escape }}</h2>
+  {%- endif -%}
+
+  {%- if has_meta_images or has_block_images or show_placeholders -%}
+    <div
+      class="hmc-media-gallery__grid"
+      role="list"
+      aria-label="{{ 'hmc.general.media_gallery_label' | t }}"
+    >
+      {%- if has_meta_images -%}
+        {%- if gallery_is_list -%}
+          {%- for image in gallery_value limit: 50 -%}
+            <div class="hmc-media-gallery__cell" role="listitem">
+              {% render 'hmc-gallery-image',
+                image: image,
+                alt: gallery_alt,
+                loading: 'lazy'
+              %}
+            </div>
+          {%- endfor -%}
+          {%- if gallery_value.size > 50 -%}
+            {%- for image in gallery_value offset: 50 limit: 50 -%}
+              <div class="hmc-media-gallery__cell" role="listitem">
+                {% render 'hmc-gallery-image',
+                  image: image,
+                  alt: gallery_alt,
+                  loading: 'lazy'
+                %}
+              </div>
+            {%- endfor -%}
+          {%- endif -%}
+          {%- if gallery_value.size > 100 -%}
+            {%- for image in gallery_value offset: 100 limit: 50 -%}
+              <div class="hmc-media-gallery__cell" role="listitem">
+                {% render 'hmc-gallery-image',
+                  image: image,
+                  alt: gallery_alt,
+                  loading: 'lazy'
+                %}
+              </div>
+            {%- endfor -%}
+          {%- endif -%}
+        {%- else -%}
+          <div class="hmc-media-gallery__cell" role="listitem">
+            {% render 'hmc-gallery-image',
+              image: gallery_value,
+              alt: gallery_alt,
+              loading: 'lazy'
+            %}
+          </div>
+        {%- endif -%}
+      {%- elsif has_block_images -%}
+        {%- for block in section.blocks -%}
+          {%- if block.settings.image != blank -%}
+            {%- liquid
+              assign block_alt = block.settings.alt_text | default: gallery_alt | escape
+            -%}
+            <div class="hmc-media-gallery__cell" role="listitem" {{ block.shopify_attributes }}>
+              {%- if block.settings.link != blank -%}
+                <a href="{{ block.settings.link }}" class="hmc-media-gallery__link">
+              {%- endif -%}
+              {% render 'hmc-gallery-image',
+                image: block.settings.image,
+                alt: block_alt,
+                loading: 'lazy'
+              %}
+              {%- if block.settings.link != blank -%}
+                </a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- elsif show_placeholders -%}
+        {%- for name in placeholder_names -%}
+          {%- liquid
+            assign ph_mod = forloop.index0 | modulo: 3
+            assign ph_class = 'hmc-media-gallery__item hmc-media-gallery__item--placeholder'
+            if ph_mod == 0
+              assign ph_class = ph_class | append: ' hmc-media-gallery__item--tall'
+            elsif ph_mod == 1
+              assign ph_class = ph_class | append: ' hmc-media-gallery__item--square'
+            else
+              assign ph_class = ph_class | append: ' hmc-media-gallery__item--wide'
+            endif
+            assign ph_alt = 'hmc.general.media_placeholder_alt' | t: index: forloop.index
+          -%}
+          <div class="hmc-media-gallery__cell" role="listitem">
+            <figure class="{{ ph_class }}">
+              {{ name | placeholder_svg_tag: 'hmc-media-gallery__placeholder' }}
+              <span class="visually-hidden">{{ ph_alt }}</span>
+            </figure>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  {%- else -%}
+    <p class="hmc-media-gallery__empty">{{ 'hmc.general.empty_gallery' | t }}</p>
+  {%- endif -%}
+</section>
+{%- endif -%}
+
+{% stylesheet %}
+  .hmc-media-gallery {
+    background: var(--hmc-white, #fff);
+    padding-top: var(--hmc-section-padding-top, 0px);
+    padding-bottom: var(--hmc-section-padding-bottom, 0px);
+  }
+
+  .hmc-media-gallery__heading {
+    margin: 0 auto 1.25rem;
+    text-align: center;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    color: var(--hmc-black, #0a0a0a);
+  }
+
+  .hmc-media-gallery__empty {
+    text-align: center;
+    color: var(--hmc-muted, rgba(10, 10, 10, 0.65));
+    padding: 2rem 1rem;
+  }
+
+  .hmc-media-gallery__grid {
+    column-count: var(--hmc-gallery-columns-mobile, 1);
+    column-gap: 5px;
+    width: 100%;
+    padding: 0 16px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-media-gallery__grid {
+      column-count: var(--hmc-gallery-columns-desktop, 3);
+    }
+  }
+
+  .hmc-media-gallery__cell {
+    break-inside: avoid;
+    margin: 0 0 5px;
+  }
+
+  .hmc-media-gallery__item {
+    margin: 0;
+  }
+
+  .hmc-media-gallery__link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .hmc-media-gallery__link:focus-visible {
+    outline: 2px solid var(--hmc-black, #0a0a0a);
+    outline-offset: 2px;
+  }
+
+  .hmc-media-gallery__image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .hmc-media-gallery__item--placeholder {
+    overflow: hidden;
+    background: var(--hmc-offwhite, #f7f7f7);
+  }
+
+  .hmc-media-gallery__item--tall {
+    aspect-ratio: 3 / 4;
+  }
+
+  .hmc-media-gallery__item--square {
+    aspect-ratio: 1 / 1;
+  }
+
+  .hmc-media-gallery__item--wide {
+    aspect-ratio: 4 / 3;
+  }
+
+  .hmc-media-gallery__placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-media-gallery.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--media-gallery",
+  "max_blocks": 24,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.hmc-media-gallery.settings.metafield_info"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hmc-media-gallery.settings.heading"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "t:sections.hmc-media-gallery.settings.columns_desktop",
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "t:sections.hmc-media-gallery.settings.columns_mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "t:sections.hmc-media-gallery.blocks.image.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.hmc-media-gallery.blocks.image.settings.image"
+        },
+        {
+          "type": "text",
+          "id": "alt_text",
+          "label": "t:sections.hmc-media-gallery.blocks.image.settings.alt_text"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.hmc-media-gallery.blocks.image.settings.link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-media-gallery.name"
+    }
+  ]
+}
+{% endschema %}

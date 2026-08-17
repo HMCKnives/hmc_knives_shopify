@@ -1,0 +1,390 @@
+{
+  "sections": {
+    "hmc_hero": {
+      "type": "hmc-hero",
+      "settings": {
+        "eyebrow": "HMC KNIVES",
+        "heading_line_1": "HIGH QUALITY",
+        "heading_line_2": "CUSTOM MADE KNIVES",
+        "drop_status": "Next Drop Coming Soon",
+        "show_drop_badge": true,
+        "cta_label": "Alert Me To Drops!",
+        "cta_link": "shopify://pages/newsletter",
+        "overlay_color": "#0a0a0a",
+        "overlay_opacity": 35,
+        "text_alignment": "left",
+        "min_height_desktop": 560,
+        "min_height_mobile": 420,
+        "content_max_width": 900,
+        "button_style": "primary",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "hmc_icon_cards": {
+      "type": "hmc-icon-cards",
+      "blocks": {
+        "card_learn": {
+          "type": "card",
+          "settings": {
+            "icon_snippet": "icon-academic-cap",
+            "title": "Learn",
+            "text": "Discover invaluable tips, techniques, and take your everyday skills to new heights",
+            "link": "shopify://pages/about-me"
+          }
+        },
+        "card_designs": {
+          "type": "card",
+          "settings": {
+            "icon_snippet": "icon-pencil-rule",
+            "title": "Check Out All OUR DESIGNS",
+            "text": "Visit our shop or gallery, and get inspired",
+            "link": "shopify://collections/all"
+          }
+        },
+        "card_tips": {
+          "type": "card",
+          "settings": {
+            "icon_snippet": "icon-email-open",
+            "title": "Get Weekly tips",
+            "text": "Join our community and receive FREE weekly tips.",
+            "link": "shopify://pages/newsletter"
+          }
+        }
+      },
+      "block_order": [
+        "card_learn",
+        "card_designs",
+        "card_tips"
+      ],
+      "settings": {
+        "heading": "New Here?",
+        "subheading": "Here's what to do.",
+        "padding_top": 20,
+        "padding_bottom": 40
+      }
+    },
+    "hmc_value_props": {
+      "type": "hmc-value-props",
+      "blocks": {
+        "prop_1": {
+          "type": "prop",
+          "settings": {
+            "title": "01 - Custom Designed Knife",
+            "text": "<p>Custom designed knives by Jim Vandeveld.</p><p>Become one of the few in the world to own one.</p>"
+          }
+        },
+        "prop_2": {
+          "type": "prop",
+          "settings": {
+            "title": "02 - Lifetime Guarantee",
+            "text": "<p>Since we're using the highest quality materials & the most stringent adherence to our manufacturing process, we are confident that our knives won't get damaged through normal use.</p>",
+            "link_label": "Click HERE to learn how to redeem",
+            "link": "shopify://pages/warranty"
+          }
+        },
+        "prop_3": {
+          "type": "prop",
+          "settings": {
+            "title": "03 - World Class Customer Service",
+            "text": "<p>I don't just build these knives and send them out the door - my name is on every single one. If something isn't right, or you need help, you're talking to me directly, and I'll make it right.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "prop_1",
+        "prop_2",
+        "prop_3"
+      ],
+      "settings": {
+        "heading": "What Exactly Do you get when You Order",
+        "overlay_color": "#435656",
+        "overlay_opacity": 85,
+        "show_wave_top": true,
+        "show_wave_bottom": true,
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
+    "hmc_about_split": {
+      "type": "hmc-about-split",
+      "blocks": {
+        "img_1": {
+          "type": "image",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "img_1"
+      ],
+      "settings": {
+        "heading": "About Me",
+        "bio": "<p>My name is Jim Vandeveld, and I am a husband and father of five based out of Erie, Pennsylvania.</p><p>For the past twelve years, I have been a full-time CNC hard mill machinist and injection mold maker.</p><p>I have spent countless hours learning to develop and implement: processes, maintain strict standards, and build parts that are both reliable and replicable.</p><p>That's how Hellion Machine Collective MFG came to life.</p><p>All of these qualities are reflected in the process I use to design and build my knives.</p><p>I look forward to working with you.</p>",
+        "cta_label": "Read More",
+        "cta_link": "shopify://pages/about-me",
+        "show_social": true,
+        "layout": "image_right",
+        "padding_top": 32,
+        "padding_bottom": 20
+      }
+    },
+    "hmc_testimonials": {
+      "type": "hmc-testimonials",
+      "blocks": {
+        "t1": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "Dudes got integrity, family value, sportsmanship, and makes a hello of a knife! Whether it's one of his Transients or any of the MAC projects! Never disappoints.",
+            "name": "Rick W."
+          }
+        },
+        "t2": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "Came for the knife stayed for the maker - The Transient - model designed and made by Jim lives in my pocket.",
+            "name": "Michael P."
+          }
+        },
+        "t3": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "Jim is passionate about getting something in your hands that is functional, well-crafted, and gorgeous.",
+            "name": "Mike S."
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2",
+        "t3"
+      ],
+      "settings": {
+        "heading": "What they say",
+        "layout": "grid",
+        "overlay_color": "#435656",
+        "overlay_opacity": 85,
+        "show_wave_top": true,
+        "show_wave_bottom": true,
+        "wave_color": "#f8f8f8",
+        "padding_top": 8,
+        "padding_bottom": 76
+      }
+    },
+    "hmc_reviews": {
+      "type": "hmc-reviews",
+      "blocks": {
+        "r1": {
+          "type": "review",
+          "settings": {
+            "author": "Garrick Eisenbeis",
+            "date": "July 13, 2026",
+            "body": "Been trying to pick one up for sometime, and boy was it worth the wait! Absolutely love this Transient! Haven't been able to put anything else in my pocket since it arrived!",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r2": {
+          "type": "review",
+          "settings": {
+            "author": "Steven L",
+            "date": "June 26, 2026",
+            "body": "Jim / HMC never disappoints. Highest quality with attention to detail. great action and really great acoustics. finally I will say the customer service is over the top.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r3": {
+          "type": "review",
+          "settings": {
+            "author": "Danny",
+            "date": "May 8, 2026",
+            "body": "Impeccable build quality and great design.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r4": {
+          "type": "review",
+          "settings": {
+            "author": "Eric Snow",
+            "date": "August 15, 2026",
+            "body": "This knife has blown me away with the quality, fit, and finish. I am no stranger to higher end American knives!",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r5": {
+          "type": "review",
+          "settings": {
+            "author": "Stephen Antonelli",
+            "date": "August 14, 2026",
+            "body": "I bought my first HMC knife from a friend. Was so impressed, I now own 3!! Actions are smooth and aesthetically appealing.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r6": {
+          "type": "review",
+          "settings": {
+            "author": "Thom F",
+            "date": "August 14, 2026",
+            "body": "Excellent knife and Excellent customer service.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r7": {
+          "type": "review",
+          "settings": {
+            "author": "Rick",
+            "date": "March 9, 2026",
+            "body": "Jim is the guy! Great customer service.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r8": {
+          "type": "review",
+          "settings": {
+            "author": "Louis Johnson",
+            "date": "February 27, 2026",
+            "body": "Second knife I have purchased and I will continue to purchase more from HMC. Great product and you can tell that attention to detail is a priority.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r9": {
+          "type": "review",
+          "settings": {
+            "author": "Steven Lisco",
+            "date": "February 27, 2026",
+            "body": "This is my very first HMC knife. I absolutely love it. The craftsmanship is over the top. The knife just works perfectly.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r10": {
+          "type": "review",
+          "settings": {
+            "author": "Antonio Simone",
+            "date": "February 13, 2026",
+            "body": "Jim has proven to be both a talented machinist and an exceptional person to work with. I recently purchased a Transient and it exceeded every expectation.",
+            "rating": 5,
+            "category": "knives"
+          }
+        }
+      },
+      "block_order": [
+        "r4",
+        "r5",
+        "r6",
+        "r1",
+        "r2",
+        "r3",
+        "r7",
+        "r8",
+        "r9",
+        "r10"
+      ],
+      "settings": {
+        "heading": "Customer Reviews",
+        "show_summary": true,
+        "rating_value": "5.0",
+        "rating_summary": "5.0 out of 5 stars (based on 67 reviews)",
+        "pct_5": 100,
+        "pct_4": 0,
+        "pct_3": 0,
+        "pct_2": 0,
+        "pct_1": 0,
+        "button_label": "View More",
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
+    },
+    "hmc_faq": {
+      "type": "hmc-faq",
+      "blocks": {
+        "f1": {
+          "type": "faq",
+          "settings": {
+            "question": "How do I order a custom knife?",
+            "answer": "<p>At this time, I am currently not taking any custom orders. My focus is to scale the availability of my knives to a point where weekly drops are made to my email list. If you are interested in a knife, signing up here is currently the best way to purchase one.</p>"
+          }
+        },
+        "f2": {
+          "type": "faq",
+          "settings": {
+            "question": "How do I get one of your knives from instagram?",
+            "answer": "<p>I'm shifting from selling knives on Instagram to notifying my email list about their availability and processing sales through my website. Social media platforms currently restrict knife-related content more and more each week, so I'm moving away from relying on them for sales.</p>"
+          }
+        },
+        "f3": {
+          "type": "faq",
+          "settings": {
+            "question": "Do I need a knife spa?",
+            "answer": "<p>Yes, if your knife has lost its edge, is showing significant surface wear and tear, or is experiencing performance issues unrelated to a manufacturer's defect, it's time to send it in for a spa.</p>"
+          }
+        },
+        "f4": {
+          "type": "faq",
+          "settings": {
+            "question": "Why are your knives so expensive?",
+            "answer": "<p>My pricing is based on the high-quality materials and craftsmanship that go into making each knife. I use premium American-made stainless steel and titanium hardware, all contributing to an all-titanium construction. Quality is my top priority throughout the manufacturing process.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "f1",
+        "f2",
+        "f3",
+        "f4"
+      ],
+      "settings": {
+        "heading": "FAQ",
+        "padding_top": 40,
+        "padding_bottom": 120
+      }
+    },
+    "hmc_shop_cta": {
+      "type": "hmc-image-cta",
+      "settings": {
+        "heading": "Get Your Knife Today",
+        "button_label": "Check Out The Shop Here",
+        "button_link": "shopify://collections/all",
+        "show_button_arrow": true,
+        "overlay_color": "#435656",
+        "overlay_opacity": 85,
+        "min_height": 320,
+        "show_wave_top": true,
+        "wave_color": "#ffffff",
+        "text_alignment": "center",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "hmc_bts": {
+      "type": "hmc-bts-video",
+      "settings": {
+        "heading": "Peek Behind The Scenes!",
+        "video_url": "https://www.youtube.com/watch?v=VqsqVW9DX7k",
+        "orientation": "portrait",
+        "frame_width": 276,
+        "show_wave_bottom": true,
+        "wave_color": "#ffffff",
+        "padding_top": 36,
+        "padding_bottom": 20
+      }
+    }
+  },
+  "order": [
+    "hmc_hero",
+    "hmc_icon_cards",
+    "hmc_value_props",
+    "hmc_about_split",
+    "hmc_testimonials",
+    "hmc_reviews",
+    "hmc_faq",
+    "hmc_shop_cta",
+    "hmc_bts"
+  ]
+}

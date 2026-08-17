@@ -1,0 +1,397 @@
+{%- liquid
+  assign overlay_opacity = section.settings.overlay_opacity | default: 85 | divided_by: 100.0
+  assign overlay_color = section.settings.overlay_color | default: '#000000'
+  assign overlay_end_color = section.settings.overlay_color_end | default: '#556a69'
+  assign overlay_start = overlay_color | color_modify: 'alpha', overlay_opacity
+  assign overlay_end = overlay_end_color | color_modify: 'alpha', overlay_opacity
+  assign overlay_class = 'hmc-media-section__overlay'
+  if section.settings.use_gradient_overlay
+    assign overlay_class = overlay_class | append: ' hmc-media-section__overlay--gradient'
+  endif
+  assign hide_band = false
+  if page.handle == 'media' or template.suffix == 'media'
+    assign hide_band = true
+  endif
+-%}
+
+{%- unless hide_band -%}
+<section
+  id="HmcNewsletterBand-{{ section.id }}"
+  class="hmc-newsletter-band hmc-media-section section-{{ section.id }}-padding"
+  style="
+    --hmc-overlay-color: {{ overlay_color }};
+    --hmc-overlay-opacity: {{ overlay_opacity }};
+    --hmc-overlay-start: {{ overlay_start }};
+    --hmc-overlay-end: {{ overlay_end }};
+    --hmc-section-padding-top: {{ section.settings.padding_top }}px;
+    --hmc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  {%- if section.settings.show_wave_top -%}
+    <div class="hmc-newsletter-band__wave">
+      {% render 'hmc-wave', variant: 'cap', fill: '#ffffff' %}
+    </div>
+  {%- endif -%}
+
+  <div class="hmc-media-section__bg hmc-newsletter-band__bg">
+    {%- liquid
+      assign newsletter_bg_alt = section.settings.background_image.alt | default: section.settings.heading | escape
+    -%}
+    {% render 'hmc-bg-image',
+      image: section.settings.background_image,
+      alt: newsletter_bg_alt,
+      class: 'hmc-newsletter-band__bg-image'
+    %}
+  </div>
+
+  <div class="{{ overlay_class }}" aria-hidden="true"></div>
+
+  <div class="hmc-media-section__inner hmc-newsletter-band__inner hmc-page-width">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="hmc-newsletter-band__heading">{{ section.settings.heading | escape }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.subheading != blank -%}
+      <p class="hmc-newsletter-band__subheading">{{ section.settings.subheading | escape }}</p>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <ul class="hmc-newsletter-band__benefits">
+        {%- for block in section.blocks -%}
+          {%- if block.settings.text != blank -%}
+            <li class="hmc-newsletter-band__benefit" {{ block.shopify_attributes }}>
+              {{ block.settings.text | escape }}
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    {%- capture newsletter_form_id -%}HmcNewsletterForm-{{ section.id }}{%- endcapture -%}
+    {% form 'customer', class: 'hmc-newsletter-form', id: newsletter_form_id %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+
+      <label class="hmc-sr-only" for="HmcNewsletterEmail-{{ section.id }}">
+        {{ 'hmc.general.email_label' | t }}
+      </label>
+      <input
+        id="HmcNewsletterEmail-{{ section.id }}"
+        type="email"
+        name="contact[email]"
+        class="hmc-newsletter-form__input"
+        value="{{ form.email }}"
+        placeholder="{{ 'hmc.general.email_placeholder' | t }}"
+        autocomplete="email"
+        autocorrect="off"
+        autocapitalize="off"
+        aria-required="true"
+        {% if form.errors %}
+          aria-invalid="true"
+          aria-describedby="HmcNewsletterError-{{ section.id }}"
+        {% elsif form.posted_successfully? %}
+          aria-describedby="HmcNewsletterSuccess-{{ section.id }}"
+        {% endif %}
+        required
+      >
+
+      <button
+        type="submit"
+        class="hmc-newsletter-form__btn"
+        name="commit"
+      >
+        {{ section.settings.button_label | escape }}
+      </button>
+
+      {%- if form.errors -%}
+        <p
+          class="hmc-newsletter-band__message hmc-newsletter-band__message--error"
+          id="HmcNewsletterError-{{ section.id }}"
+          role="alert"
+        >
+          {{ form.errors.translated_fields.email | capitalize }}
+          {{ form.errors.messages.email }}
+        </p>
+      {%- endif -%}
+
+      {%- if form.posted_successfully? -%}
+        <p
+          class="hmc-newsletter-band__message hmc-newsletter-band__message--success"
+          id="HmcNewsletterSuccess-{{ section.id }}"
+          role="status"
+        >
+          {{ 'hmc.newsletter.success' | t }}
+        </p>
+      {%- endif -%}
+    {% endform %}
+  </div>
+</section>
+{%- endunless -%}
+
+{% stylesheet %}
+  .hmc-newsletter-band {
+    color: var(--hmc-white, #fff);
+    padding-top: calc(var(--hmc-section-padding-top, 36px) * 0.75);
+    padding-bottom: calc(var(--hmc-section-padding-bottom, 36px) * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .hmc-newsletter-band {
+      padding-top: var(--hmc-section-padding-top, 36px);
+      padding-bottom: var(--hmc-section-padding-bottom, 36px);
+    }
+  }
+
+  .hmc-newsletter-band__bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hmc-newsletter-band__wave {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 3;
+    line-height: 0;
+    pointer-events: none;
+  }
+
+  .hmc-newsletter-band__inner {
+    position: relative;
+    z-index: 2;
+    padding-top: 8rem;
+    padding-bottom: 4rem;
+    text-align: left;
+  }
+
+  .hmc-newsletter-band__heading {
+    margin: 0 0 0.8rem;
+    font-size: 2rem;
+    font-weight: 400;
+    line-height: 3.2rem;
+    color: var(--hmc-white, #fff);
+  }
+
+  .hmc-newsletter-band__subheading {
+    margin: 0 0 1.6rem;
+    font-size: 1.6rem;
+    line-height: 2.8rem;
+    opacity: 1;
+    color: var(--hmc-white, #fff);
+  }
+
+  .hmc-newsletter-band__benefits {
+    list-style: none;
+    margin: 0 0 2.4rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+    font-size: 1.6rem;
+    line-height: 2.8rem;
+    opacity: 1;
+    color: var(--hmc-white, #fff);
+  }
+
+  .hmc-newsletter-band__benefit::before {
+    content: '✓';
+    margin-inline-end: 0.6rem;
+  }
+
+  .hmc-newsletter-band .hmc-newsletter-form {
+    margin: 0;
+    justify-content: flex-start;
+    max-width: none;
+  }
+
+  .hmc-newsletter-band .hmc-newsletter-form__input {
+    max-width: 34.8rem;
+    min-height: 5.4rem;
+    font-size: 1.4rem;
+  }
+
+  .hmc-newsletter-band .hmc-newsletter-form__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20.6rem;
+    min-height: 5.9rem;
+    padding: 0.8rem 1.6rem;
+    background: var(--hmc-accent, #383224);
+    color: var(--hmc-white, #fff);
+    border: 2px solid var(--hmc-white, #fff);
+    border-radius: 10rem;
+    font-family: var(--font-body-family);
+    font-size: 1.6rem;
+    font-weight: 400;
+    letter-spacing: 0.2rem;
+    line-height: 1.2;
+    cursor: pointer;
+  }
+
+  .hmc-newsletter-band .hmc-newsletter-form__btn:hover {
+    opacity: 0.92;
+  }
+
+  .hmc-newsletter-band__message {
+    flex: 1 1 100%;
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+  }
+
+  .hmc-newsletter-band__message--error {
+    color: #ffb4b4;
+  }
+
+  .hmc-newsletter-band__message--success {
+    color: #b4ffb4;
+  }
+
+  .hmc-newsletter-band .hmc-newsletter-form__input:focus-visible,
+  .hmc-newsletter-band .hmc-newsletter-form__btn:focus-visible {
+    outline: 2px solid var(--hmc-white, #fff);
+    outline-offset: 2px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hmc-newsletter-band.name",
+  "tag": "section",
+  "class": "hmc-section hmc-section--newsletter",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hmc-newsletter-band.settings.heading",
+      "default": "Join the Drop List"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "t:sections.hmc-newsletter-band.settings.subheading",
+      "default": "Get notified about weekly drops and exclusive tips."
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.background.header"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:sections.hmc.common.background.background_image"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.hmc.common.background.background_image_info"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "t:sections.hmc.common.background.overlay_color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "t:sections.hmc.common.background.overlay_opacity",
+      "default": 85
+    },
+    {
+      "type": "checkbox",
+      "id": "use_gradient_overlay",
+      "label": "t:sections.hmc-page-hero.settings.use_gradient_overlay",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "overlay_color_end",
+      "label": "t:sections.hmc-page-hero.settings.overlay_color_end",
+      "default": "#556a69"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wave_top",
+      "label": "t:sections.hmc-newsletter-band.settings.show_wave_top",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.hmc-newsletter-band.settings.button_label",
+      "default": "Subscribe"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hmc.common.padding.header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.hmc.common.padding.padding_bottom",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "t:sections.hmc-newsletter-band.blocks.benefit.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:sections.hmc-newsletter-band.blocks.benefit.settings.text",
+          "default": "Weekly drop alerts"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hmc-newsletter-band.name",
+      "blocks": [
+        {
+          "type": "benefit",
+          "settings": {
+            "text": "Weekly drop alerts"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "text": "Free knife tips"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "text": "No spam, ever"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

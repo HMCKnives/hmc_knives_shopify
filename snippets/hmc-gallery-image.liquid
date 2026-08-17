@@ -1,0 +1,34 @@
+{% doc %}
+  Renders one masonry gallery image from a file, image, or media drop.
+
+  @param {object} image - Shopify image, file, or media object
+  @param {string} [alt] - Alt text
+  @param {string} [loading] - Image loading attribute (lazy|eager)
+
+  @example
+  {% render 'hmc-gallery-image', image: file, alt: page.title, loading: 'lazy' %}
+{% enddoc %}
+
+{%- liquid
+  assign gallery_image = image
+  if image.preview_image != blank
+    assign gallery_image = image.preview_image
+  endif
+  assign img_alt = alt | default: gallery_image.alt | escape
+  assign img_loading = loading | default: 'lazy'
+-%}
+
+{%- if gallery_image != blank -%}
+  <figure class="hmc-media-gallery__item">
+    {{
+      gallery_image
+      | image_url: width: 1400
+      | image_tag:
+        loading: img_loading,
+        alt: img_alt,
+        widths: '400, 618, 800, 1000, 1400',
+        sizes: '(min-width: 750px) 33vw, 100vw',
+        class: 'hmc-media-gallery__image'
+    }}
+  </figure>
+{%- endif -%}
