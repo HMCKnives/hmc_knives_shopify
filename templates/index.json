@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hmc_hero": {
@@ -10,6 +19,8 @@
         "show_drop_badge": true,
         "cta_label": "Alert Me To Drops!",
         "cta_link": "shopify://pages/newsletter",
+        "background_image": "shopify://shop_images/BANNER_1-6.jpg",
+        "background_image_mobile": "shopify://shop_images/MOBILE.jpg",
         "overlay_color": "#0a0a0a",
         "overlay_opacity": 35,
         "text_alignment": "left",
@@ -60,6 +71,7 @@
       "settings": {
         "heading": "New Here?",
         "subheading": "Here's what to do.",
+        "icon_circle_color": "#3d342c",
         "padding_top": 20,
         "padding_bottom": 40
       }
@@ -71,7 +83,9 @@
           "type": "prop",
           "settings": {
             "title": "01 - Custom Designed Knife",
-            "text": "<p>Custom designed knives by Jim Vandeveld.</p><p>Become one of the few in the world to own one.</p>"
+            "text": "<p>Custom designed knives by Jim Vandeveld.</p><p>Become one of the few in the world to own one.</p>",
+            "link_label": "",
+            "link": ""
           }
         },
         "prop_2": {
@@ -87,7 +101,9 @@
           "type": "prop",
           "settings": {
             "title": "03 - World Class Customer Service",
-            "text": "<p>I don't just build these knives and send them out the door - my name is on every single one. If something isn't right, or you need help, you're talking to me directly, and I'll make it right.</p>"
+            "text": "<p>I don't just build these knives and send them out the door - my name is on every single one. If something isn't right, or you need help, you're talking to me directly, and I'll make it right.</p>",
+            "link_label": "",
+            "link": ""
           }
         }
       },
@@ -173,36 +189,6 @@
     "hmc_reviews": {
       "type": "hmc-reviews",
       "blocks": {
-        "r1": {
-          "type": "review",
-          "settings": {
-            "author": "Garrick Eisenbeis",
-            "date": "July 13, 2026",
-            "body": "Been trying to pick one up for sometime, and boy was it worth the wait! Absolutely love this Transient! Haven't been able to put anything else in my pocket since it arrived!",
-            "rating": 5,
-            "category": "knives"
-          }
-        },
-        "r2": {
-          "type": "review",
-          "settings": {
-            "author": "Steven L",
-            "date": "June 26, 2026",
-            "body": "Jim / HMC never disappoints. Highest quality with attention to detail. great action and really great acoustics. finally I will say the customer service is over the top.",
-            "rating": 5,
-            "category": "knives"
-          }
-        },
-        "r3": {
-          "type": "review",
-          "settings": {
-            "author": "Danny",
-            "date": "May 8, 2026",
-            "body": "Impeccable build quality and great design.",
-            "rating": 5,
-            "category": "knives"
-          }
-        },
         "r4": {
           "type": "review",
           "settings": {
@@ -229,6 +215,36 @@
             "author": "Thom F",
             "date": "August 14, 2026",
             "body": "Excellent knife and Excellent customer service.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r1": {
+          "type": "review",
+          "settings": {
+            "author": "Garrick Eisenbeis",
+            "date": "July 13, 2026",
+            "body": "Been trying to pick one up for sometime, and boy was it worth the wait! Absolutely love this Transient! Haven't been able to put anything else in my pocket since it arrived!",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r2": {
+          "type": "review",
+          "settings": {
+            "author": "Steven L",
+            "date": "June 26, 2026",
+            "body": "Jim / HMC never disappoints. Highest quality with attention to detail. great action and really great acoustics. finally I will say the customer service is over the top.",
+            "rating": 5,
+            "category": "knives"
+          }
+        },
+        "r3": {
+          "type": "review",
+          "settings": {
+            "author": "Danny",
+            "date": "May 8, 2026",
+            "body": "Impeccable build quality and great design.",
             "rating": 5,
             "category": "knives"
           }
@@ -297,6 +313,7 @@
         "pct_2": 0,
         "pct_1": 0,
         "button_label": "View More",
+        "button_link": "",
         "padding_top": 60,
         "padding_bottom": 60
       }
