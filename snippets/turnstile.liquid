@@ -22,11 +22,13 @@
 -%}
 
 {%- if current_site_key != blank -%}
-  <div class="turnstile-wrapper{% if class != blank %} {{ class }}{% endif %}" style="margin: 1rem 0; width: 100%;">
+  <div class="turnstile-wrapper{% if class != blank %} {{ class }}{% endif %}" style="margin: 1.2rem 0; width: 100%; min-height: 65px; display: flex; align-items: center;">
     <div
       class="cf-turnstile"
       data-sitekey="{{ current_site_key | escape }}"
       data-theme="{{ current_theme }}"
+      data-size="normal"
+      data-appearance="always"
     ></div>
   </div>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
