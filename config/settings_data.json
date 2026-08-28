@@ -156,6 +156,11 @@
         "type": "shopify://apps/judge-me-reviews/blocks/judgeme_core/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
         "disabled": false,
         "settings": {}
+      },
+      "1153484485588727766": {
+        "type": "shopify://apps/spoks/blocks/spoks.javascript/019df208-bd19-7b2c-ae58-b73c1182b487",
+        "disabled": false,
+        "settings": {}
       }
     },
     "color_schemes": {
