@@ -190,7 +190,7 @@
                       >
                     </div>
 
-                    {% render 'turnstile', site_key: section.settings.turnstile_site_key, theme: section.settings.turnstile_theme %}
+                    {% render 'recaptcha', site_key: section.settings.recaptcha_site_key, theme: section.settings.recaptcha_theme %}
 
                     <button type="submit" class="hmc-warranty-steps__submit">
                       <span>{{ button_text | escape }}</span>
@@ -446,30 +446,26 @@
     },
     {
       "type": "header",
-      "content": "Cloudflare Turnstile"
+      "content": "Google reCAPTCHA"
     },
     {
       "type": "text",
-      "id": "turnstile_site_key",
-      "label": "Turnstile Site Key",
-      "info": "Paste your Turnstile Site Key or leave blank to use the global theme setting."
+      "id": "recaptcha_site_key",
+      "label": "reCAPTCHA site key",
+      "info": "Paste your Google reCAPTCHA v2 Checkbox site key, or leave blank to use the global theme setting."
     },
     {
       "type": "select",
-      "id": "turnstile_theme",
-      "label": "Turnstile Theme",
+      "id": "recaptcha_theme",
+      "label": "reCAPTCHA theme",
       "options": [
         {
-          "value": "auto",
-          "label": "Auto"
+          "value": "light",
+          "label": "Light"
         },
         {
           "value": "dark",
           "label": "Dark"
-        },
-        {
-          "value": "light",
-          "label": "Light"
         }
       ],
       "default": "light"

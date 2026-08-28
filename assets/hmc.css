@@ -281,12 +281,12 @@ div.hmc-value-props__overlay {
   max-width: 520px;
 }
 
-.hmc-newsletter-form .turnstile-wrapper,
-.hmc-newsletter-form__turnstile {
-  flex: 0 0 100% !important;
-  width: 100% !important;
-  min-width: 300px !important;
-  min-height: 65px !important;
+.hmc-newsletter-form .hmc-recaptcha,
+.hmc-newsletter-form__recaptcha {
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 304px;
+  min-height: 78px;
 }
 
 .hmc-newsletter-form__input {

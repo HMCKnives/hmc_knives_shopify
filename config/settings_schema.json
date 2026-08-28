@@ -1549,37 +1549,33 @@
     ]
   },
   {
-    "name": "Cloudflare Turnstile",
+    "name": "Google reCAPTCHA",
     "settings": [
       {
         "type": "paragraph",
-        "content": "Configure Cloudflare Turnstile CAPTCHA protection for forms across your store."
+        "content": "Adds Google reCAPTCHA v2 (I'm not a robot checkbox) to theme forms. Create a v2 Checkbox key at https://www.google.com/recaptcha/admin and add your Shopify domains."
       },
       {
         "type": "text",
-        "id": "turnstile_site_key",
-        "label": "Turnstile Site Key",
-        "info": "Paste your Cloudflare Turnstile Site Key (e.g. 0x4AAAAAA...). Leave blank to disable."
+        "id": "recaptcha_site_key",
+        "label": "reCAPTCHA site key",
+        "info": "Paste the Site Key for reCAPTCHA v2 Checkbox. Leave blank to disable."
       },
       {
         "type": "select",
-        "id": "turnstile_theme",
-        "label": "Turnstile Theme",
+        "id": "recaptcha_theme",
+        "label": "reCAPTCHA theme",
         "options": [
           {
-            "value": "auto",
-            "label": "Auto"
+            "value": "light",
+            "label": "Light"
           },
           {
             "value": "dark",
             "label": "Dark"
-          },
-          {
-            "value": "light",
-            "label": "Light"
           }
         ],
-        "default": "auto"
+        "default": "light"
       }
     ]
   }

@@ -649,6 +649,9 @@
       "success": "Thanks for subscribing.",
       "error": "Unable to subscribe. Please try again."
     },
+    "recaptcha": {
+      "required": "Please check the box to verify you are not a robot."
+    },
     "product": {
       "price_label": "Price: {{ price }}",
       "select_options": "Select options",

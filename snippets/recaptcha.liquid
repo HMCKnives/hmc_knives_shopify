@@ -1,0 +1,142 @@
+{% doc %}
+  Renders a Google reCAPTCHA v2 "I'm not a robot" checkbox and blocks form submit until it is checked.
+
+  @param {string} [site_key] - Optional site key. Defaults to settings.recaptcha_site_key.
+  @param {string} [theme] - light or dark. Defaults to settings.recaptcha_theme.
+  @param {string} [class] - Optional extra CSS class.
+
+  @example
+  {% render 'recaptcha', site_key: section.settings.recaptcha_site_key, theme: section.settings.recaptcha_theme %}
+{% enddoc %}
+
+{%- liquid
+  assign current_site_key = site_key
+  if current_site_key == blank
+    assign current_site_key = settings.recaptcha_site_key
+  endif
+
+  assign current_theme = theme
+  if current_theme == blank
+    assign current_theme = settings.recaptcha_theme | default: 'light'
+  endif
+  if current_theme == 'auto'
+    assign current_theme = 'light'
+  endif
+-%}
+
+{%- if current_site_key != blank -%}
+  <hmc-recaptcha
+    class="hmc-recaptcha{% if class != blank %} {{ class }}{% endif %}"
+    data-sitekey="{{ current_site_key | escape }}"
+    data-theme="{{ current_theme }}"
+    data-error="{{ 'hmc.recaptcha.required' | t | escape }}"
+  >
+    <div class="hmc-recaptcha__widget"></div>
+    <p class="hmc-recaptcha__error" hidden role="alert"></p>
+  </hmc-recaptcha>
+{%- endif -%}
+
+{% stylesheet %}
+  .hmc-recaptcha {
+    display: block;
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 304px;
+    min-height: 78px;
+    margin-block: 1.2rem;
+    overflow: visible;
+  }
+
+  .hmc-recaptcha__widget {
+    min-width: 304px;
+    min-height: 78px;
+  }
+
+  .hmc-recaptcha__error {
+    margin: 0.8rem 0 0;
+    color: #c41e1e;
+    font-size: 1.4rem;
+  }
+
+  .newsletter-form .hmc-recaptcha,
+  .hmc-newsletter-form .hmc-recaptcha {
+    flex: 0 0 100%;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class HmcRecaptcha extends HTMLElement {
+    connectedCallback() {
+      this.widgetHost = this.querySelector('.hmc-recaptcha__widget');
+      this.errorEl = this.querySelector('.hmc-recaptcha__error');
+      this.form = this.closest('form');
+      window.hmcRecaptchaWidgets = window.hmcRecaptchaWidgets || [];
+      window.hmcRecaptchaWidgets.push(this);
+      this.#loadScript();
+      if (window.grecaptcha && typeof window.grecaptcha.render === 'function') {
+        this.renderWidget();
+      }
+      this.form?.addEventListener('submit', this.#onSubmit);
+    }
+
+    disconnectedCallback() {
+      this.form?.removeEventListener('submit', this.#onSubmit);
+    }
+
+    renderWidget() {
+      if (this.widgetId != null || !this.widgetHost) return;
+      if (!window.grecaptcha || typeof window.grecaptcha.render !== 'function') return;
+
+      this.widgetId = window.grecaptcha.render(this.widgetHost, {
+        sitekey: this.dataset.sitekey,
+        theme: this.dataset.theme === 'dark' ? 'dark' : 'light',
+        callback: () => {
+          if (!this.errorEl) return;
+          this.errorEl.hidden = true;
+          this.errorEl.textContent = '';
+        },
+      });
+    }
+
+    #onSubmit = (event) => {
+      const response =
+        this.widgetId != null && window.grecaptcha
+          ? window.grecaptcha.getResponse(this.widgetId)
+          : '';
+
+      if (response) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const message = this.dataset.error || 'Please verify you are not a robot.';
+      if (this.errorEl) {
+        this.errorEl.hidden = false;
+        this.errorEl.textContent = message;
+      }
+      if (window.showToast) window.showToast(message, 'error');
+    };
+
+    #loadScript() {
+      if (document.getElementById('hmc-recaptcha-api')) return;
+
+      window.hmcOnRecaptchaLoad = function () {
+        const widgets = window.hmcRecaptchaWidgets || [];
+        for (const widget of widgets) {
+          widget.renderWidget();
+        }
+      };
+
+      const script = document.createElement('script');
+      script.id = 'hmc-recaptcha-api';
+      script.src = 'https://www.google.com/recaptcha/api.js?onload=hmcOnRecaptchaLoad&render=explicit';
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+    }
+  }
+
+  if (!customElements.get('hmc-recaptcha')) {
+    customElements.define('hmc-recaptcha', HmcRecaptcha);
+  }
+{% endjavascript %}

@@ -228,7 +228,7 @@
           {{ section.settings.button_label | escape }}
         </button>
 
-        {% render 'turnstile', site_key: section.settings.turnstile_site_key, theme: section.settings.turnstile_theme, class: 'hmc-newsletter-form__turnstile' %}
+        {% render 'recaptcha', site_key: section.settings.recaptcha_site_key, theme: section.settings.recaptcha_theme, class: 'hmc-newsletter-form__recaptcha' %}
 
         {%- if form.errors -%}
           <p
@@ -392,7 +392,7 @@
     color: #b4ffb4;
   }
 
-  .hmc-newsletter-form__turnstile {
+  .hmc-newsletter-form__recaptcha {
     flex: 1 1 100%;
     margin-top: 1.2rem;
     display: flex;
@@ -636,30 +636,26 @@
     },
     {
       "type": "header",
-      "content": "Cloudflare Turnstile"
+      "content": "Google reCAPTCHA"
     },
     {
       "type": "text",
-      "id": "turnstile_site_key",
-      "label": "Turnstile Site Key",
-      "info": "Paste your Cloudflare Turnstile Site Key (e.g. 0x4AAAAAA...). Leave blank to disable Turnstile."
+      "id": "recaptcha_site_key",
+      "label": "reCAPTCHA site key",
+      "info": "Paste your Google reCAPTCHA v2 Checkbox site key, or leave blank to use the global theme setting."
     },
     {
       "type": "select",
-      "id": "turnstile_theme",
-      "label": "Turnstile Theme",
+      "id": "recaptcha_theme",
+      "label": "reCAPTCHA theme",
       "options": [
         {
-          "value": "auto",
-          "label": "Auto"
+          "value": "light",
+          "label": "Light"
         },
         {
           "value": "dark",
           "label": "Dark"
-        },
-        {
-          "value": "light",
-          "label": "Light"
         }
       ],
       "default": "dark"

@@ -46,8 +46,6 @@
         "heading": "Sign up for exclusive drop alerts and a chance to win a Free Transient Knife",
         "button_label": "Sign Up",
         "success_message": "Thanks for signing up!",
-        "turnstile_site_key": "0x4AAAAAAEfntj5oz6IpdJnN",
-        "turnstile_theme": "dark",
         "padding_top": 24,
         "padding_bottom": 8
       }
