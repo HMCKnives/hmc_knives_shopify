@@ -175,26 +175,8 @@
         "padding_bottom": 56
       }
     },
-    "1787932376ec597651": {
-      "type": "apps",
-      "blocks": {
-        "spoks_spoks_embedded_form_w6Ey8Y": {
-          "type": "shopify://apps/spoks/blocks/spoks.embedded.form/019df208-bd19-7b2c-ae58-b73c1182b487",
-          "settings": {
-            "form_id": "8948bf46-252a-47df-9bb7-2555f02a14f7"
-          }
-        }
-      },
-      "block_order": [
-        "spoks_spoks_embedded_form_w6Ey8Y"
-      ],
-      "settings": {
-        "include_margins": true
-      }
-    },
     "hmc_signup": {
       "type": "hmc-media-signup",
-      "disabled": true,
       "settings": {
         "heading": "Sign up for exclusive drop alerts and a chance to win a Free Transient Knife",
         "button_label": "Sign Up",
@@ -229,7 +211,6 @@
     "hmc_policy",
     "hmc_page",
     "hmc_newsletter",
-    "1787932376ec597651",
     "hmc_signup",
     "hmc_social_bottom"
   ]
