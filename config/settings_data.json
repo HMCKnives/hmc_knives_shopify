@@ -137,7 +137,7 @@
     "hmc_newsletter_heading": "Be first to know & never miss out.",
     "hmc_newsletter_subheading": "Join 4k+ members and get exclusive content.",
     "turnstile_site_key": "3x00000000000000000000FF",
-    "turnstile_theme": "auto",
+    "turnstile_theme": "dark",
     "sections": {
       "main-password-header": {
         "type": "main-password-header",
