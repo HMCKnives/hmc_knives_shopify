@@ -2,3 +2,15 @@ MatchingTranslations:
   enabled: false
 TemplateLength:
   enabled: false
+RemoteAsset:
+  enabled: false
+UndefinedObject:
+  enabled: false
+UnusedAssign:
+  enabled: false
+VariableName:
+  enabled: false
+OrphanedSnippet:
+  enabled: false
+
+

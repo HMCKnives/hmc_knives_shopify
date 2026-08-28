@@ -58,7 +58,7 @@
     {%- if section.blocks.size > 0 -%}
       <ul class="hmc-newsletter-band__benefits">
         {%- for block in section.blocks -%}
-          {%- if block.settings.text != blank -%}
+          {%- if block.type == 'benefit' and block.settings.text != blank -%}
             <li class="hmc-newsletter-band__benefit" {{ block.shopify_attributes }}>
               {{ block.settings.text | escape }}
             </li>
@@ -67,62 +67,87 @@
       </ul>
     {%- endif -%}
 
-    {%- capture newsletter_form_id -%}HmcNewsletterForm-{{ section.id }}{%- endcapture -%}
-    {% form 'customer', class: 'hmc-newsletter-form', id: newsletter_form_id %}
-      <input type="hidden" name="contact[tags]" value="newsletter">
+    {%- liquid
+      assign has_app_block = false
+      for block in section.blocks
+        if block.type == '@app'
+          assign has_app_block = true
+        endif
+      endfor
+    -%}
 
-      <label class="hmc-sr-only" for="HmcNewsletterEmail-{{ section.id }}">
-        {{ 'hmc.general.email_label' | t }}
-      </label>
-      <input
-        id="HmcNewsletterEmail-{{ section.id }}"
-        type="email"
-        name="contact[email]"
-        class="hmc-newsletter-form__input"
-        value="{{ form.email }}"
-        placeholder="{{ 'hmc.general.email_placeholder' | t }}"
-        autocomplete="email"
-        autocorrect="off"
-        autocapitalize="off"
-        aria-required="true"
-        {% if form.errors %}
-          aria-invalid="true"
-          aria-describedby="HmcNewsletterError-{{ section.id }}"
-        {% elsif form.posted_successfully? %}
-          aria-describedby="HmcNewsletterSuccess-{{ section.id }}"
-        {% endif %}
-        required
-      >
+    {%- if has_app_block -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == '@app' -%}
+          <div class="hmc-newsletter-band__app-block" {{ block.shopify_attributes }}>
+            {% render block %}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- elsif section.settings.spoks_form_id != blank -%}
+      <div
+        class="hmc-newsletter-band__spoks-form spoks-form-embed spoks-embedded-form"
+        data-form-id="{{ section.settings.spoks_form_id | escape }}"
+        data-spoks-form-id="{{ section.settings.spoks_form_id | escape }}"
+      ></div>
+    {%- else -%}
+      {%- capture newsletter_form_id -%}HmcNewsletterForm-{{ section.id }}{%- endcapture -%}
+      {% form 'customer', class: 'hmc-newsletter-form', id: newsletter_form_id %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
 
-      <button
-        type="submit"
-        class="hmc-newsletter-form__btn"
-        name="commit"
-      >
-        {{ section.settings.button_label | escape }}
-      </button>
-
-      {%- if form.errors -%}
-        <p
-          class="hmc-newsletter-band__message hmc-newsletter-band__message--error"
-          id="HmcNewsletterError-{{ section.id }}"
-          role="alert"
+        <label class="hmc-sr-only" for="HmcNewsletterEmail-{{ section.id }}">
+          {{ 'hmc.general.email_label' | t }}
+        </label>
+        <input
+          id="HmcNewsletterEmail-{{ section.id }}"
+          type="email"
+          name="contact[email]"
+          class="hmc-newsletter-form__input"
+          value="{{ form.email }}"
+          placeholder="{{ 'hmc.general.email_placeholder' | t }}"
+          autocomplete="email"
+          autocorrect="off"
+          autocapitalize="off"
+          aria-required="true"
+          {% if form.errors %}
+            aria-invalid="true"
+            aria-describedby="HmcNewsletterError-{{ section.id }}"
+          {% elsif form.posted_successfully? %}
+            aria-describedby="HmcNewsletterSuccess-{{ section.id }}"
+          {% endif %}
+          required
         >
-          {{ form.errors.translated_fields.email | capitalize }}
-          {{ form.errors.messages.email }}
-        </p>
-      {%- endif -%}
 
-      {%- if form.posted_successfully? -%}
-        <p
-          class="hmc-newsletter-band__message hmc-newsletter-band__message--success"
-          id="HmcNewsletterSuccess-{{ section.id }}"
-          role="status"
+        <button
+          type="submit"
+          class="hmc-newsletter-form__btn"
+          name="commit"
         >
-          {{ 'hmc.newsletter.success' | t }}
-        </p>
-      {%- endif -%}
-    {% endform %}
+          {{ section.settings.button_label | escape }}
+        </button>
+
+        {%- if form.errors -%}
+          <p
+            class="hmc-newsletter-band__message hmc-newsletter-band__message--error"
+            id="HmcNewsletterError-{{ section.id }}"
+            role="alert"
+          >
+            {{ form.errors.translated_fields.email | capitalize }}
+            {{ form.errors.messages.email }}
+          </p>
+        {%- endif -%}
+
+        {%- if form.posted_successfully? -%}
+          <p
+            class="hmc-newsletter-band__message hmc-newsletter-band__message--success"
+            id="HmcNewsletterSuccess-{{ section.id }}"
+            role="status"
+          >
+            {{ 'hmc.newsletter.success' | t }}
+          </p>
+        {%- endif -%}
+      {% endform %}
+    {%- endif -%}
   </div>
 </section>
 {%- endunless -%}
@@ -331,6 +356,16 @@
     },
     {
       "type": "header",
+      "content": "Custom Form App"
+    },
+    {
+      "type": "text",
+      "id": "spoks_form_id",
+      "label": "Spoks Form ID",
+      "info": "Paste your Spoks Form ID (e.g. 8948bf46-252a-47df-9bb7-2555f02a14f7) to replace the default form. Leave blank to use default form."
+    },
+    {
+      "type": "header",
       "content": "t:sections.hmc.common.padding.header"
     },
     {
@@ -355,6 +390,9 @@
     }
   ],
   "blocks": [
+    {
+      "type": "@app"
+    },
     {
       "type": "benefit",
       "name": "t:sections.hmc-newsletter-band.blocks.benefit.name",
