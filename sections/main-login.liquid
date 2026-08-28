@@ -58,6 +58,8 @@
         </small>
       {%- endif -%}
 
+      {% render 'turnstile', site_key: section.settings.turnstile_site_key, theme: section.settings.turnstile_theme %}
+
       <button>
         {{ 'customer.login_page.submit' | t }}
       </button>
@@ -73,12 +75,20 @@
   </h1>
   <div>
     {%- if recover_success == true -%}
+      {%- assign recover_success_text = 'customer.recover_password.success' | t -%}
       <h3 class="form__message" tabindex="-1" autofocus>
         <span class="svg-wrapper">
           {{- 'icon-success.svg' | inline_asset_content -}}
         </span>
-        {{ 'customer.recover_password.success' | t }}
+        {{ recover_success_text }}
       </h3>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          if (window.showToast) {
+            window.showToast({{ recover_success_text | json }});
+          }
+        });
+      </script>
     {%- endif -%}
     {%- form 'customer_login', novalidate: 'novalidate' -%}
       {%- if form.errors -%}
@@ -145,6 +155,8 @@
         </a>
       {%- endif -%}
 
+      {% render 'turnstile', site_key: section.settings.turnstile_site_key, theme: section.settings.turnstile_theme %}
+
       <button>
         {{ 'customer.login_page.sign_in' | t }}
       </button>
@@ -178,6 +190,36 @@
       "id": "enable_shop_login_button",
       "label": "t:sections.main-login.shop_login_button.enable",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Cloudflare Turnstile"
+    },
+    {
+      "type": "text",
+      "id": "turnstile_site_key",
+      "label": "Turnstile Site Key",
+      "info": "Paste your Turnstile Site Key or leave blank to use the global theme setting."
+    },
+    {
+      "type": "select",
+      "id": "turnstile_theme",
+      "label": "Turnstile Theme",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "dark",
+          "label": "Dark"
+        },
+        {
+          "value": "light",
+          "label": "Light"
+        }
+      ],
+      "default": "auto"
     },
     {
       "type": "header",

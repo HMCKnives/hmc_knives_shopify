@@ -127,6 +127,7 @@
         {{ form.errors.messages.password }}.
       </span>
     {%- endif -%}
+    {% render 'turnstile', site_key: section.settings.turnstile_site_key, theme: section.settings.turnstile_theme %}
     <button>
       {{ 'customer.register.submit' | t }}
     </button>
@@ -137,6 +138,36 @@
 {
   "name": "t:sections.main-register.name",
   "settings": [
+    {
+      "type": "header",
+      "content": "Cloudflare Turnstile"
+    },
+    {
+      "type": "text",
+      "id": "turnstile_site_key",
+      "label": "Turnstile Site Key",
+      "info": "Paste your Turnstile Site Key or leave blank to use the global theme setting."
+    },
+    {
+      "type": "select",
+      "id": "turnstile_theme",
+      "label": "Turnstile Theme",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "dark",
+          "label": "Dark"
+        },
+        {
+          "value": "light",
+          "label": "Light"
+        }
+      ],
+      "default": "auto"
+    },
     {
       "type": "header",
       "content": "t:sections.all.padding.section_padding_heading"

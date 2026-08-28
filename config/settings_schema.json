@@ -1547,5 +1547,40 @@
         "info": "t:settings_schema.hmc_brand.settings.hmc_media_hero_image_info"
       }
     ]
+  },
+  {
+    "name": "Cloudflare Turnstile",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Configure Cloudflare Turnstile CAPTCHA protection for forms across your store."
+      },
+      {
+        "type": "text",
+        "id": "turnstile_site_key",
+        "label": "Turnstile Site Key",
+        "info": "Paste your Cloudflare Turnstile Site Key (e.g. 0x4AAAAAA...). Leave blank to disable."
+      },
+      {
+        "type": "select",
+        "id": "turnstile_theme",
+        "label": "Turnstile Theme",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Auto"
+          },
+          {
+            "value": "dark",
+            "label": "Dark"
+          },
+          {
+            "value": "light",
+            "label": "Light"
+          }
+        ],
+        "default": "auto"
+      }
+    ]
   }
 ]

@@ -164,14 +164,22 @@
               {%- endfor -%}
             </ul>
           {%- elsif form.posted_successfully? -%}
+            {%- assign comment_success_text = post_message | t -%}
             <div class="form-status-list form__message" role="status">
               <h3 class="form-status" tabindex="-1" autofocus>
                 <span class="svg-wrapper">
                   {{- 'icon-success.svg' | inline_asset_content -}}
                 </span>
-                {{ post_message | t }}
+                {{ comment_success_text }}
               </h3>
             </div>
+            <script>
+              document.addEventListener('DOMContentLoaded', function() {
+                if (window.showToast) {
+                  window.showToast({{ comment_success_text | json }});
+                }
+              });
+            </script>
           {%- endif -%}
 
           <div
@@ -281,6 +289,7 @@
           {%- if blog.moderated? -%}
             <p class="article-template__comment-warning caption">{{ 'blogs.article.moderated' | t }}</p>
           {%- endif -%}
+          {% render 'turnstile' %}
           <input type="submit" class="button" value="{{ 'blogs.article.post' | t }}">
         {% endform %}
       </div>

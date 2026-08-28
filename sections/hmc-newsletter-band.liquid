@@ -89,7 +89,109 @@
         class="hmc-newsletter-band__spoks-form spoks-form-embed spoks-embedded-form"
         data-form-id="{{ section.settings.spoks_form_id | escape }}"
         data-spoks-form-id="{{ section.settings.spoks_form_id | escape }}"
-      ></div>
+      >
+        <style>
+          #HmcNewsletterBand-{{ section.id }} [data-form-id],
+          #HmcNewsletterBand-{{ section.id }} [data-spoks-form-id],
+          #HmcNewsletterBand-{{ section.id }} .spoks-form-embed,
+          #HmcNewsletterBand-{{ section.id }} .spoks-embedded-form,
+          #HmcNewsletterBand-{{ section.id }} .hmc-newsletter-band__spoks-form {
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            max-width: 65rem !important;
+          }
+          #HmcNewsletterBand-{{ section.id }} [data-form-id] > div,
+          #HmcNewsletterBand-{{ section.id }} [data-spoks-form-id] > div,
+          #HmcNewsletterBand-{{ section.id }} .spoks-form-embed > div,
+          #HmcNewsletterBand-{{ section.id }} .spoks-embedded-form > div {
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+          }
+          #HmcNewsletterBand-{{ section.id }} [data-form-id] h1,
+          #HmcNewsletterBand-{{ section.id }} [data-form-id] h2,
+          #HmcNewsletterBand-{{ section.id }} [data-form-id] h3,
+          #HmcNewsletterBand-{{ section.id }} [data-form-id] [class*="title"],
+          #HmcNewsletterBand-{{ section.id }} [data-form-id] [class*="heading"] {
+            display: none !important;
+          }
+          #HmcNewsletterBand-{{ section.id }} form.space-y-5,
+          #HmcNewsletterBand-{{ section.id }} [data-form-id] form {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            gap: 1.2rem !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            background: transparent !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            max-width: none !important;
+          }
+          #HmcNewsletterBand-{{ section.id }} [data-form-id] form > div {
+            display: inline-flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            width: auto !important;
+            max-width: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+          #HmcNewsletterBand-{{ section.id }} [data-form-id] form > div:first-child {
+            flex: 1 1 24rem !important;
+            max-width: 35rem !important;
+            width: 100% !important;
+          }
+          #HmcNewsletterBand-{{ section.id }} [data-form-id] input[type="email"],
+          #HmcNewsletterBand-{{ section.id }} [data-form-id] input[type="text"] {
+            width: 100% !important;
+            max-width: 35rem !important;
+            min-height: 5.4rem !important;
+            height: 5.4rem !important;
+            padding: 0.8rem 2rem !important;
+            border-radius: 10rem !important;
+            border: none !important;
+            background: #ffffff !important;
+            color: #0a0a0a !important;
+            font-size: 1.4rem !important;
+            -webkit-text-fill-color: #0a0a0a !important;
+            outline: none !important;
+            box-shadow: none !important;
+          }
+          #HmcNewsletterBand-{{ section.id }} [data-form-id] input::placeholder {
+            color: rgba(10, 10, 10, 0.5) !important;
+            font-size: 1.4rem !important;
+          }
+          #HmcNewsletterBand-{{ section.id }} [data-form-id] button,
+          #HmcNewsletterBand-{{ section.id }} [data-form-id] [data-react-aria-pressable] {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 20.6rem !important;
+            min-height: 5.4rem !important;
+            height: 5.4rem !important;
+            padding: 0.8rem 2rem !important;
+            background: var(--hmc-accent, #383224) !important;
+            color: var(--hmc-white, #fff) !important;
+            border: 2px solid var(--hmc-white, #fff) !important;
+            border-radius: 10rem !important;
+            font-size: 1.6rem !important;
+            font-weight: 400 !important;
+            letter-spacing: 0.2rem !important;
+            cursor: pointer !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+            text-transform: capitalize !important;
+          }
+          #HmcNewsletterBand-{{ section.id }} [data-form-id] button:hover {
+            opacity: 0.92 !important;
+          }
+        </style>
+      </div>
     {%- else -%}
       {%- capture newsletter_form_id -%}HmcNewsletterForm-{{ section.id }}{%- endcapture -%}
       {% form 'customer', class: 'hmc-newsletter-form', id: newsletter_form_id %}
@@ -126,6 +228,8 @@
           {{ section.settings.button_label | escape }}
         </button>
 
+        {% render 'turnstile', site_key: section.settings.turnstile_site_key, theme: section.settings.turnstile_theme, class: 'hmc-newsletter-form__turnstile' %}
+
         {%- if form.errors -%}
           <p
             class="hmc-newsletter-band__message hmc-newsletter-band__message--error"
@@ -138,13 +242,26 @@
         {%- endif -%}
 
         {%- if form.posted_successfully? -%}
+          {%- liquid
+            assign success_text = section.settings.success_message
+            if success_text == blank
+              assign success_text = 'hmc.newsletter.success' | t
+            endif
+          -%}
           <p
             class="hmc-newsletter-band__message hmc-newsletter-band__message--success"
             id="HmcNewsletterSuccess-{{ section.id }}"
             role="status"
           >
-            {{ 'hmc.newsletter.success' | t }}
+            {{ success_text }}
           </p>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              if (window.showToast) {
+                window.showToast({{ success_text | json }});
+              }
+            });
+          </script>
         {%- endif -%}
       {% endform %}
     {%- endif -%}
@@ -275,6 +392,13 @@
     color: #b4ffb4;
   }
 
+  .hmc-newsletter-form__turnstile {
+    flex: 1 1 100%;
+    margin-top: 1.2rem;
+    display: flex;
+    justify-content: flex-start;
+  }
+
   .hmc-newsletter-band .hmc-newsletter-form__input:focus-visible,
   .hmc-newsletter-band .hmc-newsletter-form__btn:focus-visible {
     outline: 2px solid var(--hmc-white, #fff);
@@ -282,51 +406,56 @@
   }
 
   /* Spoks Form Custom Restyling */
+  .hmc-newsletter-band .hmc-newsletter-band__spoks-form,
   .hmc-newsletter-band .spoks-form-embed,
   .hmc-newsletter-band .spoks-embedded-form,
-  .hmc-newsletter-band .hmc-newsletter-band__spoks-form,
-  .hmc-newsletter-band .hmc-newsletter-band__app-block {
+  .hmc-newsletter-band .hmc-newsletter-band__app-block,
+  .hmc-newsletter-band div[style*="max-width: 700px"],
+  .hmc-newsletter-band [data-form-id] {
     background: transparent !important;
     box-shadow: none !important;
     border: none !important;
     padding: 0 !important;
     margin: 0 !important;
-    max-width: 60rem !important;
+    max-width: 65rem !important;
   }
 
-  .hmc-newsletter-band .spoks-form-embed *,
-  .hmc-newsletter-band .spoks-embedded-form *,
-  .hmc-newsletter-band .hmc-newsletter-band__spoks-form * {
-    box-sizing: border-box;
-  }
-
-  /* Hide Spoks container cards, white backgrounds, and redundant titles */
+  /* Override the white background card generated by Spoks */
+  .hmc-newsletter-band [class*="bg-[color:var(--looks-colors-surface)]"],
+  .hmc-newsletter-band div[style*="max-width: 700px"],
+  .hmc-newsletter-band .hmc-newsletter-band__spoks-form > div,
   .hmc-newsletter-band .spoks-form-embed > div,
-  .hmc-newsletter-band .spoks-embedded-form > div,
-  .hmc-newsletter-band .hmc-newsletter-band__spoks-form > div {
+  .hmc-newsletter-band [data-form-id] > div {
+    background-color: transparent !important;
     background: transparent !important;
     box-shadow: none !important;
     border: none !important;
     padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
   }
 
-  .hmc-newsletter-band .spoks-form-embed h1,
-  .hmc-newsletter-band .spoks-form-embed h2,
-  .hmc-newsletter-band .spoks-form-embed h3,
-  .hmc-newsletter-band .spoks-form-embed h4,
-  .hmc-newsletter-band .spoks-form-embed [class*="title"],
-  .hmc-newsletter-band .spoks-form-embed [class*="heading"],
-  .hmc-newsletter-band .spoks-embedded-form [class*="title"],
-  .hmc-newsletter-band .spoks-embedded-form [class*="heading"],
-  .hmc-newsletter-band .hmc-newsletter-band__spoks-form [class*="title"],
-  .hmc-newsletter-band .hmc-newsletter-band__spoks-form [class*="heading"] {
+  .hmc-newsletter-band div[class*="py-8"],
+  .hmc-newsletter-band div[class*="px-7"],
+  .hmc-newsletter-band div[class*="pt-4"] {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Hide Spoks duplicate headings (Sign Up) and description */
+  .hmc-newsletter-band h3[slot="title"],
+  .hmc-newsletter-band [class*="spoks"] h1,
+  .hmc-newsletter-band [class*="spoks"] h2,
+  .hmc-newsletter-band [class*="spoks"] h3,
+  .hmc-newsletter-band [data-form-id] h3,
+  .hmc-newsletter-band [data-form-id] [slot="title"] {
     display: none !important;
   }
 
-  /* Form row layout */
-  .hmc-newsletter-band .spoks-form-embed form,
-  .hmc-newsletter-band .spoks-embedded-form form,
-  .hmc-newsletter-band .hmc-newsletter-band__spoks-form form {
+  /* Form row layout - override Tailwind space-y-5 / flex-col */
+  .hmc-newsletter-band form.space-y-5,
+  .hmc-newsletter-band form.flex-col,
+  .hmc-newsletter-band [data-form-id] form {
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: wrap !important;
@@ -336,57 +465,74 @@
     background: transparent !important;
     padding: 0 !important;
     margin: 0 !important;
+    max-width: none !important;
   }
 
-  .hmc-newsletter-band .spoks-form-embed [class*="field"],
-  .hmc-newsletter-band .spoks-form-embed [class*="input-wrapper"],
-  .hmc-newsletter-band .spoks-embedded-form [class*="field"],
-  .hmc-newsletter-band .hmc-newsletter-band__spoks-form [class*="field"] {
+  .hmc-newsletter-band form.space-y-5 > div,
+  .hmc-newsletter-band form.flex-col > div,
+  .hmc-newsletter-band [data-form-id] form > div {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    width: auto !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .hmc-newsletter-band form.space-y-5 > div:first-child,
+  .hmc-newsletter-band form.flex-col > div:first-child,
+  .hmc-newsletter-band [data-form-id] form > div:first-child {
     flex: 1 1 24rem !important;
     max-width: 35rem !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  .hmc-newsletter-band .spoks-form-embed label,
-  .hmc-newsletter-band .spoks-embedded-form label,
-  .hmc-newsletter-band .hmc-newsletter-band__spoks-form label {
-    display: none !important;
-  }
-
-  /* Input pill styling */
-  .hmc-newsletter-band .spoks-form-embed input[type="email"],
-  .hmc-newsletter-band .spoks-form-embed input[type="text"],
-  .hmc-newsletter-band .spoks-embedded-form input[type="email"],
-  .hmc-newsletter-band .spoks-embedded-form input[type="text"],
-  .hmc-newsletter-band .hmc-newsletter-band__spoks-form input[type="email"],
-  .hmc-newsletter-band .hmc-newsletter-band__spoks-form input[type="text"] {
     width: 100% !important;
+  }
+
+  /* Input wrapper & Input pill styling */
+  .hmc-newsletter-band div[data-rac] {
+    width: 100% !important;
+  }
+
+  .hmc-newsletter-band input[type="email"][data-rac],
+  .hmc-newsletter-band [data-form-id] input[type="email"],
+  .hmc-newsletter-band .hmc-newsletter-band__spoks-form input[type="email"] {
+    width: 100% !important;
+    max-width: 35rem !important;
     min-height: 5.4rem !important;
+    height: 5.4rem !important;
     padding: 0.8rem 2rem !important;
     border-radius: 10rem !important;
     border: none !important;
+    background-color: #ffffff !important;
     background: #ffffff !important;
     color: #0a0a0a !important;
     font-size: 1.4rem !important;
     font-family: inherit !important;
     outline: none !important;
     box-shadow: none !important;
+    -webkit-text-fill-color: #0a0a0a !important;
+    line-height: normal !important;
   }
 
-  /* Button pill styling */
-  .hmc-newsletter-band .spoks-form-embed button,
-  .hmc-newsletter-band .spoks-form-embed input[type="submit"],
-  .hmc-newsletter-band .spoks-embedded-form button,
-  .hmc-newsletter-band .spoks-embedded-form input[type="submit"],
-  .hmc-newsletter-band .hmc-newsletter-band__spoks-form button,
-  .hmc-newsletter-band .hmc-newsletter-band__spoks-form input[type="submit"] {
+  .hmc-newsletter-band input[type="email"][data-rac]::placeholder,
+  .hmc-newsletter-band [data-form-id] input::placeholder {
+    color: rgba(10, 10, 10, 0.5) !important;
+    -webkit-text-fill-color: rgba(10, 10, 10, 0.5) !important;
+    font-size: 1.4rem !important;
+  }
+
+  /* Button wrapper & Button pill styling */
+  .hmc-newsletter-band button[data-rac][type="submit"],
+  .hmc-newsletter-band [data-form-id] button[type="submit"],
+  .hmc-newsletter-band .hmc-newsletter-band__spoks-form button {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     min-width: 20.6rem !important;
     min-height: 5.4rem !important;
+    height: 5.4rem !important;
     padding: 0.8rem 2rem !important;
+    background-color: var(--hmc-accent, #383224) !important;
     background: var(--hmc-accent, #383224) !important;
     color: var(--hmc-white, #fff) !important;
     border: 2px solid var(--hmc-white, #fff) !important;
@@ -400,14 +546,12 @@
     box-shadow: none !important;
     transition: opacity 0.2s ease !important;
     margin: 0 !important;
+    text-transform: capitalize !important;
   }
 
-  .hmc-newsletter-band .spoks-form-embed button:hover,
-  .hmc-newsletter-band .spoks-form-embed input[type="submit"]:hover,
-  .hmc-newsletter-band .spoks-embedded-form button:hover,
-  .hmc-newsletter-band .spoks-embedded-form input[type="submit"]:hover,
-  .hmc-newsletter-band .hmc-newsletter-band__spoks-form button:hover,
-  .hmc-newsletter-band .hmc-newsletter-band__spoks-form input[type="submit"]:hover {
+  .hmc-newsletter-band button[data-rac][type="submit"]:hover,
+  .hmc-newsletter-band [data-form-id] button:hover,
+  .hmc-newsletter-band .hmc-newsletter-band__spoks-form button:hover {
     opacity: 0.92 !important;
   }
 {% endstylesheet %}
@@ -483,6 +627,42 @@
       "id": "button_label",
       "label": "t:sections.hmc-newsletter-band.settings.button_label",
       "default": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Thanks for subscribing!"
+    },
+    {
+      "type": "header",
+      "content": "Cloudflare Turnstile"
+    },
+    {
+      "type": "text",
+      "id": "turnstile_site_key",
+      "label": "Turnstile Site Key",
+      "info": "Paste your Cloudflare Turnstile Site Key (e.g. 0x4AAAAAA...). Leave blank to disable Turnstile."
+    },
+    {
+      "type": "select",
+      "id": "turnstile_theme",
+      "label": "Turnstile Theme",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "dark",
+          "label": "Dark"
+        },
+        {
+          "value": "light",
+          "label": "Light"
+        }
+      ],
+      "default": "dark"
     },
     {
       "type": "header",

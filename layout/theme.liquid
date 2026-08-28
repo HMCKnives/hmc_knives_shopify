@@ -288,6 +288,34 @@
     {{ 'base.css' | asset_url | stylesheet_tag }}
 
     {{ 'hmc.css' | asset_url | stylesheet_tag }}
+    {{ 'toastify.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'toastify.js' | asset_url }}" defer="defer"></script>
+    <script>
+      window.showToast = function(message, type, options) {
+        if (!message) return;
+        type = type || 'success';
+        options = options || {};
+        var run = function() {
+          if (typeof Toastify === 'function') {
+            var toast = Toastify(Object.assign({
+              text: message,
+              duration: options.duration || 5000,
+              close: true,
+              gravity: options.gravity || 'top',
+              position: options.position || 'right',
+              stopOnFocus: true,
+              className: type === 'error' ? 'toastify-error' : 'toastify-success'
+            }, options));
+            toast.showToast();
+          }
+        };
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', run);
+        } else {
+          run();
+        }
+      };
+    </script>
     {% style %}
       :root {
         --hmc-accent: {{ settings.hmc_accent }};

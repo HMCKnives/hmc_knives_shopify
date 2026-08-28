@@ -95,6 +95,8 @@
         </button>
       </div>
 
+      {% render 'turnstile', site_key: section.settings.turnstile_site_key, theme: section.settings.turnstile_theme %}
+
       {%- if form.errors -%}
         <p class="hmc-media-signup__message hmc-media-signup__message--error" id="{{ error_id }}" role="alert">
           {{ form.errors.translated_fields.email | capitalize }}
@@ -103,9 +105,22 @@
       {%- endif -%}
 
       {%- if form.posted_successfully? -%}
+        {%- liquid
+          assign success_text = section.settings.success_message
+          if success_text == blank
+            assign success_text = 'hmc.newsletter.success' | t
+          endif
+        -%}
         <p class="hmc-media-signup__message hmc-media-signup__message--success" id="{{ success_id }}" role="status">
-          {{ 'hmc.newsletter.success' | t }}
+          {{ success_text }}
         </p>
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            if (window.showToast) {
+              window.showToast({{ success_text | json }});
+            }
+          });
+        </script>
       {%- endif -%}
     {% endform %}
   </div>
@@ -132,11 +147,11 @@
   }
 
   .hmc-media-signup__heading {
-    margin: 0 auto 0.75rem;
-    max-width: 42rem;
+    margin: 0 auto 1.2rem;
+    max-width: 56rem;
     text-align: center;
-    font-size: 1.25rem;
-    line-height: 1.4;
+    font-size: clamp(1.6rem, 2.2vw, 2.2rem);
+    line-height: 1.35;
     font-weight: 700;
     color: var(--hmc-black, #0a0a0a);
   }
@@ -158,14 +173,15 @@
   .hmc-media-signup__input,
   .hmc-media-signup__submit {
     width: 100%;
-    min-height: 53px;
-    font-size: 0.875rem;
-    line-height: 1.2;
+    min-height: 5.4rem;
+    font-family: inherit;
+    font-size: 1.5rem;
+    line-height: 1.4;
   }
 
   .hmc-media-signup__input {
     display: block;
-    padding: 18px;
+    padding: 1.4rem 1.8rem;
     border: 1px solid var(--hmc-black, #000);
     border-radius: 3px;
     background: #f8f6f1;
@@ -173,7 +189,8 @@
   }
 
   .hmc-media-signup__input::placeholder {
-    color: rgba(17, 17, 17, 0.55);
+    color: rgba(17, 17, 17, 0.6);
+    font-size: 1.5rem;
   }
 
   .hmc-media-signup__input:focus-visible,
@@ -183,19 +200,29 @@
   }
 
   .hmc-media-signup__submit {
-    padding: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.4rem 2rem;
     border: 0;
     border-radius: 0;
     background: var(--hmc-accent, #383224);
     color: var(--hmc-white, #fff);
-    font-weight: 400;
+    font-size: 1.6rem;
+    font-weight: 500;
+    letter-spacing: 0.05rem;
     cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .hmc-media-signup__submit:hover {
+    opacity: 0.92;
   }
 
   .hmc-media-signup__message {
-    margin: 0.75rem 0 0;
+    margin: 1rem 0 0;
     text-align: center;
-    font-size: 0.875rem;
+    font-size: 1.4rem;
   }
 
   .hmc-media-signup__message--error {
@@ -224,6 +251,42 @@
       "id": "button_label",
       "label": "t:sections.hmc-media-signup.settings.button_label",
       "default": "Sign Up"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Thanks for signing up!"
+    },
+    {
+      "type": "header",
+      "content": "Cloudflare Turnstile"
+    },
+    {
+      "type": "text",
+      "id": "turnstile_site_key",
+      "label": "Turnstile Site Key",
+      "info": "Paste your Turnstile Site Key or leave blank to use the global theme setting."
+    },
+    {
+      "type": "select",
+      "id": "turnstile_theme",
+      "label": "Turnstile Theme",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "dark",
+          "label": "Dark"
+        },
+        {
+          "value": "light",
+          "label": "Light"
+        }
+      ],
+      "default": "light"
     },
     {
       "type": "header",
