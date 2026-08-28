@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hmc_page_hero": {
@@ -52,10 +61,18 @@
           }
         }
       },
-      "block_order": ["s1", "s2", "s3", "s4"],
+      "block_order": [
+        "s1",
+        "s2",
+        "s3",
+        "s4"
+      ],
       "settings": {
         "heading": "Here's How to Redeem Your Warranty.",
         "button_label": "Send To HMC Knives",
+        "success_message": "Your warranty submission was received successfully.",
+        "turnstile_site_key": "",
+        "turnstile_theme": "dark",
         "padding_top": 24,
         "padding_bottom": 48
       }
@@ -63,24 +80,51 @@
     "hmc_newsletter": {
       "type": "hmc-newsletter-band",
       "blocks": {
-        "b1": { "type": "benefit", "settings": { "text": "Exclusive Email List Knife Drops" } },
-        "b2": { "type": "benefit", "settings": { "text": "Educational Content" } },
-        "b3": { "type": "benefit", "settings": { "text": "Free Knife Giveaways" } }
+        "b1": {
+          "type": "benefit",
+          "settings": {
+            "text": "Exclusive Email List Knife Drops"
+          }
+        },
+        "b2": {
+          "type": "benefit",
+          "settings": {
+            "text": "Educational Content"
+          }
+        },
+        "b3": {
+          "type": "benefit",
+          "settings": {
+            "text": "Free Knife Giveaways"
+          }
+        }
       },
-      "block_order": ["b1", "b2", "b3"],
+      "block_order": [
+        "b1",
+        "b2",
+        "b3"
+      ],
       "settings": {
         "heading": "Be first to know & never miss out.",
         "subheading": "Join 4k+ members and get exclusive content.",
-        "overlay_opacity": 85,
         "overlay_color": "#000000",
+        "overlay_opacity": 85,
         "use_gradient_overlay": true,
         "overlay_color_end": "#556a69",
         "show_wave_top": true,
         "button_label": "Subscribe Now",
+        "success_message": "Thanks for subscribing!",
+        "turnstile_site_key": "",
+        "turnstile_theme": "dark",
+        "spoks_form_id": "",
         "padding_top": 56,
         "padding_bottom": 56
       }
     }
   },
-  "order": ["hmc_page_hero", "hmc_warranty", "hmc_newsletter"]
+  "order": [
+    "hmc_page_hero",
+    "hmc_warranty",
+    "hmc_newsletter"
+  ]
 }
