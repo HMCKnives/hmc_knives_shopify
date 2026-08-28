@@ -144,48 +144,6 @@
         "padding_bottom": 20
       }
     },
-    "hmc_testimonials": {
-      "type": "hmc-testimonials",
-      "blocks": {
-        "t1": {
-          "type": "testimonial",
-          "settings": {
-            "quote": "Dudes got integrity, family value, sportsmanship, and makes a hello of a knife! Whether it's one of his Transients or any of the MAC projects! Never disappoints.",
-            "name": "Rick W."
-          }
-        },
-        "t2": {
-          "type": "testimonial",
-          "settings": {
-            "quote": "Came for the knife stayed for the maker - The Transient - model designed and made by Jim lives in my pocket.",
-            "name": "Michael P."
-          }
-        },
-        "t3": {
-          "type": "testimonial",
-          "settings": {
-            "quote": "Jim is passionate about getting something in your hands that is functional, well-crafted, and gorgeous.",
-            "name": "Mike S."
-          }
-        }
-      },
-      "block_order": [
-        "t1",
-        "t2",
-        "t3"
-      ],
-      "settings": {
-        "heading": "What they say",
-        "layout": "grid",
-        "overlay_color": "#435656",
-        "overlay_opacity": 85,
-        "show_wave_top": true,
-        "show_wave_bottom": true,
-        "wave_color": "#f8f8f8",
-        "padding_top": 8,
-        "padding_bottom": 76
-      }
-    },
     "hmc_reviews": {
       "type": "hmc-reviews",
       "blocks": {
@@ -398,7 +356,6 @@
     "hmc_icon_cards",
     "hmc_value_props",
     "hmc_about_split",
-    "hmc_testimonials",
     "hmc_reviews",
     "hmc_faq",
     "hmc_shop_cta",
