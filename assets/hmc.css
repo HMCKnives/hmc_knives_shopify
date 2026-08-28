@@ -281,6 +281,14 @@ div.hmc-value-props__overlay {
   max-width: 520px;
 }
 
+.hmc-newsletter-form .turnstile-wrapper,
+.hmc-newsletter-form__turnstile {
+  flex: 0 0 100% !important;
+  width: 100% !important;
+  min-width: 300px !important;
+  min-height: 65px !important;
+}
+
 .hmc-newsletter-form__input {
   flex: 1 1 200px;
   min-height: 48px;
