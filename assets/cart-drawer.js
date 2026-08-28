@@ -140,3 +140,30 @@ class CartDrawerItems extends CartItems {
 }
 
 customElements.define('cart-drawer-items', CartDrawerItems);
+
+if (!customElements.get('hmc-cart-discount')) {
+  class HmcCartDiscount extends HTMLElement {
+    connectedCallback() {
+      this.querySelector('form')?.addEventListener('submit', this.#onSubmit);
+    }
+
+    disconnectedCallback() {
+      this.querySelector('form')?.removeEventListener('submit', this.#onSubmit);
+    }
+
+    #onSubmit = (event) => {
+      event.preventDefault();
+      const input = this.querySelector('input[name="discount"]');
+      const code = input?.value?.trim();
+      if (!code) {
+        input?.focus();
+        return;
+      }
+
+      const redirect = encodeURIComponent(`${window.location.pathname}${window.location.search}`);
+      window.location.assign(`/discount/${encodeURIComponent(code)}?redirect=${redirect}`);
+    };
+  }
+
+  customElements.define('hmc-cart-discount', HmcCartDiscount);
+}

@@ -122,6 +122,9 @@
             class="hmc-product__price"
             data-hmc-product-price
             aria-label="{{ price_label }}"
+            {% if selected_variant.price <= 0 %}
+              style="display: none;"
+            {% endif %}
           >
             {%- if selected_variant.compare_at_price > selected_variant.price -%}
               <span class="hmc-product__price-compare" aria-hidden="true">{{ selected_variant.compare_at_price | money }}</span>
@@ -167,7 +170,7 @@
                           disabled
                         {% endunless %}
                       >
-                        {{ variant.title | escape }} — {{ variant.price | money }}
+                        {{ variant.title | escape }}{% if variant.price > 0 %} — {{ variant.price | money }}{% endif %}
                       </option>
                     {%- endfor -%}
                   </select>
@@ -616,12 +619,17 @@
         variantInput.value = variant.id;
 
         if (priceEl) {
-          const formattedPrice = formatMoney(variant.price);
-          const compare = variant.compare_at_price > variant.price
-            ? `<span class="hmc-product__price-compare" aria-hidden="true">${formatMoney(variant.compare_at_price)}</span>`
-            : '';
-          priceEl.innerHTML = `${compare}<span class="hmc-product__price-current">${formattedPrice}</span>`;
-          priceEl.setAttribute('aria-label', labels.priceLabel.replace('[price]', formattedPrice));
+          if (variant.price > 0) {
+            priceEl.style.display = '';
+            const formattedPrice = formatMoney(variant.price);
+            const compare = variant.compare_at_price > variant.price
+              ? `<span class="hmc-product__price-compare" aria-hidden="true">${formatMoney(variant.compare_at_price)}</span>`
+              : '';
+            priceEl.innerHTML = `${compare}<span class="hmc-product__price-current">${formattedPrice}</span>`;
+            priceEl.setAttribute('aria-label', labels.priceLabel.replace('[price]', formattedPrice));
+          } else {
+            priceEl.style.display = 'none';
+          }
         }
 
         if (stockEl) {
@@ -636,6 +644,26 @@
           submitLabel.textContent = variant.available ? labels.addToCart : labels.soldOut;
         }
       };
+
+      if (priceEl) {
+        const checkPriceVisibility = () => {
+          const currentPriceSpan = priceEl.querySelector('.hmc-product__price-current') || priceEl;
+          const text = currentPriceSpan.textContent || '';
+          const numericMatch = text.replace(/[^0-9.]/g, '');
+          const priceValue = parseFloat(numericMatch);
+          if (isNaN(priceValue) || priceValue <= 0) {
+            priceEl.style.display = 'none';
+          } else {
+            priceEl.style.display = '';
+          }
+        };
+
+        const priceObserver = new MutationObserver(() => {
+          checkPriceVisibility();
+        });
+        priceObserver.observe(priceEl, { childList: true, subtree: true, characterData: true });
+        signal.addEventListener('abort', () => priceObserver.disconnect());
+      }
 
       if (variantSelect) {
         variantSelect.addEventListener('change', () => {
