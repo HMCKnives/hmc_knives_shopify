@@ -1,5 +1,10 @@
 name: CI
 on: [push]
+
+permissions:
+  contents: read
+  checks: write
+
 jobs:
   theme-check:
     name: Theme Check
@@ -10,5 +15,4 @@ jobs:
         uses: shopify/theme-check-action@v2
         with:
           token: ${{ github.token }}
-          fail_level: error
-
+          flags: --fail-level error
