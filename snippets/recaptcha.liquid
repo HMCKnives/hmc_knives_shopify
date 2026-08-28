@@ -1,142 +1,86 @@
 {% doc %}
-  Renders a Google reCAPTCHA v2 "I'm not a robot" checkbox and blocks form submit until it is checked.
+  Renders a visible "I'm not a robot" checkbox. Shopify rejects Google reCAPTCHA v2
+  on storefront forms, so this is a native required checkbox. Shopify's own hCaptcha
+  still protects customer, contact, and comment forms.
 
-  @param {string} [site_key] - Optional site key. Defaults to settings.recaptcha_site_key.
-  @param {string} [theme] - light or dark. Defaults to settings.recaptcha_theme.
   @param {string} [class] - Optional extra CSS class.
 
   @example
-  {% render 'recaptcha', site_key: section.settings.recaptcha_site_key, theme: section.settings.recaptcha_theme %}
+  {% render 'recaptcha' %}
 {% enddoc %}
 
-{%- liquid
-  assign current_site_key = site_key
-  if current_site_key == blank
-    assign current_site_key = settings.recaptcha_site_key
-  endif
-
-  assign current_theme = theme
-  if current_theme == blank
-    assign current_theme = settings.recaptcha_theme | default: 'light'
-  endif
-  if current_theme == 'auto'
-    assign current_theme = 'light'
-  endif
--%}
-
-{%- if current_site_key != blank -%}
-  <hmc-recaptcha
-    class="hmc-recaptcha{% if class != blank %} {{ class }}{% endif %}"
-    data-sitekey="{{ current_site_key | escape }}"
-    data-theme="{{ current_theme }}"
-    data-error="{{ 'hmc.recaptcha.required' | t | escape }}"
-  >
-    <div class="hmc-recaptcha__widget"></div>
-    <p class="hmc-recaptcha__error" hidden role="alert"></p>
-  </hmc-recaptcha>
-{%- endif -%}
+<div class="hmc-robot-check{% if class != blank %} {{ class }}{% endif %}">
+  <label class="hmc-robot-check__label" for="HmcRobotCheck-{{ section.id }}-{{ form.id }}">
+    <input
+      id="HmcRobotCheck-{{ section.id }}-{{ form.id }}"
+      class="hmc-robot-check__input"
+      type="checkbox"
+      required
+    >
+    <span class="hmc-robot-check__box" aria-hidden="true"></span>
+    <span class="hmc-robot-check__text">{{ 'hmc.recaptcha.label' | t }}</span>
+  </label>
+</div>
 
 {% stylesheet %}
-  .hmc-recaptcha {
+  .hmc-robot-check {
     display: block;
     flex: 0 0 100%;
     width: 100%;
-    min-width: 304px;
-    min-height: 78px;
     margin-block: 1.2rem;
-    overflow: visible;
   }
 
-  .hmc-recaptcha__widget {
-    min-width: 304px;
-    min-height: 78px;
+  .hmc-robot-check__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0;
+    cursor: pointer;
+    font-size: 1.5rem;
+    line-height: 1.4;
+    color: inherit;
   }
 
-  .hmc-recaptcha__error {
-    margin: 0.8rem 0 0;
-    color: #c41e1e;
-    font-size: 1.4rem;
+  .hmc-robot-check__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
-  .newsletter-form .hmc-recaptcha,
-  .hmc-newsletter-form .hmc-recaptcha {
+  .hmc-robot-check__box {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border: 2px solid currentColor;
+    background: #fff;
+    color: #0a0a0a;
+  }
+
+  .hmc-robot-check__input:checked + .hmc-robot-check__box::after {
+    content: '';
+    width: 0.7rem;
+    height: 1.2rem;
+    border: solid #0a0a0a;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translateY(-0.1rem);
+  }
+
+  .hmc-robot-check__input:focus-visible + .hmc-robot-check__box {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .newsletter-form .hmc-robot-check,
+  .hmc-newsletter-form .hmc-robot-check {
     flex: 0 0 100%;
   }
 {% endstylesheet %}
-
-{% javascript %}
-  class HmcRecaptcha extends HTMLElement {
-    connectedCallback() {
-      this.widgetHost = this.querySelector('.hmc-recaptcha__widget');
-      this.errorEl = this.querySelector('.hmc-recaptcha__error');
-      this.form = this.closest('form');
-      window.hmcRecaptchaWidgets = window.hmcRecaptchaWidgets || [];
-      window.hmcRecaptchaWidgets.push(this);
-      this.#loadScript();
-      if (window.grecaptcha && typeof window.grecaptcha.render === 'function') {
-        this.renderWidget();
-      }
-      this.form?.addEventListener('submit', this.#onSubmit);
-    }
-
-    disconnectedCallback() {
-      this.form?.removeEventListener('submit', this.#onSubmit);
-    }
-
-    renderWidget() {
-      if (this.widgetId != null || !this.widgetHost) return;
-      if (!window.grecaptcha || typeof window.grecaptcha.render !== 'function') return;
-
-      this.widgetId = window.grecaptcha.render(this.widgetHost, {
-        sitekey: this.dataset.sitekey,
-        theme: this.dataset.theme === 'dark' ? 'dark' : 'light',
-        callback: () => {
-          if (!this.errorEl) return;
-          this.errorEl.hidden = true;
-          this.errorEl.textContent = '';
-        },
-      });
-    }
-
-    #onSubmit = (event) => {
-      const response =
-        this.widgetId != null && window.grecaptcha
-          ? window.grecaptcha.getResponse(this.widgetId)
-          : '';
-
-      if (response) return;
-
-      event.preventDefault();
-      event.stopPropagation();
-
-      const message = this.dataset.error || 'Please verify you are not a robot.';
-      if (this.errorEl) {
-        this.errorEl.hidden = false;
-        this.errorEl.textContent = message;
-      }
-      if (window.showToast) window.showToast(message, 'error');
-    };
-
-    #loadScript() {
-      if (document.getElementById('hmc-recaptcha-api')) return;
-
-      window.hmcOnRecaptchaLoad = function () {
-        const widgets = window.hmcRecaptchaWidgets || [];
-        for (const widget of widgets) {
-          widget.renderWidget();
-        }
-      };
-
-      const script = document.createElement('script');
-      script.id = 'hmc-recaptcha-api';
-      script.src = 'https://www.google.com/recaptcha/api.js?onload=hmcOnRecaptchaLoad&render=explicit';
-      script.async = true;
-      script.defer = true;
-      document.head.appendChild(script);
-    }
-  }
-
-  if (!customElements.get('hmc-recaptcha')) {
-    customElements.define('hmc-recaptcha', HmcRecaptcha);
-  }
-{% endjavascript %}

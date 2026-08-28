@@ -1549,33 +1549,11 @@
     ]
   },
   {
-    "name": "Google reCAPTCHA",
+    "name": "Form spam protection",
     "settings": [
       {
         "type": "paragraph",
-        "content": "Adds Google reCAPTCHA v2 (I'm not a robot checkbox) to theme forms. Create a v2 Checkbox key at https://www.google.com/recaptcha/admin and add your Shopify domains."
-      },
-      {
-        "type": "text",
-        "id": "recaptcha_site_key",
-        "label": "reCAPTCHA site key",
-        "info": "Paste the Site Key for reCAPTCHA v2 Checkbox. Leave blank to disable."
-      },
-      {
-        "type": "select",
-        "id": "recaptcha_theme",
-        "label": "reCAPTCHA theme",
-        "options": [
-          {
-            "value": "light",
-            "label": "Light"
-          },
-          {
-            "value": "dark",
-            "label": "Dark"
-          }
-        ],
-        "default": "light"
+        "content": "Shopify no longer allows Google reCAPTCHA on storefront forms. Theme forms show a visible I'm not a robot checkbox, and Shopify's built-in hCaptcha still protects customer, contact, and comment submissions. Manage Shopify CAPTCHA under Online Store > Preferences."
       }
     ]
   }

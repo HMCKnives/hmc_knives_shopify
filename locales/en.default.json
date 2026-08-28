@@ -650,6 +650,7 @@
       "error": "Unable to subscribe. Please try again."
     },
     "recaptcha": {
+      "label": "I'm not a robot",
       "required": "Please check the box to verify you are not a robot."
     },
     "product": {
