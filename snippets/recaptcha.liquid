@@ -1,86 +1,65 @@
 {% doc %}
-  Renders a visible "I'm not a robot" checkbox. Shopify rejects Google reCAPTCHA v2
-  on storefront forms, so this is a native required checkbox. Shopify's own hCaptcha
-  still protects customer, contact, and comment forms.
+  Renders a Google reCAPTCHA v2 checkbox. Submit is blocked in the browser until it is
+  checked. Google token fields are stripped before POST so Shopify does not reject the form.
 
+  @param {string} [site_key] - Optional site key. Defaults to settings.recaptcha_site_key.
+  @param {string} [theme] - light or dark. Defaults to settings.recaptcha_theme.
   @param {string} [class] - Optional extra CSS class.
 
   @example
-  {% render 'recaptcha' %}
+  {% render 'recaptcha', site_key: section.settings.recaptcha_site_key, theme: section.settings.recaptcha_theme %}
 {% enddoc %}
 
-<div class="hmc-robot-check{% if class != blank %} {{ class }}{% endif %}">
-  <label class="hmc-robot-check__label" for="HmcRobotCheck-{{ section.id }}-{{ form.id }}">
-    <input
-      id="HmcRobotCheck-{{ section.id }}-{{ form.id }}"
-      class="hmc-robot-check__input"
-      type="checkbox"
-      required
-    >
-    <span class="hmc-robot-check__box" aria-hidden="true"></span>
-    <span class="hmc-robot-check__text">{{ 'hmc.recaptcha.label' | t }}</span>
-  </label>
-</div>
+{%- liquid
+  assign current_site_key = site_key | default: settings.recaptcha_site_key
+  if current_site_key == blank
+    assign current_site_key = settings.recaptcha_site_key
+  endif
+
+  assign current_theme = theme | default: settings.recaptcha_theme
+  if current_theme == blank or current_theme == 'auto'
+    assign current_theme = 'light'
+  endif
+-%}
+
+{%- if current_site_key != blank -%}
+  <div
+    class="hmc-recaptcha{% if class != blank %} {{ class }}{% endif %}"
+    data-hmc-recaptcha
+    data-sitekey="{{ current_site_key | escape }}"
+    data-theme="{{ current_theme }}"
+    data-error="{{ 'hmc.recaptcha.required' | t | escape }}"
+  >
+    <div class="g-recaptcha"></div>
+    <p class="hmc-recaptcha__error" hidden role="alert"></p>
+  </div>
+{%- endif -%}
 
 {% stylesheet %}
-  .hmc-robot-check {
+  .hmc-recaptcha {
     display: block;
     flex: 0 0 100%;
     width: 100%;
+    min-width: 304px;
+    min-height: 78px;
     margin-block: 1.2rem;
+    overflow: visible;
   }
 
-  .hmc-robot-check__label {
-    display: inline-flex;
-    align-items: center;
-    gap: 1rem;
-    margin: 0;
-    cursor: pointer;
-    font-size: 1.5rem;
-    line-height: 1.4;
-    color: inherit;
+  .hmc-recaptcha .g-recaptcha,
+  .hmc-recaptcha iframe {
+    min-width: 304px;
+    min-height: 78px;
   }
 
-  .hmc-robot-check__input {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+  .hmc-recaptcha__error {
+    margin: 0.8rem 0 0;
+    color: #c41e1e;
+    font-size: 1.4rem;
   }
 
-  .hmc-robot-check__box {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    width: 2.2rem;
-    height: 2.2rem;
-    border: 2px solid currentColor;
-    background: #fff;
-    color: #0a0a0a;
-  }
-
-  .hmc-robot-check__input:checked + .hmc-robot-check__box::after {
-    content: '';
-    width: 0.7rem;
-    height: 1.2rem;
-    border: solid #0a0a0a;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg) translateY(-0.1rem);
-  }
-
-  .hmc-robot-check__input:focus-visible + .hmc-robot-check__box {
-    outline: 2px solid currentColor;
-    outline-offset: 2px;
-  }
-
-  .newsletter-form .hmc-robot-check,
-  .hmc-newsletter-form .hmc-robot-check {
+  .newsletter-form .hmc-recaptcha,
+  .hmc-newsletter-form .hmc-recaptcha {
     flex: 0 0 100%;
   }
 {% endstylesheet %}

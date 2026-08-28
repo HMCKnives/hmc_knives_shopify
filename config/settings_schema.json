@@ -1549,11 +1549,33 @@
     ]
   },
   {
-    "name": "Form spam protection",
+    "name": "Google reCAPTCHA",
     "settings": [
       {
         "type": "paragraph",
-        "content": "Shopify no longer allows Google reCAPTCHA on storefront forms. Theme forms show a visible I'm not a robot checkbox, and Shopify's built-in hCaptcha still protects customer, contact, and comment submissions. Manage Shopify CAPTCHA under Online Store > Preferences."
+        "content": "Shows a Google reCAPTCHA v2 checkbox on theme forms. The token is checked in the browser only and is not sent to Shopify, which no longer accepts Google reCAPTCHA on storefront form posts."
+      },
+      {
+        "type": "text",
+        "id": "recaptcha_site_key",
+        "label": "reCAPTCHA site key",
+        "info": "Paste the Site Key for reCAPTCHA v2 Checkbox. Leave blank to hide the widget."
+      },
+      {
+        "type": "select",
+        "id": "recaptcha_theme",
+        "label": "reCAPTCHA theme",
+        "options": [
+          {
+            "value": "light",
+            "label": "Light"
+          },
+          {
+            "value": "dark",
+            "label": "Dark"
+          }
+        ],
+        "default": "light"
       }
     ]
   }

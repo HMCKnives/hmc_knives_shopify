@@ -290,6 +290,7 @@
     {{ 'hmc.css' | asset_url | stylesheet_tag }}
     {{ 'toastify.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'toastify.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'hmc-recaptcha.js' | asset_url }}" defer="defer"></script>
     <script>
       window.showToast = function(message, type, options) {
         if (!message) return;
