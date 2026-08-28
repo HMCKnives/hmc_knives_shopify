@@ -19,10 +19,68 @@
     {%- paginate collection.products by section.settings.products_per_page -%}
       {%- if collection.products.size > 0 -%}
         <ul class="hmc-collection-grid__list" role="list">
+          {%- liquid
+            assign rendered_product_ids = ''
+            assign is_first_item = true
+          -%}
+
+          {%- comment -%} Render products sorted by position tags (position_1, position_2, etc.) {%- endcomment -%}
+          {%- for i in (1..100) -%}
+            {%- liquid
+              assign tag_underscore = 'position_' | append: i
+              assign tag_hyphen = 'position-' | append: i
+              assign tag_zero = ''
+              if i < 10
+                assign tag_zero = 'position_0' | append: i
+              endif
+            -%}
+
+            {%- for product in collection.products -%}
+              {%- liquid
+                assign match_position = false
+                for tag in product.tags
+                  assign tag_clean = tag | downcase | strip
+                  if tag_clean == tag_underscore or tag_clean == tag_hyphen or tag_clean == tag_zero
+                    assign match_position = true
+                    break
+                  endif
+                endfor
+              -%}
+
+              {%- if match_position -%}
+                {%- assign id_marker = ',' | append: product.id | append: ',' -%}
+                {%- unless rendered_product_ids contains id_marker -%}
+                  {%- liquid
+                    assign eager_load = false
+                    if is_first_item
+                      assign eager_load = true
+                      assign is_first_item = false
+                    endif
+                  -%}
+                  <li class="hmc-collection-grid__item">
+                    {% render 'hmc-product-card', product: product, show_excerpt: section.settings.show_excerpt, eager: eager_load %}
+                  </li>
+                  {%- assign rendered_product_ids = rendered_product_ids | append: id_marker -%}
+                {%- endunless -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endfor -%}
+
+          {%- comment -%} Render remaining products that have no position tag {%- endcomment -%}
           {%- for product in collection.products -%}
-            <li class="hmc-collection-grid__item">
-              {% render 'hmc-product-card', product: product, show_excerpt: section.settings.show_excerpt, eager: forloop.first %}
-            </li>
+            {%- assign id_marker = ',' | append: product.id | append: ',' -%}
+            {%- unless rendered_product_ids contains id_marker -%}
+              {%- liquid
+                assign eager_load = false
+                if is_first_item
+                  assign eager_load = true
+                  assign is_first_item = false
+                endif
+              -%}
+              <li class="hmc-collection-grid__item">
+                {% render 'hmc-product-card', product: product, show_excerpt: section.settings.show_excerpt, eager: eager_load %}
+              </li>
+            {%- endunless -%}
           {%- endfor -%}
         </ul>
 

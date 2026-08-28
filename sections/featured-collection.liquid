@@ -105,33 +105,112 @@
         {%- if section.settings.collection.products.size > 0 -%}
           {% assign lazy_load = false %}
           {% paginate section.settings.collection.products by section.settings.products_to_show %}
-            {%- for product in section.settings.collection.products limit: section.settings.products_to_show -%}
-              {% if lazy_load == false and forloop.index > max_columns_to_show %}
-                {% assign lazy_load = true %}
-              {% endif %}
-              <li
-                id="Slide-{{ section.id }}-{{ forloop.index }}"
-                class="grid__item{% if show_mobile_slider or show_desktop_slider %} slider__slide{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-                {% if settings.animations_reveal_on_scroll %}
-                  data-cascade
-                  style="--animation-order: {{ forloop.index }};"
-                {% endif %}
-              >
-                {% render 'card-product',
-                  card_product: product,
-                  media_aspect_ratio: section.settings.image_ratio,
-                  image_shape: section.settings.image_shape,
-                  lazy_load: lazy_load,
-                  show_secondary_image: section.settings.show_secondary_image,
-                  show_vendor: section.settings.show_vendor,
-                  show_rating: section.settings.show_rating,
-                  skip_styles: skip_card_product_styles,
-                  section_id: section.id,
-                  quick_add: section.settings.quick_add,
-                  product_view_context: 'collection'
-                %}
-              </li>
-              {%- assign skip_card_product_styles = true -%}
+            {%- liquid
+              assign rendered_product_ids = ''
+              assign card_index = 0
+            -%}
+
+            {%- for i in (1..100) -%}
+              {%- liquid
+                assign tag_underscore = 'position_' | append: i
+                assign tag_hyphen = 'position-' | append: i
+                assign tag_zero = ''
+                if i < 10
+                  assign tag_zero = 'position_0' | append: i
+                endif
+              -%}
+
+              {%- for product in section.settings.collection.products -%}
+                {%- if card_index >= section.settings.products_to_show -%}
+                  {%- break -%}
+                {%- endif -%}
+
+                {%- liquid
+                  assign match_position = false
+                  for tag in product.tags
+                    assign tag_clean = tag | downcase | strip
+                    if tag_clean == tag_underscore or tag_clean == tag_hyphen or tag_clean == tag_zero
+                      assign match_position = true
+                      break
+                    endif
+                  endfor
+                -%}
+
+                {%- if match_position -%}
+                  {%- assign id_marker = ',' | append: product.id | append: ',' -%}
+                  {%- unless rendered_product_ids contains id_marker -%}
+                    {%- liquid
+                      assign card_index = card_index | plus: 1
+                      if lazy_load == false and card_index > max_columns_to_show
+                        assign lazy_load = true
+                      endif
+                    -%}
+                    <li
+                      id="Slide-{{ section.id }}-{{ card_index }}"
+                      class="grid__item{% if show_mobile_slider or show_desktop_slider %} slider__slide{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                      {% if settings.animations_reveal_on_scroll %}
+                        data-cascade
+                        style="--animation-order: {{ card_index }};"
+                      {% endif %}
+                    >
+                      {% render 'card-product',
+                        card_product: product,
+                        media_aspect_ratio: section.settings.image_ratio,
+                        image_shape: section.settings.image_shape,
+                        lazy_load: lazy_load,
+                        show_secondary_image: section.settings.show_secondary_image,
+                        show_vendor: section.settings.show_vendor,
+                        show_rating: section.settings.show_rating,
+                        skip_styles: skip_card_product_styles,
+                        section_id: section.id,
+                        quick_add: section.settings.quick_add,
+                        product_view_context: 'collection'
+                      %}
+                    </li>
+                    {%- assign skip_card_product_styles = true -%}
+                    {%- assign rendered_product_ids = rendered_product_ids | append: id_marker -%}
+                  {%- endunless -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endfor -%}
+
+            {%- for product in section.settings.collection.products -%}
+              {%- if card_index >= section.settings.products_to_show -%}
+                {%- break -%}
+              {%- endif -%}
+
+              {%- assign id_marker = ',' | append: product.id | append: ',' -%}
+              {%- unless rendered_product_ids contains id_marker -%}
+                {%- liquid
+                  assign card_index = card_index | plus: 1
+                  if lazy_load == false and card_index > max_columns_to_show
+                    assign lazy_load = true
+                  endif
+                -%}
+                <li
+                  id="Slide-{{ section.id }}-{{ card_index }}"
+                  class="grid__item{% if show_mobile_slider or show_desktop_slider %} slider__slide{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                  {% if settings.animations_reveal_on_scroll %}
+                    data-cascade
+                    style="--animation-order: {{ card_index }};"
+                  {% endif %}
+                >
+                  {% render 'card-product',
+                    card_product: product,
+                    media_aspect_ratio: section.settings.image_ratio,
+                    image_shape: section.settings.image_shape,
+                    lazy_load: lazy_load,
+                    show_secondary_image: section.settings.show_secondary_image,
+                    show_vendor: section.settings.show_vendor,
+                    show_rating: section.settings.show_rating,
+                    skip_styles: skip_card_product_styles,
+                    section_id: section.id,
+                    quick_add: section.settings.quick_add,
+                    product_view_context: 'collection'
+                  %}
+                </li>
+                {%- assign skip_card_product_styles = true -%}
+              {%- endunless -%}
             {%- endfor -%}
           {% endpaginate %}
         {%- else -%}

@@ -157,33 +157,104 @@
                 "
               >
                 {% assign skip_card_product_styles = false %}
+                {%- liquid
+                  assign rendered_product_ids = ''
+                  assign card_index = 0
+                -%}
+
+                {%- for i in (1..100) -%}
+                  {%- liquid
+                    assign tag_underscore = 'position_' | append: i
+                    assign tag_hyphen = 'position-' | append: i
+                    assign tag_zero = ''
+                    if i < 10
+                      assign tag_zero = 'position_0' | append: i
+                    endif
+                  -%}
+
+                  {%- for product in collection.products -%}
+                    {%- liquid
+                      assign match_position = false
+                      for tag in product.tags
+                        assign tag_clean = tag | downcase | strip
+                        if tag_clean == tag_underscore or tag_clean == tag_hyphen or tag_clean == tag_zero
+                          assign match_position = true
+                          break
+                        endif
+                      endfor
+                    -%}
+
+                    {%- if match_position -%}
+                      {%- assign id_marker = ',' | append: product.id | append: ',' -%}
+                      {%- unless rendered_product_ids contains id_marker -%}
+                        {%- liquid
+                          assign card_index = card_index | plus: 1
+                          assign lazy_load = false
+                          if card_index > 2
+                            assign lazy_load = true
+                          endif
+                        -%}
+                        <li
+                          class="grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                          {% if settings.animations_reveal_on_scroll %}
+                            data-cascade
+                            style="--animation-order: {{ card_index }};"
+                          {% endif %}
+                        >
+                          {% render 'card-product',
+                            card_product: product,
+                            media_aspect_ratio: section.settings.image_ratio,
+                            image_shape: section.settings.image_shape,
+                            show_secondary_image: section.settings.show_secondary_image,
+                            show_vendor: section.settings.show_vendor,
+                            show_rating: section.settings.show_rating,
+                            lazy_load: lazy_load,
+                            skip_styles: skip_card_product_styles,
+                            quick_add: section.settings.quick_add,
+                            section_id: section.id,
+                            product_view_context: 'collection'
+                          %}
+                        </li>
+                        {%- assign skip_card_product_styles = true -%}
+                        {%- assign rendered_product_ids = rendered_product_ids | append: id_marker -%}
+                      {%- endunless -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                {%- endfor -%}
+
                 {%- for product in collection.products -%}
-                  {% assign lazy_load = false %}
-                  {%- if forloop.index > 2 -%}
-                    {%- assign lazy_load = true -%}
-                  {%- endif -%}
-                  <li
-                    class="grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-                    {% if settings.animations_reveal_on_scroll %}
-                      data-cascade
-                      style="--animation-order: {{ forloop.index }};"
-                    {% endif %}
-                  >
-                    {% render 'card-product',
-                      card_product: product,
-                      media_aspect_ratio: section.settings.image_ratio,
-                      image_shape: section.settings.image_shape,
-                      show_secondary_image: section.settings.show_secondary_image,
-                      show_vendor: section.settings.show_vendor,
-                      show_rating: section.settings.show_rating,
-                      lazy_load: lazy_load,
-                      skip_styles: skip_card_product_styles,
-                      quick_add: section.settings.quick_add,
-                      section_id: section.id,
-                      product_view_context: 'collection'
-                    %}
-                  </li>
-                  {%- assign skip_card_product_styles = true -%}
+                  {%- assign id_marker = ',' | append: product.id | append: ',' -%}
+                  {%- unless rendered_product_ids contains id_marker -%}
+                    {%- liquid
+                      assign card_index = card_index | plus: 1
+                      assign lazy_load = false
+                      if card_index > 2
+                        assign lazy_load = true
+                      endif
+                    -%}
+                    <li
+                      class="grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                      {% if settings.animations_reveal_on_scroll %}
+                        data-cascade
+                        style="--animation-order: {{ card_index }};"
+                      {% endif %}
+                    >
+                      {% render 'card-product',
+                        card_product: product,
+                        media_aspect_ratio: section.settings.image_ratio,
+                        image_shape: section.settings.image_shape,
+                        show_secondary_image: section.settings.show_secondary_image,
+                        show_vendor: section.settings.show_vendor,
+                        show_rating: section.settings.show_rating,
+                        lazy_load: lazy_load,
+                        skip_styles: skip_card_product_styles,
+                        quick_add: section.settings.quick_add,
+                        section_id: section.id,
+                        product_view_context: 'collection'
+                      %}
+                    </li>
+                    {%- assign skip_card_product_styles = true -%}
+                  {%- endunless -%}
                 {%- endfor -%}
               </ul>
 
