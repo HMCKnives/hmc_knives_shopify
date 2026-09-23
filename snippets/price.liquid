@@ -68,9 +68,9 @@
               <span>
                 <s class="price-item price-item--regular variant-item__old-price">
                   {% if settings.currency_code_enabled %}
-                    <span bss-po-product-id="{{ product.id }}" bss-po-variant-price bss-po-variant-id="{{ variant.id }}" bss-po-product-compare-price>{{ compare_at_price | money_with_currency }}</span>
+                    {{ compare_at_price | money_with_currency }}
                   {% else %}
-                    <span bss-po-product-id="{{ product.id }}" bss-po-variant-price bss-po-variant-id="{{ variant.id }}" bss-po-product-compare-price>{{ compare_at_price | money }}</span>
+                    {{ compare_at_price | money }}
                   {% endif %}
                 </s>
               </span>
@@ -96,16 +96,16 @@
           <span>
             <s class="price-item price-item--regular">
               {% if settings.currency_code_enabled %}
-               <span bss-po-product-id="{{ product.id }}" bss-po-variant-price bss-po-variant-id="{{ variant.id }}" bss-po-product-compare-price>{{ compare_at_price | money_with_currency }}</span>
+                {{ compare_at_price | money_with_currency }}
               {% else %}
-                <span bss-po-product-id="{{ product.id }}" bss-po-variant-price bss-po-variant-id="{{ variant.id }}" bss-po-product-compare-price>{{ compare_at_price | money }}</span>
+                {{ compare_at_price | money }}
               {% endif %}
             </s>
           </span>
         {%- endunless -%}
         <span class="visually-hidden visually-hidden--inline">{{ 'products.product.price.sale_price' | t }}</span>
         <span class="price-item price-item--sale price-item--last">
-         <span bss-po-product-id="{{ product.id }}" bss-po-variant-price bss-po-variant-id="{{ variant.id }}" bss-po-product-price> {{ money_price }}</span>
+          {{ money_price }}
         </span>
       </div>
       {%- if product.selected_or_first_available_variant.unit_price_measurement -%}
