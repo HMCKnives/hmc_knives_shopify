@@ -70,7 +70,7 @@
                   {% if settings.currency_code_enabled %}
                     {{ compare_at_price | money_with_currency }}
                   {% else %}
-                    {{ compare_at_price | money }}
+                    <span bss-po-product-id="{{ product.id }}" bss-po-variant-price bss-po-variant-id="{{ variant.id }}" bss-po-product-compare-price>{{ compare_at_price | money }}</span>
                   {% endif %}
                 </s>
               </span>
